@@ -1,0 +1,328 @@
+This is FIGlet quad-FAT package for NEXTSTEP. I have only tested it on
+NEXTSTEP 3.3J/Intel. (J means Japanese Version)
+
+If you have any problems with the program and its functions please contact the author of FIGlet. If you have any questions about this package please contact me and not the author of FIGlet.
+
+For more information please visit at: http://st-www.cs.uiuc.edu/users/chai/figlet.html
+
+---
+    _/_/  Tsutomu Eguchi@Saga Medical School
+ _/_/_/_/ mailto:Tsutomu_Eguchi@ns.saga-med.ac.jp (NeXTmail/MIME Welcome)
+  _/      http://www.ns.saga-med.ac.jp/~eguchi/
+  _/_/_/  PGP fingerprint = 37 8D 7D 2A F2 77 07 80 78 D2 37 85 0A 1C 63 87
+
+
+======================================================================
+Original README:
+
+About FIGlet (Frank, Ian & Glenn's Letters) release 2.2, 2 Oct 1996
+----------------------------------------------------------------------
+FIGlet is a program that creates large characters out of ordinary
+screen characters
+ _ _ _          _   _     _       
+| (_) | _____  | |_| |__ (_)___   
+| | | |/ / _ \ | __| '_ \| / __|  
+| | |   <  __/ | |_| | | | \__ \_ 
+|_|_|_|\_\___|  \__|_| |_|_|___(_)
+                                  
+(This is meant to be viewed in a monospaced font.)  FIGlet can create
+characters in many different styles and can kern and "smush" these
+characters together in various ways.  FIGlet output is generally
+reminiscent of the sort of "signatures" many people like to put at the
+end of e-mail and UseNet messages.
+
+If you like FIGlet (hey, even if you *hate* FIGlet), please send an
+e-mail message to <figlet@uiuc.edu>.
+
+Files -- Unix version
+---------------------
+
+README       -- This file.
+figlet.c     -- The FIGlet source code.
+zipio.h,     -- A package for reading ZIP archives
+zipio.c,
+inflate.c,
+crc.c
+getopt.c     -- Source for the standard "getopt" routine, in case you
+                don't have it in your C library.  Not used by default.
+Makefile     -- The FIGlet makefile.  Used by the make command. 
+figlet.6     -- The FIGlet man(ual) page. 
+figlist      -- Script that lists available fonts and control files.
+showfigfonts -- Script that gives a sample of each available font.
+chkfont.c    -- Source code for chkfont: a program that checks FIGlet
+                fonts for formatting errors.  You can ignore this file
+                unless you intend to design or edit fonts.
+figfont.txt  -- Text file that explains the format of FIGlet fonts.
+                You can ignore this file unless you intend to design
+                or edit fonts.
+fonts        -- Directory containing fonts and control files.
+<xxx>.flf    -- All files ending in ".flf" are FIGlet font files.
+<xxx>.flc    -- All files ending in ".flc" are FIGlet control files.
+
+Files -- DOS version
+--------------------
+
+README       -- This file
+figlet.exe   -- The FIGlet program.
+figlet.man   -- The FIGlet man(ual) page. 
+showall.bat  -- Batch file that lists available fonts and samples of each.
+chkfont.exe  -- A program that checks FIGlet fonts for formatting errors.
+                You can ignore this file unless you intend to design
+                or edit fonts.
+figfont.txt  -- Text file that explains the format of FIGlet fonts.
+                You can ignore this file unless you intend to design
+                or edit fonts.
+fonts        -- Directory containing fonts and control files.
+<xxx>.flf    -- All files ending in ".flf" are FIGlet font files.
+<xxx>.flc    -- All files ending in ".flc" are FIGlet control files.
+
+
+Installing FIGlet --- Unix version
+----------------------------------
+
+First decide in which directories FIGlet and the FIGlet font files
+(the ".flf" files) will be stored (we recommend "/usr/games" and
+"/usr/games/lib/figlet.dir", respectively) and which will be the
+default font (we recommend "standard.flf").
+
+Edit "Makefile", and set the variables DEFAULTFONTDIR and
+DEFAULTFONTFILE to the appropriate values.  Set DEFAULTFONTDIR to be
+the full pathname of the directory in which you will keep the FIGlet
+font files.  Set DEFAULTFONTFILE to be the filename of the default
+font.
+
+At this point, you have two choices:
+
+(1) Just compile FIGlet.  To go this, go into the directory containing
+the FIGlet source, and type "make figlet".  Then copy the various files
+to the proper locations.  The executable (figlet), along with figlist
+and showfigfonts, goes wherever you keep your executables.  The fonts
+(<xxx>.flf) and control files (<xxx>.flc) go in the default font
+directory.  The man page (figlet.6) goes in section 6 (usually
+/usr/man/man6).  If you cannot, or do not want to, install the man page,
+you can probably still read it using
+
+        nroff -man figlet.6 | more
+
+(2) Do a complete installation.  To do the this, set the variables
+DESTDIR and MANDIR in Makefile to the appropriate values.  DESTDIR
+should be the full pathname of the directory in which the executable
+files should be put (we recommend "/usr/games");  MANDIR should be the
+full pathname of the directory in which the figlet man page should be
+put, generally "/usr/man/man6".  Once DEFAULTFONTDIR, DEFAULTFONTFILE,
+DESTDIR and MANDIR have been set, in the directory containing the FIGlet
+source, type "make install".
+
+If space is a problem, the only files you absolutely must have to run
+figlet are "figlet" (the executable) and at least one font (preferably
+the one you chose to be the default font).
+
+Installing FIGlet -- DOS version
+--------------------------------
+
+Unpack the ZIPfile using PKUNZIP, Info-Zip UNZIP, WinUnzip, or any other
+ZIP-compatible program.  Be sure to use the -d option with PKUNZIP
+in order to preserve the directory structure.  We recommend that you
+unpack the archive into C:\FIGLET, but any directory will do.
+
+If you unpack the archive on top of an older version of FIGlet, be
+sure to delete the file FIGLET.COM.  The executable program in this
+release is named FIGLET.EXE.  You can keep your old fonts by putting
+them in a FONTS subdirectory before unpacking.  (There are upgraded
+versions of the standard fonts in the archive.)
+
+Using FIGlet
+------------
+
+(Note: FIGlet needs a good thorough tutorial.  Currently I don't have
+the time to write one, but if anyone wants to do so, go right ahead.
+I'd be glad to help out a little.  Write us at <figlet@uiuc.edu> if
+you're interested.  -GGC-)
+
+At the shell prompt, type "figlet".  Then type, say, "Hello, world!"
+and press return.  "Hello, world!" in nice, big, designer characters
+should appear on your screen.  If you chose standard.flf to be the
+default font, you should see
+ _   _      _ _                             _     _ _ 
+| | | | ___| | | ___    __      _____  _ __| | __| | |
+| |_| |/ _ \ | |/ _ \   \ \ /\ / / _ \| '__| |/ _` | |
+|  _  |  __/ | | (_) |   \ V  V / (_) | |  | | (_| |_|
+|_| |_|\___|_|_|\___( )   \_/\_/ \___/|_|  |_|\__,_(_)
+                    |/                                
+Then type something else, or type an EOF (typically control-D) to quit
+FIGlet.
+
+Now you can send the output of figlet to a file (e.g., "figlet > file")
+and e-mail it to your friends (who will probably say, "Wow!  It must
+have taken you hours to put that together!")
+
+To use other fonts, use the "-f" command line option.  For example, if
+you had said "figlet -f smslant" above, you would have seen
+   __ __    ____                         __   ____
+  / // /__ / / /__      _    _____  ____/ /__/ / /
+ / _  / -_) / / _ \_   | |/|/ / _ \/ __/ / _  /_/ 
+/_//_/\__/_/_/\___( )  |__,__/\___/_/ /_/\_,_(_)  
+                  |/                              
+
+Here are some other useful command line options:
+
+-c   center -- centers the output of FIGlet.
+-k  tells FIGlet to kern characters without smushing them together.
+-t   terminal -- FIGlet asks your terminal how wide it is, and uses
+     this to determine when to break lines.  Normally, FIGlet assumes
+     80 columns so that people with wide terminals won't annoy the
+     people they e-mail FIGlet output to.
+-p   paragraph mode -- eliminates some spurious line breaks when piping
+     a multi-line file through FIGlet.
+-v   version -- prints information about your copy of FIGlet.
+
+For in-depth explanations of these and other options, see the man page.
+DOS users, see figlet.man.
+
+
+Other Fonts & Mailing List
+--------------------------
+
+A good number of FIGlet fonts have been developed, most of which are
+not included in the standard FIGlet package.  Many of these can be
+obtained by anonymous FTP from ftp.nicoh.com in the directory
+"pub/figlet/fonts".  Some non-Roman fonts are available at the FTP
+site.  As of this writing, we have Hebrew, Cyrillic (Russian) and
+Greek.
+
+We run an e-mail list dedicated to FIGlet software and font
+announcements, as well as general discussion about FIGlet.  If you
+would like to be on this list, send e-mail to listserv@vmd.cso.uiuc.edu
+with the message body
+        subscribe figlet-l YOUR NAME
+where YOUR NAME should be replaced with your name.  For those who don't
+want to be bothered with the discussions, the list can be configured so
+that you only see software update notices, or only software and font
+announcements.
+
+Other Stuff
+-----------
+
+FIGlet is available for operating systems other than Unix.  E-mail us
+for more information.
+
+Although you don't have to design your own fonts to use FIGlet, we'd
+certainly like it if lots of people did make up new FIGlet fonts.  If
+you feel like giving it a try, see the "FONT FILE FORMAT" section of
+the man page.  If you do design a font, please let us know!
+
+See "Other Things to Try" in the EXAMPLES section of the man page
+for... well... other things to try.
+
+
+Authors
+-------
+
+FIGlet was written mostly by Glenn Chappell <c486scm@semovm.semo.edu>.  The
+author not being an e-mail fanatic, most correspondence (bug reports, rave
+reviews, etc.) should be directed to his secretary (who is definitely
+an e-mail fanatic), Ian Chai <chai@uiuc.edu>.
+
+Changes in FIGlet 2.2
+---------------------
+
+FIGlet 2.2 is a moderate revision of FIGlet 2.1.2.  The new features are:
+
+o	font files and control files can be compressed using ``zip'', and
+	will be automatically decompressed
+
+o	new commands in controlfiles provide support for
+	single-byte (default), double-byte, HZ, Shift-JIS, and Unicode
+	UTF-8 encodings of the input
+
+o	ISO 2022 escape sequences are decoded and interpreted
+
+o	control files can now have the format of Unicode Consortium
+	mapping tables (two columns of numbers representing
+	input character and output character, no ranges, # comments)
+
+o	new options -s (smush, same as -m-2), -k (kern, same as -m0),
+	-S (forced smushing), and -W (full width, same as -m-1) make
+	-m option unnecessary except for font designers.  The -S option
+	works even if the font's smushmode is 0 or -1, in which case
+	the smushmode is read from a new parameter in the
+	font's first line, or does universal overlapping if no such parameter
+	exists
+
+o	universal smushing (-o option to force it, but -S will use it
+	if no smush rules are available) makes FIGcharacters overlap by
+	one place independent of how they are constructed
+	more fonts smushable.
+
+o	file "figmagic" can be appended to your system magic number
+	file to make the "file" command recognize FIGlet files
+
+o	file "figfont.txt" is an implementation-independent specification
+	for FIGlet fonts and control files
+
+o	integrated support for extended characters (extended Latin in
+	"standard", Greek in "big", katakana in "banner", Hebrew in new
+	"ivrit" fonts) with appropriate controlfiles
+
+o	smushing rule 16 has changed slightly: "/\" now smushes
+	into "|" and "\/" smushes into "Y"; "><" still smushes
+	into "X" and "<>" is still not smushed at all.
+
+o	-A option introduced in FIGlet 2.1.2 is now optional;
+	if any words appear on the command line after the options,
+	they are formatted, and the standard input is not read.
+
+These changes were made by John Cowan <cowan@ccil.org>.
+
+Changes in FIGlet 2.1.2
+------------------------
+
+FIGlet 2.1.2 is a minor revision of FIGlet 2.1.1.  The files
+README, FTP-NOTE, figlet.c and figlet.6 have been changed.  All other
+files are identical with the 2.1.1 release.
+
+o	The only new option is -A, which causes FIGlet to read input
+	from the command line.
+
+These changes were made by Gilbert Healton <ghealton@nmia.com> as Glenn
+Chappell is now busy as a new professor of Mathematics.
+
+Changes in FIGlet 2.1
+----------------------
+
+A number of minor bugs and major incompatibility problems have been
+fixed.  FIGlet 2.1 should compile correctly on many operating systems for
+which FIGlet 2.0 did not.
+
+o	The "-F" command line option, which used to list all the available
+	fonts, has been removed, since it made FIGlet incompatible with some
+	operating systems.  It has been replaced by the "figlist" script.  The
+	"showfigfonts" script has been updated so that it no longer requires
+	the "-F" option to be available.
+
+o	The FIGlet font file format has been extended to allow an arbitrarily
+	large number of characters.  The ISO Latin-1 character set, which
+	includes many accented letters and special symbols, has been added to
+	most standard fonts.
+
+o	FIGlet can now print right-to-left.  This can be specified on the
+	command line ("-R") or in the font file.  Thus, for example, Hebrew and
+	Arabic fonts can be handled more easily.
+
+o	FIGlet can now right justify its output.  This is the default when
+	right-to-left printing is selected.  It can also be specified on the
+	command line ("-r").
+
+o	FIGlet now supports "control files".  These can be used to change which
+	character FIGlet will print when it sees a certain input character --
+	sort of an expanded version of the "-D" option.  For example, a control
+	file could convert lower-case letters to upper-case or map certain
+	ASCII characters to accented letters.  Control file names end with the
+	suffix ".flc".  Select a control file by using "-C controlfile" on the
+	command line.  Several controlfiles can be used at once by giving
+	muliple "-C" options.
+
+o	There is now a way for programs that use FIGlet to get various
+	information from FIGlet, for example, what version of FIGlet is being
+	used or the name of the default font directory.  This information is
+	gotten through the "-I" option.  See the man page for details.

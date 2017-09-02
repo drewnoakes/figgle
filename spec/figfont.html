@@ -1,0 +1,1888 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="EN" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>FIGfont Version 2 FIGfont and FIGdriver Standard</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+		<meta name="ROBOTS" content="index,follow"/>
+		<meta name="description" content="The FIGfont Version 2 FIGfont and FIGdriver Standard."/>
+		<meta name="keywords" content="FIGlet font format specification figfonts standard figdriver"/>
+		<meta name="publisher" content="Markus Gebhard"/>
+		<meta name="Content-Language" content="EN"/>
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<style type="text/css">
+
+
+
+    <!-- body { font-family: arial,sans-serif; background-color: #FFFFFF; font-size: 13px; } -->
+    <!-- ul { margin-top: 5px; } -->
+    <!-- li { margin-bottom: 1px; } -->
+    <!-- blockquote { margin-top: 5px; margin-left:30px; } -->
+    <!-- code { font-family: Courier New, Courier; font-size: 11px; margin: 0px; } -->
+    <!-- pre { font-family: Courier New, Courier; font-size: 11px; margin: 0px; } -->
+    <!-- h1 { font-family: Verdana,Arial,Geneva,Helvetica; font-size: 20px; text-align:center; border-bottom:0px; padding-bottom:7px; padding-top:7px; margin:0px;} -->
+    <!-- h2 { font-family: Verdana,Arial,Geneva,Helvetica; font-size: 20px; padding-left:6px; margin:0px; padding-top:6px; height:32px; font-family: Verdana,Arial,Geneva,Helvetica; font-size: 13pt; background-image:url('design/h2_background.gif'); background-repeat:no-repeat; background-position: center left;} -->
+    <!-- h3 { font-family: Verdana,Arial,Geneva,Helvetica; font-size: 11pt; padding-left:8px; margin-bottom: 8px; } -->
+    <!-- h4 { font-family: Verdana,Arial,Geneva,Helvetica; font-size: 10pt; padding-left:8px; font-weight: bold; } -->
+    <!-- p { padding-left:8px; } -->
+    <!-- table {border-collapse:collapse; border-width:0px} -->
+  </style>
+	</head>
+	<body>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre> _____  ___  ____   __                _
+|  ___||_ _|/ ___| / _|  ___   _ __  | |_  ___  _
+| |_    | || |  _ | |_  / _ \ | '_ \ | __|/ __|(_)
+|  _|   | || |_| ||  _|| (_) || | | || |_ \__ \ _
+|_|    |___|\____||_|   \___/ |_| |_| \__||___/(_)</pre>
+				</td>
+			</tr>
+		</table>
+
+		<h1>The FIGfont Version 2 FIGfont and FIGdriver Standard</h1>
+
+		<center> Draft 2.0 Copyright 1996, 1997 by John Cowan and Paul Burton
+			<br/> Portions Copyright 1991, 1993, 1994 by Glenn Chappell and Ian Chai
+			<br/> May be freely copied and distributed.
+			<br/> </center>
+		<hr/>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>  _____          __           __
+ / ___/__  ___  / /____ ___  / /____
+/ /__/ _ \/ _ \/ __/ -_) _ \/ __(_-&lt;
+\___/\___/_//_/\__/\__/_//_/\__/___/</pre>
+				</td>
+			</tr>
+		</table>
+
+		<table align="center">
+			<tr>
+				<td>
+					<ul>
+						<li><a href="#introduction">Introduction</a>
+						</li>
+						<li><a href="#basic">Basic Definitions and Concepts</a>
+							<ul>
+								<li><a href="#figfont">&quot;FIGfont&quot;</a>
+								</li>
+								<li><a href="#figcharacter">&quot;FIGcharacters&quot; and &quot;Sub-characters&quot;</a>
+								</li>
+								<li><a href="#figdriver">&quot;FIGdriver&quot;</a>
+								</li>
+								<li><a href="#figure">&quot;FIGure&quot;</a>
+								</li>
+								<li><a href="#fig">&quot;FIG&quot;</a>
+								</li>
+								<li><a href="#layoutmodes">&quot;Layout Modes&quot;</a>
+								</li>
+								<li><a href="#smushingrules">&quot;Smushing Rules&quot;</a>
+								</li>
+								<li><a href="#hardblanks">&quot;Hardblanks&quot;</a>
+								</li>
+								<li><a href="#charactersets">&quot;Character Sets&quot; and &quot;Character Codes&quot;</a>
+								</li>
+							</ul></li>
+						<li><a href="#creating">Creating FIGfonts</a>
+							<ul>
+								<li><a href="#headerline">The Header Line</a>
+								</li>
+								<li><a href="#interpretlayout">Interpretation of Layout Parameters</a>
+								</li>
+								<li><a href="#settinglayout">Setting Layout Parameters Step-by-Step</a>
+								</li>
+								<li><a href="#figfontcomments">FIGfont Comments</a>
+								</li>
+								<li><a href="#figcharacterdata">FIGcharacter Data</a>
+									<ul>
+										<li><a href="#basicdata">Basic Data Structure</a>
+										</li>
+										<li><a href="#requiredfigchar">Required FIGcharacters</a>
+										</li>
+										<li><a href="#codetagged">Code Tagged FIGcharacters</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li><a href="#notes">Notes - Avoiding Errors and General Advice</a>
+						</li>
+						<li><a href="#controlfiles">Control Files</a>
+							<ul>
+								<li><a href="#ctrlstandard">Standard Format</a>
+								</li>
+								<li><a href="#ctrlextended">Extended Commands</a>
+								</li>
+							</ul>
+						</li>
+						<li><a href="#standardizedcapabilities">Standardized Capabilities of current and future FIGdrivers</a>
+						</li>
+						<li><a href="#chartofcapabilities">Chart of Capabilities of FIGlet 2.2 and FIGWin 1.0</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+
+		<hr/> <a name="introduction"/>
+		<h2>Introduction</h2>
+
+		<p>This document specifies the format of font files, and the associated control files, used by the FIGlet and FIGWin programs
+			(FIGdrivers). It is written for designers who wish to build fonts (FIGfonts) usable by either program, and also serves as a
+			standard for development of future versions or similar FIGdrivers. Some features explained here are not supported by both
+			programs. See separate documentation to learn how to use FIGlet or FIGWin.</p>
+
+		<p>NOTE: FIGWin 1.0 is packaged with a program called FIGfont Editor for Windows 1.0, which is just that. It does not require a
+			complete understanding of this document to create FIGfonts. However it is a good idea to become familiar with the "BASIC
+			DEFINITIONS AND CONCEPTS" information before using it.</p>
+
+		<p>If you design a FIGfont, please send an e-mail announcement to
+			&lt;figletfonts@onelist.com&gt;, the FIGlet fonts mailing list, and email a copy to &lt;ianchai@usa.net&gt; for him to put
+			it at the ftp site.</p>
+
+
+		<hr/> <a name="basic"/>
+		<h2>Basic Definitions and Concepts</h2>
+
+
+		<a name="figfont"/>
+		<h3>&quot;FIGfont&quot;</h3>
+
+<p>A FIGfont is a file which represents the graphical arrangement of characters
+representing larger characters.  Since a FIGfont file is a text file, it can
+be created with any text editing program on any platform.  The filename of a
+FIGfont file must end with &quot;.flf&quot;, which stands for &quot;<b>F</b>IG<b>L</b>ettering
+<b>F</b>ont&quot;.</p>
+
+		<a name="figcharacter"/>
+		<h3>&quot;FIGcharacters&quot; and &quot;Sub-characters&quot;</h3>
+<p>Because FIGfonts describe large characters which consist of smaller
+characters, confusion can result when descussing one or the other.
+Therefore, the terms &quot;FIGcharacter&quot; and &quot;sub-character&quot; are used,
+respectively.</p>
+
+		<a name="figdriver"/>
+		<h3>&quot;FIGdriver&quot;</h3>
+
+<p>The term FIGdriver is used in this document to encompass FIGlet, FIGWin, and
+any future programs which use FIGfonts.</p>
+
+		<a name="figure"/>
+		<h3>&quot;FIGure&quot;</h3>
+<p>A FIGure (thusly capitalized) is an image created by a FIGdriver.</p>
+
+		<a name="fig"/>
+		<h3>&quot;FIG&quot;</h3>
+
+<p>A bit of history:</p>
+
+<p>In Spring 1991, inspired by the Email signature of a friend named Frank, and
+goaded on by Ian Chai, Glenn Chappell wrote a nifty little 170-line &quot;C&quot;
+program called &quot;newban&quot;, which would create large letters out of ordinary
+text characters.  At the time, it was only compiled for UNIX.  In hindsight,
+we now call it &quot;FIGlet 1.0&quot;.  FIGlet stands for <b>F</b>rank, <b>I</b>an, and <b>G</b>lenn's
+<b>let</b>ters.  In various incarnations, newban circulated around the net for a
+couple of years.  It had one font, which included only lowercase letters.</p>
+
+<p>In early 1993, Ian decided newban was due for a few changes, so together Ian
+and Glenn added the full ASCII character set, to start with.  First, though,
+Ian had to find a copy of the source, since Glenn had tossed it away as not
+worth the disk space.  Ian and Glenn discussed what could be done with it,
+decided on a general re-write, and, 7 months later, ended up with 888 lines
+of code, 13 FIGfonts and documentation.  This was FIGlet 2.0, the first real
+release.</p>
+
+<p>To their great surprise, FIGlet took the net by storm.  They received floods
+of &quot;FIGlet is great!&quot; messages and a new contributed FIGfont about once a
+week.  To handle all the traffic, Ian quickly set up a mailing list, Daniel
+Simmons kindly offered space for an FTP site, several people volunteered to
+port FIGlet to non-Unix operating systems, ...and bug reports poured in.</p>
+
+<p>Because of these, and the need to make FIGlet more &quot;international&quot;, Ian and
+Glenn released a new version of FIGlet which could handle non-ASCII character
+sets and right-to-left printing.  This was FIGlet 2.1, which, in a couple of
+weeks, became figlet 2.1.1.  This weighed in at 1314 lines, and there were
+over 60 FIGfonts.</p>
+
+<p>By late 1996, FIGlet had quite a following of fans subscribing to its mailing
+list.  It had been ported to MS-DOS, Macintosh, Amiga, Apple II GS, Atari ST,
+Acorn and OS/2.  FIGlet had been further updated, and there were nearly 200
+FIGfonts.</p>
+
+<p>John Cowan and Paul Burton are two FIGlet fans who decided to create new
+versions.  While John wrote FIGlet version 2.2 using C, Paul wrote FIGWin
+1.0, the first true GUI (Windows) implementation of FIGlet, using Visual
+Basic.  John and Paul worked together to add new features to FIGfont files
+which could be read by both programs, and together wrote this document, which
+we hope helps to establish consistency in FIGfonts and help with the creation
+of future FIGdrivers.  FIGlet 2.2 has about 4800 lines of code, of which
+over half is a support library for reading compressed files.</p>
+
+<p>FIGlet 2.2 and FIGWin 1.0 both allow greater flexibility by use of new
+information which can be contained in FIGfont files without interfering with
+the function of older FIGdrivers.</p>
+
+<p>NOTE: The Macintosh version of FIGlet is still command-line driven as of this
+writing, and a GUI version is very much in demand.  The FIGlet C code is
+written to be easily plugged in to a GUI shell, so it will be a relatively
+easy task for a Macintosh developer.</p>
+
+
+		 <a name="layoutmodes"/>
+		<h3>&quot;Layout Modes&quot;</h3>
+
+<p>A FIGdriver may arrange FIGcharacters using one of three &quot;layout modes&quot;,
+which define the spacing between FIGcharacters.  The layout mode for the
+horizontal axis may differ from the layout mode for the vertical axis.  A
+default choice is defined for each axis by every FIGfont.</p>
+
+<p>The three layout modes are:</p>
+
+<ul><li>Full Size (Separately called &quot;Full Width&quot; or &quot;Full Height&quot;.)
+<blockquote>Represents each FIGcharacter occupying the full width or
+        height of its arrangement of sub-characters as designed.</blockquote></li>
+<li>Fitting Only (Separately called &quot;Kerning or &quot;Vertical Fitting&quot;.)
+<blockquote>Moves FIGcharacters closer together until they touch.
+        Typographers use the term &quot;kerning&quot; for this phenomenon
+        when applied to the horizontal axis, but fitting also
+        includes this as a vertical behavior, for which there is
+        apparently no established typographical term.</blockquote></li>
+<li>Smushing (Same term for both axes.)
+<blockquote><p>Moves FIGcharacters one step closer after they touch, so that
+        they partially occupy the same space.  A FIGdriver must decide
+        what sub-character to display at each junction.  There are two
+        ways of making these decisions: by controlled smushing or by
+        universal smushing.</p>
+
+        <p>Controlled smushing uses a set of &quot;smushing rules&quot; selected by
+        the designer of a FIGfont.  (See <a href="#smushingrules">&quot;Smushing Rules&quot;</a> below.)
+        Each rule is a comparison of the two sub-characters which must
+        be joined to yield what to display at the junction.
+        Controlled smushing will not always allow smushing to occur,
+        because the compared sub-characters may not correspond to any
+        active rule.  Wherever smushing cannot occur, fitting occurs
+        instead.</p>
+
+        <p>Universal smushing simply overrides the sub-character from the
+        earlier FIGcharacter with the sub-character from the later
+        FIGcharacter.  This produces an &quot;overlapping&quot; effect with some
+        FIGfonts, wherin the latter FIGcharacter may appear to be &quot;in
+        front&quot;.</p>
+
+        <p>A FIGfont which does not specify any smushing rules for a
+        particular axis indicates that universal smushing is to occur
+        when smushing is requested.  Therefore, it is not possible for
+        a FIGfont designer to &quot;forbid&quot; smushing.  However there are
+        ways to ensure that smushing does not cause a FIGfont to be
+        illegible when smushed.  This is especially important for
+        smaller FIGfonts.  (See <a href="#hardblanks">&quot;Hardblanks&quot;</a> for details.)</p></blockquote></li></ul>
+
+<p>For vertical fitting or smushing, entire lines of output FIGcharacters are
+&quot;moved&quot; as a unit.</p>
+
+<p>Not all FIGdrivers do vertical fitting or smushing.  At present, FIGWin 1.0
+does, but FIGlet 2.2 does not.  Further, while FIGlet 2.2 allows the user to
+override the FIGfont designer's set of smushing rules, FIGWin 1.0 does not.</p>
+
+<p>NOTE: In the documentation of FIGlet versions prior to 2.2, the term
+&quot;smushmode&quot; was used to mean the layout mode, and this term further included
+the smushing rules (if any) to be applied.  However, since the layout mode
+may or may not involve smushing, we are straying from the use of this
+somewhat misleading term.</p>
+
+
+
+		<a name="smushingrules"/>
+		<h3>&quot;Smushing Rules&quot;</h3>
+
+		<p>Again, smushing rules are for controlled smushing. If none are defined to be active in a FIGfont, universal smushing occurs
+			instead.</p>
+
+		<p>Generally, if a FIGfont is &quot;drawn at the borders&quot; using sub-characters
+			&quot;<code>-_|/\[]{}()&lt;&gt;</code>&quot;, you will want to use controlled smushing by selecting from the rules below.
+			Otherwise, if your FIGfont uses a lot of other sub-characters, do not select any rules and universal smushing will occur
+			instead. (See <a href="#hardblanks">&quot;Hardblanks&quot;</a> below if your FIGfont is very small and would become
+			illegible if smushed.) Experimentation is the best way to make these decisions.</p>
+
+		<p>There are six possible horizontal smushing rules and five possible vertical smushing rules. Below is a description of all of the
+			rules.</p>
+
+		<p>NOTE: Ignore the &quot;code values&quot; for now. They are explained later.</p>
+
+		<h4>The Six Horizontal Smushing Rules</h4>
+		<table border="1" align="center">
+			<tr>
+				<th>Rule</th>
+				<th>Name</th>
+				<th>code&nbsp;value</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>EQUAL&nbsp;CHARACTER&nbsp;SMUSHING</td>
+				<td>1</td>
+				<td>Two sub-characters are smushed into a single sub-character if they are the same. This rule does not smush hardblanks.
+					(See <a href="#hardblanks">&quot;Hardblanks&quot;</a> below.)</td>
+			</tr>
+
+			<tr>
+				<td>2</td>
+				<td>UNDERSCORE&nbsp;SMUSHING</td>
+				<td>2</td>
+				<td>An underscore (&quot;_&quot;) will be replaced by any of: &quot;|&quot;, &quot;/&quot;,
+					&quot;\&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;, &quot;(&quot;,
+					&quot;)&quot;, &quot;&lt;&quot; or &quot;&gt;&quot;.</td>
+			</tr>
+
+			<tr>
+				<td>3</td>
+				<td>HIERARCHY&nbsp;SMUSHING</td>
+				<td>4</td>
+				<td>A hierarchy of six classes is used: &quot;|&quot;, &quot;/\&quot;, &quot;[]&quot;, &quot;{}&quot;,
+					&quot;()&quot;, and &quot;&lt;&gt;&quot;. When two smushing sub-characters are from different classes, the one
+					from the latter class will be used.</td>
+			</tr>
+
+			<tr>
+				<td>4</td>
+				<td>OPPOSITE&nbsp;PAIR&nbsp;SMUSHING</td>
+				<td>8</td>
+				<td>Smushes opposing brackets (&quot;[]&quot; or &quot;][&quot;), braces (&quot;{}&quot; or
+					&quot;}{&quot;) and parentheses (&quot;()&quot; or &quot;)(&quot;) together, replacing any such pair with a
+					vertical bar (&quot;|&quot;).</td>
+			</tr>
+
+			<tr>
+				<td>5</td>
+				<td>BIG&nbsp;X&nbsp;SMUSHING</td>
+				<td>16</td>
+				<td>Smushes &quot;/\&quot; into &quot;|&quot;, &quot;\/&quot; into &quot;Y&quot;, and
+					&quot;&gt;&lt;&quot; into &quot;X&quot;. Note that &quot;&lt;&gt;&quot; is not smushed in any way by this rule. The
+					name &quot;BIG X&quot; is historical; originally all three pairs were smushed into
+					&quot;X&quot;.</td>
+			</tr>
+
+			<tr>
+				<td>6</td>
+				<td>HARDBLANK&nbsp;SMUSHING</td>
+				<td>32</td>
+				<td>Smushes two hardblanks together, replacing them with a single hardblank. (See <a href="#hardblanks">
+					&quot;Hardblanks&quot;</a> below.)</td>
+			</tr>
+		</table>
+
+		<h4>The Five Vertical Smushing Rules</h4>
+		<table border="1" align="center">
+			<tr>
+				<th>Rule</th>
+				<th>Name</th>
+				<th>code&nbsp;value</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>EQUAL&nbsp;CHARACTER&nbsp;SMUSHING</td>
+				<td>256</td>
+				<td>Same as horizontal smushing rule 1.</td>
+			</tr>
+
+			<tr>
+				<td>2</td>
+				<td>UNDERSCORE&nbsp;SMUSHING</td>
+				<td>512</td>
+				<td>Same as horizontal smushing rule 2.</td>
+			</tr>
+
+			<tr>
+				<td>3</td>
+				<td>HIERARCHY&nbsp;SMUSHING</td>
+				<td>1024</td>
+				<td>Same as horizontal smushing rule 3.</td>
+			</tr>
+
+			<tr>
+				<td>4</td>
+				<td>HORIZONTAL&nbsp;LINE SMUSHING</td>
+				<td>2048</td>
+				<td>Smushes stacked pairs of &quot;-&quot; and &quot;_&quot;, replacing them with a single &quot;=&quot;
+					sub-character. It does not matter which is found above the other. Note that vertical smushing rule 1 will smush
+					IDENTICAL pairs of horizontal lines, while this rule smushes horizontal lines consisting of DIFFERENT
+					sub-characters.</td>
+			</tr>
+
+			<tr>
+				<td>5</td>
+				<td>VERTICAL&nbsp;LINE&nbsp;SUPERSMUSHING</td>
+				<td>4096</td>
+				<td>This one rule is different from all others, in that it
+					&quot;supersmushes&quot; vertical lines consisting of several vertical bars (&quot;|&quot;). This creates the
+					illusion that FIGcharacters have slid vertically against each other. Supersmushing continues until any
+					sub-characters other than &quot;|&quot; would have to be smushed. Supersmushing can produce impressive results,
+					but it is seldom possible, since other sub-characters would usually have to be considered for smushing as soon as any
+					such stacked vertical lines are encountered.</td>
+			</tr>
+		</table>
+		<a name="hardblanks"/>
+		<h3>&quot;Hardblanks&quot;</h3>
+
+		<p>A hardblank is a special sub-character which is displayed as a blank (space) in rendered FIGures, but is treated more like a
+			&quot;visible&quot; sub-character when fitting or smushing horizontally. Therefore, hardblanks keep adjacent
+			FIGcharacters a certain distance apart.</p>
+
+		<p>NOTE: Hardblanks act the same as blanks for vertical operations.</p>
+
+		<p>Hardblanks have three purposes:</p>
+
+		<ol>
+			<li>Hardblanks are used to create the blank (space) FIGcharacter.
+				<blockquote>Usually the space FIGcharacter is simply one or two vertical columns of hardblanks. Some slanted FIGfonts as
+					shown below have a diagonal arrangement of hardblanks instead.</blockquote></li>
+
+			<li>Hardblanks can prevent &quot;unreasonable&quot; fitting or smushing.
+				<blockquote>
+					<p>Normally when fitting or smushing, the blank (space) sub-character is considered &quot;vacant space&quot;. In
+						the following example, a capital &quot;C&quot; FIGcharacter is smushed with a &quot;minus&quot;
+						FIGcharacter.</p>
+
+
+					<pre>   ______                        ______
+  / ____/                       / ____/
+ / /      ____  &gt;&gt;-Becomes-&gt;   / /  ____
+/ /___   /___/                / /__/___/
+\____/                        \____/</pre>
+
+					<p>The FIGure above looks like a capital G. To prevent this, a FIGfont designer might place a hardblank in the center of
+						the capital C. In the following example, the hardblank is represented as a &quot;$&quot;:</p>
+
+
+					<pre>   ______                        ______
+  / ____/                       / ____/
+ / /  $   ____  &gt;&gt;-Becomes-&gt;   / /   ____
+/ /___   /___/                / /___/___/
+\____/                        \____/</pre>
+					<p>Using hardblanks in this manner ensures that FIGcharacters with a lot of empty space will not be unreasonably
+						&quot;invaded&quot; by adjacent FIGcharacters. Generally, FIGcharacters such as capital C, L or T, or small
+						punctuation marks such as commas, may contain hardblanks, since they may contain a lot of vacant space which is
+						&quot;accessible&quot; from either side.</p>
+				</blockquote></li>
+
+			<li>Hardblanks can prevent smushing from making FIGfonts illegible.
+				<blockquote>
+					<p>This legitimate purpose of hardblanks is often overused. If a FIGfont designer is absolutely sure that smushing
+						&quot;visible&quot; sub-characters would make their FIGfont illegible, hardblanks may be positioned at the
+						end of each row of sub-characters, against the visible sub-characters, creating a barrier.</p>
+
+					<p>With older FIGdrivers, using hardblanks for this purpose meant that FIGcharacters would have to be separated by at
+						least one blank in output FIGures, since only a hardblank could smush with another hardblank. However with the
+						advent of universal smushing, this is no longer necessary. Hardblanks ARE overriden by any visible
+						sub-character when performing universal smushing. Hardblanks still represent a &quot;stopping point&quot;,
+						but only AFTER their locations are occupied.</p>
+
+					<p>NOTE: Earlier it was stated that universal smushing overrides the sub-character from the former FIGcharacter
+						with the sub-character from the latter FIGcharacter. Hardblanks (and blanks or spaces) are the exception to this
+						rule; they will always be overriden by visible sub-characters, regardless of which FIGcharacter contains the
+						hardblank. This ensures that no visible sub-characters &quot;disappear&quot;.</p>
+
+					<p>Therefore, one can design a FIGfont with a default behavior of universal smushing, while the output FIGure would
+						LOOK like the effect of fitting, or even full size if additional hardblanks are used. If a user &quot;scales
+						down&quot; the layout mode to fitting, the result would look like &quot;extra spacing&quot; between
+						FIGcharacters.</p>
+
+					<p>Taking this concept further, a FIGcharacter may also include extra blanks (spaces) on the left side of each
+						FIGcharacter, which would define the FIGcharacter's width as slightly larger than required for the visible
+						sub-characters and hardblanks. With such a FIGfont, a user who further &quot;scales down&quot; the layout mode
+						to full size would see even greater spacing.</p>
+
+					<p>These techniques prevent horizontal smushing from causing a FIGfont to become illegible, while offering greater
+						flexibility of output to users.</p>
+
+					<p>NOTE: These techniques cannot be used to prevent vertical smushing of visible sub-characters, since hardblanks
+						are not respected in the vertical axis. Although it is possible to select only one vertical smushing rule which
+						involves only sub-characters which are not used in your FIGfont, it is recommend that you do NOT do so. In our
+						opinion, most users would prefer to get what they ask for, rather than being told, in effect: &quot;I, the FIGfont
+						designer, have decided that you wouldn't like the results of vertical smushing, so I have prevented you from
+						trying it.&quot; Instead, we recommend setting the default behavior to either fitting or full height, and either
+						allowing universal smushing, or selecting vertical smushing rules which seem most appropriate. A user of your
+						FIGfont will quickly see why you did not choose smushing as the default vertical layout mode, and will agree with
+						you.</p>
+				</blockquote></li>
+		</ol> <a name="charactersets"/>
+		<h3>&quot;Character Sets&quot; and &quot;Character Codes&quot;</h3>
+
+		<p>When you type using your keyboard, you are actually sending your computer a series of numbers. Each number must be interpreted by
+			your computer so that it knows what character to display. The computer uses a list of definitions, called a &quot;character
+			set&quot;. The numbers which represent each character are called &quot;character codes&quot;.</p>
+
+		<p>There are many character sets, most of which are internationally accepted as standards. By far, the most common character set is
+			ASCII, which stands for
+			&quot;American Standard Code for Information Interchange&quot;. ASCII identifies its characters with codes ranging from 0
+			to 127.</p>
+
+		<p>NOTE: The term &quot;ASCII art&quot; has become well-understood to mean artistic images which consist of characters on your
+			screen (such as FIGures).</p>
+
+		<p>For a list of the printable ASCII characters with the corresponding codes, see the section <a href="#requiredfigchar">
+			Required FIGcharacters</a> below. The other ASCII codes in the range of 0 through 31 are &quot;control characters&quot; such
+			as carriage-return (code 13), linefeed/newline (code 10), tab (code 9), backspace (code 8) or null (code 0). Code 127 is a delete
+			in ASCII.</p>
+
+		<p>Getting more technical for just a moment: A byte consisting of 8 bits (eight 1's or 0's) may represent a number from 0 to 255.
+			Therefore, most computers have DIRECT access to 256 characters at any given time. A character set which includes 256 characters
+			is called an 8-bit character set.</p>
+
+		<p>For Latin-based languages, ASCII is almost always the first half of a larger 8-bit character set. Latin-1 is the most common
+			example of an 8-bit character set. Latin-1 includes all of ASCII, and adds characters with codes from 128 to 255 which include
+			umlauted (&quot;double-dotted&quot;) letters and characters with various other accents. In the United States, Windows and
+			most Unix systems have Latin-1 directly available.</p>
+
+		<p>Most modern systems allow the possibility of changing 8-bit character sets. On Windows systems, character sets are referred to
+			as &quot;code pages&quot;. There are many other character sets which are not mentioned here. DOS has its own character set
+			(which also has international variants) that includes graphics characters for drawing lines. It is also an extension of
+			ASCII.</p>
+
+		<p>For some languages, 8-bit character sets are insufficient, particularly on East Asian systems. Therefore, some systems allow 2
+			bytes for each character, which multiplies the 256 possibilties by 256, resulting in 65536 possible characters. (Much more
+			than the world will ever need.)</p>
+
+		<p>Unicode is a character set standard which is intended to fulfill the worldwide need for a single character set which includes all
+			characters used worldwide. Unicode includes character codes from 0 to 65535, although at present, only about 22,000
+			characters have been officially assigned and named by the Unicode Consortium. The alphabets and other writing systems
+			representable with Unicode include all Latin-alphabet systems, Greek, Russian and other Cyrillic-alphabet systems,
+			Hebrew, Arabic, the various languages of India, Chinese, Japanese, Korean, and others. The existing Unicode symbols include
+			chess pieces, astrological signs, gaming symbols, telephones, pointing fingers, etc. --- just about any type of FIGcharacter
+			you may wish to create. Unicode is constantly (but slowly) being extended to handle new writing systems and symbols.
+			Information on Unicode is available at http://www.unicode.org and at ftp://unicode.org .</p>
+
+		<p>Unicode, Latin-1, and ASCII all specify the same meanings for overlapping character codes: ASCII 65 = Latin-1 65 = Unicode 65 =
+			&quot;A&quot;, formally known as &quot;LATIN CAPITAL LETTER A&quot;.</p>
+
+		<p>Since a keyboard usually has only about 100 keys, your computer may contain a program called a &quot;keyboard map&quot;, which
+			will interpret certain keystrokes or combinations of keystrokes as different character codes. Keyboard maps use
+			&quot;mapping tables&quot; to make these determinations. The appropriate keyboard activity for a given character code may
+			involve several keystrokes. Almost all systems are capable of handling at least 8-bit character sets (containing 256
+			characters), so there is always an active keyboard map, at least for those characters which are not actually painted on the keys.
+			(United States users may not even know that their computer can interpret special keystrokes. Such keystrokes may be something
+			similar to holding down the ALT key while typing a character code on the numeric keypad. Try it!)</p>
+
+		<p>Below are characters 160 through 255, AS REPRESENTED ON YOUR SYSTEM.</p>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>&#160;&#161;&#162;&#163;&#164;&#165;&#166;&#167;&#168;&#169;&#170;&#171;&#172;&#173;&#174;&#175;&#176;&#177;&#178;&#179;&#180;&#181;&#182;&#183;&#184;&#185;&#186;&#187;&#188;&#189;&#190;&#191;&#192;&#193;&#194;&#195;&#196;&#197;&#198;&#199;&#200;&#201;&#202;&#203;&#204;&#205;&#206;&#207;
+&#208;&#209;&#210;&#211;&#212;&#213;&#214;&#215;&#216;&#217;&#218;&#219;&#220;&#221;&#222;&#223;&#224;&#225;&#226;&#227;&#228;&#229;&#230;&#231;&#232;&#233;&#234;&#235;&#236;&#237;&#238;&#239;&#240;&#241;&#242;&#243;&#244;&#245;&#246;&#247;&#248;&#249;&#250;&#251;&#252;&#253;&#254;&#255;
+</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>IMPORTANT NOTE: Depending on which character set is active on your system, you may see different characters. This document (like
+			all computer documents) does not contains characters per se, only bytes. What you see above is your particular computer's
+			representation of these byte values. In other words, your active character set. However, if it is Latin-1, the first visible
+			character is an inverted &quot;!&quot;, and the last is an umlauted &quot;y&quot;. Although we can safely assume your computer
+			has ASCII, it does not necessarily have the Latin-1 character set active.</p>
+
+		<p>What does all this have to do with FIGfonts???</p>
+
+		<p>First, it should be evident that it is best to use only ASCII characters for sub-characters when possible. This will ensure
+			portability to different platforms.</p>
+
+		<p>FIGlet has gained international popularity, but early versions were made to handle only FIGcharacters with assigned character
+			codes corresponding to ASCII. So, over the years there have been four methods used to create
+			&quot;virtual mapping tables&quot; within the program itself:</p>
+
+		<blockquote>
+			<p>The first method was simply to create FIGcharacters which do not look like the ASCII character set implies. For example, a
+				FIGfont might contain Greek letters, and within its comments, it may say, &quot;If you type A, you'll get a Greek
+				Alpha&quot; etc. With the advent of newer features, it is preferable not to use this method. Instead, when possible, add new
+				FIGcharacters to existing FIGfonts or create new FIGfonts with FIGcharacters coded to match the expectations of
+				ASCII/Latin-1/Unicode, and create an appropriate control file. (See <a href="#controlfiles">Control Files</a>
+				below.) Remember that Unicode includes almost any character for which you may want to create a FIGcharacter.</p>
+
+			<p>The second method was very specific, to accommodate the German audience. A special option was added to the FIGlet program
+				which would re-route input characters &quot;[&quot;, &quot;\&quot;, and &quot;]&quot; to umlauted A, O and U, while
+				&quot;{&quot;, &quot;|&quot;, and &quot;}&quot; would become the respective lowercase versions of these. Also,
+				&quot;~&quot; was made to become the s-z character when this special option was used. This was called &quot;the -D
+				option.&quot; The addition of this feature meant that all compatible FIGfonts must contain these Deutsch (German)
+				FIGcharacters, in addition to the ASCII FIGcharacters. Although this option is still available in the most recent
+				version, it is no longer necessary, as the same result can be achieved by the newer features described below. However, the
+				requirement for Deutsch FIGcharacters remains for backward compatibility. (Or at least zero-width FIGcharacters in
+				their place.)</p>
+
+			<p>Later, FIGlet was made to accept control files, which are quite literally a form of mapping table. (See <a
+					href="#controlfiles">Control Files</a> below.) This was a significant advance for internationalization.</p>
+
+			<p>FIGlet 2.2 can now accept specially encoded formats of input text which imply more than one byte per character.</p>
+		</blockquote>
+
+		<hr/> <a name="creating"/>
+		<h2>Creating FIGfonts</h2>
+
+		<p>NOTE: FIGWin 1.0 is packaged with a program called FIGfont Editor for Windows 1.0, which is just that. There is no need to read
+			further if you intend to use it. However, the section &quot;CONTROL FILES&quot; below is still relevant.</p>
+
+		<p>Since a FIGfont file is a text file, it can be created with any text editing program on any platform, and will still be compatible
+			with FIGdrivers on all operating systems, except that the bytes used to indicate the end of each text line may vary. (PC's use
+			carriage return and linefeed at the end of each line, Macintosh uses carriage return only, and UNIX uses linefeed only.)</p>
+
+		<p>This minor difference among operating systems is handled easily by setting your FTP program to ASCII mode during upload or
+			download. So there is no need to be concerned about this as long as you remember to do this during file transfer.</p>
+
+		<p>The filename of a FIGfont file must end with &quot;.flf&quot;, which stands for
+			&quot;<b>F</b>IG<b>L</b>ettering <b>F</b>ont&quot;. The first part of the filename should contain only letters, and
+			should be lowercase on operating systems which permit case sensitive filenames. The filename should be unique in the first 8
+			characters, since some older file systems truncate longer filenames.</p>
+
+		<p>It is easier to modify an existing FIGfont than it is to create a new one from scratch. The first step is to read and understand this
+			document. You may want to load &quot;standard.flf&quot; or another FIGfont into a text editor as an example while you read.</p>
+
+		<p>A FIGfont file contains three portions: a header line, comments, and FIGcharacter data.</p> <a name="headerline"/>
+		<h3>The Header Line</h3>
+
+		<p>The header line gives information about the FIGfont. Here is an example showing the names of all parameters:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>        flf2a$ 6 5 20 15 3 0 143 229    NOTE: The first five characters in
+          |  | | | |  |  | |  |   |     the entire file must be &quot;flf2a&quot;.
+         /  /  | | |  |  | |  |   \
+Signature  /  /  | |  |  | |   \   Codetag_Count
+  Hardblank  /  /  |  |  |  \   Full_Layout*
+       Height  /   |  |   \  Print_Direction
+       Baseline   /    \   Comment_Lines
+        Max_Length      Old_Layout*
+
+* The two layout parameters are closely related and fairly complex.
+    (See <a href="#interpretlayout">Interpretation of Layout Parameters</a>.)</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>For those desiring a quick explanation, the above line indicates that this FIGfont uses &quot;$&quot; to represent the
+			hardblank in FIGcharacter data, it has FIGcharacters which are 6 lines tall, 5 of which are above the baseline, no line in the
+			FIGfont data is more than 20 columns wide, the default horizontal layout is represented by the number 15, there are 3 comment
+			lines, the default print direction for this FIGfont is left-to-right, a complete description of default and possible
+			horizontal and vertical layouts is represented by the number 143, and there are 229 code-tagged characters.</p>
+
+		<p>The first seven parameters are required. The last three (Direction, Full_Layout, and Codetag_Count, are not. This allows for
+			backward compatibility with older FIGfonts, but a FIGfont without these parameters would force a FIGdriver to
+			&quot;guess&quot; (by means not described in this document) the information it would expect to find in Full_Layout. For this
+			reason, inclusion of all parameters is strongly recommended.</p>
+
+		<p>Future versions of this standard may add more parameters after Codetag_Count.</p>
+
+		<p>A description of each parameter follows:</p>
+
+		<table border="1" align="center">
+			<tr>
+				<th>Signature</th>
+				<td>
+					<p>The signature is the first five characters: &quot;flf2a&quot;. The first four characters &quot;flf2&quot;
+						identify the file as compatible with FIGlet version 2.0 or later (and FIGWin 1.0). The &quot;a&quot; is currently
+						ignored, but cannot be omitted. Different characters in the &quot;a&quot; location may mean something in future
+						versions of this standard. If so, you can be sure your FIGfonts will still work if this character is
+						&quot;a&quot;.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Hardblank</th>
+				<td>
+					<p>Immediately following the signature is the hardblank character. The hardblank character in the header line
+						defines which sub-character will be used to represent hardblanks in the FIGcharacter data.</p>
+
+					<p>By convention, the usual hardblank is a &quot;$&quot;, but it can be any character except a blank (space), a
+						carriage-return, a newline (linefeed) or a null character. If you want the entire printable ASCII set available
+						to use, make the hardblank a &quot;delete&quot; character (character code 127). With the exception of delete, it
+						is inadvisable to use non-printable characters as a hardblank.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Height</th>
+				<td>
+					<p>The Height parameter specifies the consistent height of every FIGcharacter, measured in sub-characters. Note
+						that ALL FIGcharacters in a given FIGfont have the same height, since this includes any empty space above or below.
+						This is a measurement from the top of the tallest FIGcharacter to the bottom of the lowest hanging FIGcharacter,
+						such as a lowercase g.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Baseline</th>
+				<td>
+					<p>The Baseline parameter is the number of lines of sub-characters from the baseline of a FIGcharacter to the top of the
+						tallest FIGcharacter. The baseline of a FIGfont is an imaginary line on top of which capital letters would rest,
+						while the tails of lowercase g, j, p, q, and y may hang below. In other words, Baseline is the height of a
+						FIGcharacter, ignoring any descenders.</p>
+
+					<p>This parameter does not affect the output of FIGlet 2.2 or FIGWin 1.0, but future versions or other future
+						FIGdrivers may use it. The Baseline parameter should be correctly set to reflect the true baseline as described
+						above. It is an error for Baseline to be less than 1 or greater than the Height parameter.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Max_Length</th>
+				<td>
+					<p>The Max_Length parameter is the maximum length of any line describing a FIGcharacter. This is usually the width of
+						the widest FIGcharacter, plus 2 (to accommodate endmarks as described later.) However, you can (and probably
+						should) set Max_Length slightly larger than this as a safety measure in case your FIGfont is edited to include
+						wider FIGcharacters. FIGlet (but not FIGWin 1.0) uses this number to minimize the memory taken up by a FIGfont,
+						which is important in the case of FIGfonts with many FIGcharacters.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Old_Layout</th>
+				<td>
+					<p>See <a href="#interpretlayout">Interpretation of Layout Parameters</a></p>
+				</td>
+			</tr>
+			<tr>
+				<th>Comment_Lines</th>
+				<td>
+					<p>Between the first line and the actual FIGcharacters of the FIGfont are the comment lines. The Comment_Lines
+						parameter specifies how many lines there are. Comments are optional, but recommended to properly document the
+						origin of a FIGfont.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Print_Direction</th>
+				<td>
+					<p>The Print_Direction parameter tells which direction the font is to be printed by default. A value of 0 means
+						left-to-right, and 1 means right-to-left. If this parameter is absent, 0 (left-to-right) is assumed.
+						Print_Direction may not specify vertical print, although FIGdrivers are capable of vertical print. Versions of
+						FIGlet prior to 2.1 ignore this parameter.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Full_Layout</th>
+				<td>
+					<p>See <a href="#interpretlayout">Interpretation of Layout Parameters</a> just below.</p>
+				</td>
+			</tr>
+			<tr>
+				<th>Codetag_Count</th>
+				<td>
+					<p>Indicates the number of code-tagged (non-required) FIGcharacters in this FIGfont. This is always equal to the
+						total number of FIGcharacters in the font minus 102. This parameter is typically ignored by FIGdrivers, but can be
+						used to verify that no characters are missing from the end of the FIGfont. The chkfont program will display the
+						number of codetagged characters in the FIGfont on which it is run, making it easy to insert this parameter after a
+						FIGfont is written.</p>
+				</td>
+			</tr>
+		</table> <a name="interpretlayout"/>
+		<h3>Interpretation of Layout Parameters</h3>
+
+		<p>Full_Layout describes ALL information about horizontal and vertical layout: the default layout modes and potential smushing
+			rules, even when smushing is not a default layout mode.</p>
+
+		<p>Old_Layout does not include all of the information desired by the most recent FIGdrivers, which is the inspiration for the
+			creation of the new Full_Layout parameter. Old_Layout is still required for backward compatibility, and FIGdrivers must be
+			able to interpret FIGfonts which do not have the Full_Layout parameter. (See <a href="#standardizedcapabilities">
+			Standardized Capabilities of current and future FIGdrivers</a>.)</p>
+
+		<p>Versions of FIGlet prior to 2.2 do not recognize the Full_Layout parameter. Documentation accompanying FIGlet versions prior
+			to 2.2 refer to Old_Layout as &quot;smushmode&quot;, which is somewhat misleading since it can indicate layout modes other
+			than smushing.</p>
+
+		<p>Old_Layout and Full_Layout must contain some redundant information.</p>
+
+		<p>Setting the layout parameters is a matter of adding numbers together (&quot;code values&quot;). What follows is a chart of the
+			meanings of all code values. (You may skip down to <a href="#settinglayout">Setting Layout Parameters Step-by-Step</a> if
+			you prefer, or if you find this portion confusing.)</p>
+
+		<p>Full_Layout: (Legal values 0 to 32767)</p>
+
+		<table border="1" align="center">
+			<tr>
+				<th>1</th>
+				<td>Apply horizontal smushing rule 1 when smushing</td>
+			</tr>
+			<tr>
+				<th>2</th>
+				<td>Apply horizontal smushing rule 2 when smushing</td>
+			</tr>
+			<tr>
+				<th>4</th>
+				<td>Apply horizontal smushing rule 3 when smushing</td>
+			</tr>
+			<tr>
+				<th>8</th>
+				<td>Apply horizontal smushing rule 4 when smushing</td>
+			</tr>
+			<tr>
+				<th>16</th>
+				<td>Apply horizontal smushing rule 5 when smushing</td>
+			</tr>
+			<tr>
+				<th>32</th>
+				<td>Apply horizontal smushing rule 6 when smushing</td>
+			</tr>
+			<tr>
+				<th>64</th>
+				<td>Horizontal fitting (kerning) by default</td>
+			</tr>
+			<tr>
+				<th>128</th>
+				<td>Horizontal smushing by default (Overrides 64)</td>
+			</tr>
+			<tr>
+				<th>256</th>
+				<td>Apply vertical smushing rule 1 when smushing</td>
+			</tr>
+			<tr>
+				<th>512</th>
+				<td>Apply vertical smushing rule 2 when smushing</td>
+			</tr>
+			<tr>
+				<th>1024</th>
+				<td>Apply vertical smushing rule 3 when smushing</td>
+			</tr>
+			<tr>
+				<th>2048</th>
+				<td>Apply vertical smushing rule 4 when smushing</td>
+			</tr>
+			<tr>
+				<th>4096</th>
+				<td>Apply vertical smushing rule 5 when smushing</td>
+			</tr>
+			<tr>
+				<th>8192</th>
+				<td>Vertical fitting by default</td>
+			</tr>
+			<tr>
+				<th>16384</th>
+				<td>Vertical smushing by default (Overrides 8192)</td>
+			</tr>
+		</table>
+
+		<p>When no smushing rules are included in Full_Layout for a given axis, the meaning is that universal smushing shall occur, either by
+			default or when requested.</p>
+
+		<p>Old_Layout: (Legal values -1 to 63)</p>
+
+		<table border="1" align="center">
+			<tr>
+				<th>-1</th>
+				<td>Full-width layout by default</td>
+			</tr>
+			<tr>
+				<th>0</th>
+				<td>Horizontal fitting (kerning) layout by default*</td>
+			</tr>
+			<tr>
+				<th>1</th>
+				<td>Apply horizontal smushing rule 1 by default</td>
+			</tr>
+			<tr>
+				<th>2</th>
+				<td>Apply horizontal smushing rule 2 by default</td>
+			</tr>
+			<tr>
+				<th>4</th>
+				<td>Apply horizontal smushing rule 3 by default</td>
+			</tr>
+			<tr>
+				<th>8</th>
+				<td>Apply horizontal smushing rule 4 by default</td>
+			</tr>
+			<tr>
+				<th>16</th>
+				<td>Apply horizontal smushing rule 5 by default</td>
+			</tr>
+			<tr>
+				<th>32</th>
+				<td>Apply horizontal smushing rule 6 by default</td>
+			</tr>
+		</table>
+		<p>* When Full_Layout indicates UNIVERSAL smushing as a horizontal default (i.e., when none of the code values of horizontal
+			smushing rules are included and code value 128 is included in Full_Layout) Old_Layout must be set to 0 (zero). Older FIGdrivers
+			which cannot read the Full_Layout parameter are also incapable of universal smushing. Therefore they would be directed to the
+			&quot;next best thing&quot;, which is horizontal fitting (kerning).</p>
+
+		<p>NOTE: You should NOT add the -1 value to any positive code value for Old_Layout. This would be a logical contradiction.</p>
+
+		<p>See <a href="#standardizedcapabilities">Standardized Capabilities of current and future FIGdrivers</a> for the behavior
+			of a FIGdriver when the Full_Layout parameter is absent (presumably in an older FIGfont).</p>
+
+		<p>The following rules establish consistency between Old_Layout and Full_Layout.</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>If full width is to be the horizontal default:
+  Old_Layout must be -1.
+  Full_Layout must NOT include code values 64 nor 128.
+
+If horizontal fitting (kerning) is to be default:
+  Old_Layout must be 0.
+  Full_Layout must include code value 64.
+  Full_Layout must NOT include code value 128.
+
+If CONTROLLED smushing is to be the horizontal default:
+  Old_Layout must be a positive number, represented by the added
+      code values of all desired horizontal smushing rules.
+  Full_Layout must include the code values for the SAME set of
+      horizontal smushing rules as included in Old_Layout.
+  Full_Layout must include code value 128.
+
+If UNIVERSAL smushing is to be the horizontal default:
+  Old_Layout must be 0.
+  Full_Layout must include code value 128.
+  Full_Layout must NOT include any code value under 64.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>In general terms, if Old_Layout specifies horizontal smushing rules, Full_Layout must specify the same set of horizontal
+			rules, and both must indicate the same horizontal default layout mode.</p> <a name="settinglayout"/>
+		<h3>Setting Layout Parameters Step-by-Step</h3>
+
+		<p>The following step-by-step process will yield correct and consistent values for the two layout parameters. You may skip this if
+			you find the explanations above easier to use.</p>
+
+		<p>Step 1: Start with 0 for both numbers.</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>Write &quot;Old_Layout&quot; and &quot;Full_Layout&quot; on a piece of paper.
+Write the number 0 next to each.
+The number 0 may be crossed out and changed several times below.
+Go to step 2.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Step 2: Set the DEFAULT HORIZONTAL LAYOUT MODE.</p>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>If you want to use FULL WIDTH as the default
+   Make Old_Layout -1
+   Go to step 3.
+If you want to use HORIZONTAL FITTING (kerning) as the default
+   Make Full_Layout 64
+   Go to step 3.
+If you want to use HORIZONTAL SMUSHING as the default
+   Make Full_Layout 128
+   Go to step 3.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Step 3: Specify HOW TO SMUSH HORIZONTALLY WHEN SMUSHING.</p>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>If you want to use UNIVERSAL smushing for the horizontal axis
+   Go to step 4.
+If you want to use CONTROLLED smushing for the horizontal axis
+   Add together the code values for all the horizontal smushing
+   rules you want from the list below to get the horizontal
+   smushing rules total.
+
+       EQUAL CHARACTER SMUSHING          1
+       UNDERSCORE SMUSHING               2
+       HIERARCHY SMUSHING                4
+       OPPOSITE PAIR SMUSHING            8
+       BIG X SMUSHING                   16
+       HARDBLANK SMUSHING               32
+
+       Horizontal smushing rules total: ___
+
+If Full_Layout is currently 128
+   Change Old_Layout to the horizontal smushing rules total.
+   Increase Full_Layout by the horizontal smushing rules total.
+   Go to Step 4.
+If Full_Layout is currently 0 or 64
+   Increase Full_Layout by the horizontal smusing rules total.
+   Go to Step 4.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Step 4: Set the DEFAULT VERTICAL LAYOUT MODE.</p>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>If you want to use FULL HEIGHT as the default
+   Go to step 5.
+If you want to use VERTICAL FITTING as the default
+   Increase Full_Layout by 8192.
+   Go to step 5.
+If you want to use VERTICAL SMUSHING as the default
+   Increase Full_Layout by 16384.
+   Go to step 5.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Step 5: Specify HOW TO SMUSH VERTICALLY WHEN SMUSHING.</p>
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>If you want to use UNIVERSAL smushing for the vertical axis
+   Go to step 6.
+If you want to use CONTROLLED smushing for the vertical axis
+   Add together the code values for all the vertical smushing
+   rules you want from the list below to get the vertical
+   smushing rules total.
+
+       EQUAL CHARACTER SMUSHING        256
+       UNDERSCORE SMUSHING             512
+       HIERARCHY SMUSHING             1024
+       HORIZONTAL LINE SMUSHING       2048
+       VERTICAL LINE SUPERSMUSHING    4096
+
+       Vertical smushing rules total: ____
+
+   Increase Full_Layout by the vertical smushing rules total.
+   Go to step 6.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Step 6: You're done.</p>
+
+		<p>The resulting value of Old_Layout will be a number from -1 to 63.
+			<br/> The resulting value of Full_Layout will be a number from 0 and 32767.</p> <a name="figfontcomments"/>
+		<h3>FIGfont Comments</h3>
+
+		<p>After the header line are FIGfont comments. The comments can be as many lines as you like, but should at least include your name and
+			Email address. Here is an example which also shows the header line.</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>flf2a$ 6 5 20 15 3 0 143
+Example by Glenn Chappell &lt;ggc@uiuc.edu&gt; 8/94
+Permission is hereby given to modify this font, as long as the
+modifier's name is placed on a comment line.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Comments are not required, but they are appreciated. Please comment your FIGfonts.</p>
+
+		<p>Remember to adjust the Comment_Lines parameter as you add lines to your comments. Don't forget that blank lines DO count.</p>
+
+		<hr/> <a name="figcharacterdata"/>
+		<h3>FIGcharacter Data</h3>
+
+		<p>The FIGcharacter data begins on the next line after the comments and continues to the end of the file.</p> <a name="basicdata"/>
+		<h4>Basic Data Structure</h4>
+
+		<p>The sub-characters in the file are given exactly as they should be output, with two exceptions:</p>
+		<ol>
+			<li>Hardblanks should be the hardblank character specified in the header line, not a blank (space).</li>
+
+			<li>Every line has one or two endmark characters, whose column locations define the width of each FIGcharacter.</li>
+		</ol>
+		<p>In most FIGfonts, the endmark character is either &quot;@&quot; or &quot;#&quot;. The FIGdriver will eliminate the last block
+			of consecutive equal characters from each line of sub-characters when the font is read in. By convention, the last line of a
+			FIGcharacter has two endmarks, while all the rest have one. This makes it easy to see where FIGcharacters begin and end. No line
+			should have more than two endmarks.</p>
+
+		<p>Below is an example of the first few FIGcharacters, taken from small.flf.</p>
+
+		<p>NOTE: The line drawn below consisting of &quot;|&quot; represents the left margin of your editor. It is NOT part of the FIGfont.
+			Also note that hardblanks are represented as &quot;$&quot; in this FIGfont, as would be described in the header line.</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>                   |$@
+                   |$@
+      blank/space  |$@
+                   |$@
+                   |$@@
+                   | _ @
+                   || |@
+exclamation point  ||_|@
+                   |(_)@
+                   |   @@
+                   | _ _ @
+                   |( | )@
+     double quote  | V V @
+                   |  $  @
+                   |     @@
+                   |   _ _   @
+                   | _| | |_ @
+      number sign  ||_  .  _|@
+                   ||_     _|@
+                   |  |_|_|  @@
+                   |    @
+                   | ||_@
+      dollar sign  |(_-&lt;@
+                   |/ _/@
+                   | || @@</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Notice that each FIGcharacter occupies the same number of lines (6 lines, in this case), which must also be expressed in the header
+			line as the Height parameter.</p>
+
+		<p>Also notice that for every FIGcharacter, there must be a consistent width (length) for each line once the endmarks are removed. To
+			do otherwise would be an error.</p>
+
+		<p>Be aware of the vertical alignment of each FIGcharacter within its height, so that all FIGcharacters will be properly lined up
+			when printed.</p>
+
+		<p>If one of the last sub-characters in a particular FIGcharacter is &quot;@&quot;, you should use another character for the
+			endmark in that FIGcharacter so that the intended &quot;@&quot; is not interpreted as an endmark. &quot;#&quot; is a common
+			alternative.</p>
+
+		<p>Load a few existing FIGfonts into your favorite text editor for other examples.</p> <a name="requiredfigchar"/>
+		<h4>Required FIGcharacters</h4>
+
+		<p>Some FIGcharacters are required, and must be represented in a specific order. Specifically: all of the printable character
+			codes from ASCII shown in the table below, in order, plus character codes 196, 214, 220, 228, 246, 252, and 223, in that order. In
+			Latin-1, these extra 7 characters represent the following German characters: umlauted &quot;A&quot;, &quot;O&quot;,
+			&quot;U&quot;, &quot;a&quot;, &quot;o&quot; and &quot;u&quot;; and also &quot;ess-zed&quot;.</p>
+
+		<ul>
+			<li>Printable portion of the ASCII character set:
+
+				<table align="center">
+					<tr>
+						<td>
+
+
+							<pre>32 (blank/space) 64 @             96  `
+33 !             65 A             97  a
+34 &quot;             66 B             98  b
+35 #             67 C             99  c
+36 $             68 D             100 d
+37 %             69 E             101 e
+38 &amp;             70 F             102 f
+39 '             71 G             103 g
+40 (             72 H             104 h
+41 )             73 I             105 i
+42 *             74 J             106 j
+43 +             75 K             107 k
+44 ,             76 L             108 l
+45 -             77 M             109 m
+46 .             78 N             110 n
+47 /             79 O             111 o
+48 0             80 P             112 p
+49 1             81 Q             113 q
+50 2             82 R             114 r
+51 3             83 S             115 s
+52 4             84 T             116 t
+53 5             85 U             117 u
+54 6             86 V             118 v
+55 7             87 W             119 w
+56 8             88 X             120 x
+57 9             89 Y             121 y
+58 :             90 Z             122 z
+59 ;             91 [             123 {
+60 &lt;             92 \             124 |
+61 =             93 ]             125 }
+62 &gt;             94 ^             126 ~
+63 ?             95 _</pre>
+						</td>
+					</tr>
+				</table></li>
+
+			<li>Additional required Deutsch FIGcharacters, in order:
+
+				<table align="center">
+					<tr>
+						<td>
+
+
+							<pre>196 (umlauted &quot;A&quot; -- two dots over letter &quot;A&quot;)
+214 (umlauted &quot;O&quot; -- two dots over letter &quot;O&quot;)
+220 (umlauted &quot;U&quot; -- two dots over letter &quot;U&quot;)
+228 (umlauted &quot;a&quot; -- two dots over letter &quot;a&quot;)
+246 (umlauted &quot;o&quot; -- two dots over letter &quot;o&quot;)
+252 (umlauted &quot;u&quot; -- two dots over letter &quot;u&quot;)
+223 (&quot;ess-zed&quot; -- see FIGcharacter illustration below)
+                              ___
+                             / _ \
+                            | |/ /
+          Ess-zed &gt;&gt;---&gt;    | |\ \
+                            | ||_/
+                            |_|</pre>
+						</td>
+					</tr>
+				</table></li>
+		</ul>
+
+		<p>If you do not wish to define FIGcharacters for all of those required above, you MAY create &quot;empty&quot; FIGcharacters in
+			their place by placing endmarks flush with the left margin. The Deutsch FIGcharacters are commonly created as empty. If your
+			FIGfont includes only capital letters, please copy them to the appropriate lowercase locations, rather than leaving
+			lowercase letters empty. A FIGfont which does not include at least all ASCII letters, a space, and a few basic punctuation marks
+			will probably frustrate some users. (For example &quot;@&quot; is more frequently desired as a FIGcharacter than you may
+			think, since Email addresses may be written as FIGures.)</p> <a name="codetagged"/>
+		<h4>Code Tagged FIGcharacters</h4>
+
+		<p>After the required FIGcharacters, you may create FIGcharacters with any character code in the range of -2147483648 to
+			+2147483647. (Over four billion possibilities, which is &quot;virtual infinity&quot; for this purpose.) One exception:
+			character code -1 is NOT allowed for technical reasons. It is advisable to assign character codes such that the appearance of
+			your FIGcharacters matches the expectations of ASCII/Latin-1/Unicode, with a few exceptions:</p>
+
+		<ol>
+			<li>If a FIGcharacter with code 0 is present, it is treated specially. It is a FIGfont's &quot;missing character&quot;.
+				Whenever the FIGdriver is told to print a character which doesn't exist in the current FIGfont, it will print FIGcharacter
+				0. If there is no FIGcharacter 0, nothing will be printed.</li>
+
+			<li>If a FIGfont contains a non-Latin alphabet in character codes in the ASCII range 32-126 (which is discouraged), we have
+				found it helpful to include a human-readable translation table as one of the FIGcharacters instead of a
+				&quot;glyph&quot;. Typically, the &quot;~&quot; would contain this table. The translation table FIGcharacter would
+				contain a list of all the special characters in the FIGfont, along with the ASCII characters to which they correspond. Keep
+				this table no more than 79 columns wide. (Thanks to Gedaliah Friedenberg for this idea.)</li>
+
+			<li>In more extensive Unicode fonts, you can assign a negative character code (other than -1) to one or more translation tables,
+				similar to #2 above. (All Unicode character codes are positive.) And, you will most likely suggest within the comments that
+				a user access one of several control files (See <a href="#controlfiles">Control Files</a> below) to gain access to
+				Latin-2, Latin-3, or other 8-bit standardized character sets. The control files may redirect the &quot;~&quot;
+				character to one of the negative character codes so that the translation table would display the table when &quot;~&quot;
+				is given for input. Doing this allows you to still have a &quot;~&quot; FIGcharacter for those who do not use a control
+				file.</li>
+		</ol>
+		<p>Those FIGcharacters which are not required must have an explicit character code in a separate line preceding them, called a
+			&quot;code tag&quot;. A code tag contains the value of the character code, followed by whitespace (a few spaces), and perhaps an
+			optional comment. The comment is usually the name of the FIGcharacter. The Unicode Consortium has assigned formal names to all
+			officially accepted characters, and these may be used. An entire code tag, including the comment, should not occupy more than 95
+			columns. (Over 100 characters here may make older versions of FIGlet crash.)</p>
+
+		<p>Here is an example, showing two code tagged FIGcharacters after the last two required Deutsch FIGcharacters. Again, the line
+			drawn below consisting of
+			&quot;|&quot; represents the left margin of your editor, and is NOT part of the FIGfont.</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>| _   _ @
+|(_) (_)@
+|| | | |@
+|| |_| |@
+| \__,_|@
+|       @@
+|  ___ @
+| / _ \@
+|| |/ /@
+|| |\ \@
+|| ||_/@
+||_|   @@
+|161  INVERTED EXCLAMATION MARK
+| _ @
+|(_)@
+|| |@
+|| |@
+||_|@
+|   @@
+|162  CENT SIGN
+|   _  @
+|  | | @
+| / __)@
+|| (__ @
+| \   )@
+|  |_| @@</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>A character code may be expressed in decimal (as shown above, numbers we're all familiar with), or in Octal (seldom used) or in
+			hexadecimal.</p>
+
+		<p>Character codes expressed in octal must be preceded by &quot;0&quot; (zero), and if negative, &quot;-&quot; (minus) must
+			precede the &quot;0&quot;. There are eight octal digits: 01234567. You may recall octal numbers from school as &quot;base 8
+			numbers&quot;.</p>
+
+		<p>Character codes expressed in hexadecimal must be preceded by &quot;0x&quot; or &quot;0X&quot;. (That's also a zero.) If
+			negative, the &quot;-&quot; must precede the &quot;0x&quot;. There are 16 hexadecimal digits: 01234567890ABCDEF. (The
+			&quot;letter-digits&quot; may also be lowercase.) Hexadecimal is &quot;base 16&quot;.</p>
+
+		<p>It is common to express character codes less than 256 (in the range of an 8-bit character set) as decimal, while FIGfonts which
+			extend into the Unicode range would have character codes expressed in hexadecimal. This is because the Unicode Standard
+			expresses character codes in hexadecimal, which is helpful for programmers.</p>
+
+		<p>The code tagged FIGcharacters may be listed in any order, but simple sequential order is recommended.</p>
+
+		<p>If two or more FIGcharacters have the same character code, the last one in the FIGfont is the one used. It is common for the Deutsch
+			FIGcharacters to be given twice in a FIGfont, just to maintain a consistent order for the Latin-1 range (128 to 255).</p>
+
+		<p>It is not advisable to assign character codes in the range of 1 to 31, since this range includes control characters in ASCII.
+			Character code 127 is a delete in ASCII, and is also not advised. Character codes 128 to 159 are additional control characters in
+			Latin-1, and they too should not be used. All of the above are legal, technically, but are not part of what is legal for input, so
+			they could only be accessed by use of a control file. (See <a href="#controlfiles">Control Files</a> below.) If you are still
+			tempted to use them, consider negative character codes instead, which are meaningless in all standardized character
+			sets.</p>
+
+		<p>Again, the character code -1 is illegal for technical reasons.</p>
+
+		<hr/> <a name="notes"/>
+		<h2>Notes - Avoiding Errors and General Advice</h2>
+
+		<p>It is very important that every character in a font has the same height, and, once the endmarks are removed, that all the lines
+			constituting a single FIGcharacter have the same length. Be careful also that no lines in the font file have trailing blanks
+			(spaces), as the FIGdriver will take these to be the endmarks. (FIGWin 1.0 will not consider blanks to be endmarks.)</p>
+
+		<p>Errors in a FIGfont can be detected by using the &quot;chkfont&quot; program, part of the standard FIGlet package.</p>
+
+		<p>For FIGWin users, the FIGWin program will report errors when a FIGfont is read in; it is less forgiving than FIGlet, which can
+			produce nonsense if the FIGfont is incorrectly formatted.</p>
+
+		<p>Remember that sub-characters outside of the ASCII range will not necessarily display the same way on your system as on
+			others.</p>
+
+		<p>The blank (space) FIGcharacter should usually consist of one or two columns of hardblanks and nothing else; slanted fonts are an
+			exception to this rule. If the space FIGcharacter does not contain any hardblanks, it will disappear when horizontal fitting
+			(kerning) or smushing occurs.</p>
+
+		<p>Again, if you design a FIGfont, please let us know!</p>
+
+		<hr/> <a name="controlfiles"/>
+		<h2>Control Files</h2>
+
+		<p>A FIGfont control file is a separate text file, associated with one or more FIGfonts, that indicates how to map input characters
+			into FIGfont character codes. By default, FIGdrivers read single bytes from the input source and interpret them as Latin-1
+			FIGcharacters.</p>
+
+		<p>FIGlet version 2.2 (and later) can optionally interpret its input as DBCS or UTF-8 characters, making it possible to access
+			FIGcharacters with codes outside the Latin-1 range (greater than 255).</p>
+
+		<p>In addition, though, all versions of FIGlet can use control files to transform specific character codes (or ranges of codes) as
+			other codes (or ranges). Multiple control files can be specified, in which case multiple stages of transformation are
+			performed.</p>
+
+		<p>The filename of a control file always ends with &quot;.flc&quot;.</p> <a name="ctrlstandard"/>
+		<h3>Standard Format</h3>
+
+		<p>Control files contain several kinds of lines. Lines beginning with &quot;#&quot;, as well as blank lines, are comment lines and
+			are ignored. All other lines are command lines, with one of the following formats:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>t inchar outchar
+t inchar1-inchar2 outchar1-outchar2
+number number
+f
+h
+j
+b
+u
+g{0|1|2|3} {94|96|94x94} [char]
+g{L|R} {0|1|2|3}</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>where &quot;inchar&quot;, &quot;outchar&quot;, and &quot;char&quot; are either Latin-1 characters representing their own
+			codes, or else are numeric character codes preceded by a &quot;\&quot; character; and &quot;number&quot; is a numeric
+			character code with no preceding
+			&quot;\&quot; character.</p>
+
+		<p>Thus &quot;A&quot; represents the code 65, as does &quot;\65&quot;, and &quot;\0x100&quot; represents the code 256 (100 in
+			hexadecimal). In addition, &quot;\ &quot; (backslash followed by a space) represents the code 32 (space), and the following
+			backslash sequences are also understood:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>\a        code 7 (a bell/alert)
+\b        code 8 (a backspace)
+\e        code 27 (an ESC character)
+\f        code 12 (a form feed)
+\n        code 10 (a newline/line feed)
+\r        code 13 (a carriage return)
+\t        code 9 (a horizontal tab)
+\v        code 11 (a vertical tab)
+\\        code 92 (a backslash)</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>All of these combinations except perhaps &quot;\\&quot; are very unlikely to be used, but they are provided just in case they are
+			needed.</p>
+
+		<p>Whitespace characters are used between &quot;t&quot; and &quot;inchar&quot; and between &quot;inchar&quot; and
+			&quot;outchar&quot;, but not around the &quot;-&quot; characters used in the second type of
+			&quot;t&quot; command.</p>
+
+		<p>The term &quot;string&quot; refers to any number of characters represented in the format given above. The characters begin
+			after the whitespace following the letter &quot;s&quot;, and continue to the end of the line.</p>
+
+		<p>Anything following the first letter of an &quot;f&quot;, &quot;h&quot;, &quot;j&quot;, or &quot;u&quot; command is
+			ignored.</p>
+
+		<p>The first type of &quot;t&quot; command transforms characters with the code &quot;inchar&quot; into characters with the code
+			&quot;outchar&quot;. The second type of &quot;t&quot; command transforms characters in the range &quot;inchar1&quot; to
+			&quot;inchar2&quot; as the corresponding codes in the range &quot;outchar1&quot; to &quot;outchar2&quot;. Both ranges
+			must be of the same size. The form &quot;number number&quot; is equivalent to a &quot;t&quot; command of the first type, and is
+			provided for compatibility with the mapping tables issued by the Unicode Consortium.</p>
+
+		<p>Multiple transformation stages can be encoded in a single control file by using &quot;f&quot; commands to separate the
+			stages.</p>
+
+		<p>Versions of FIGlet before 2.1 required that the first line of a control file consist of the signature string &quot;flc2a&quot;.
+			This signature line is still permitted in FIGlet 2.2 and later versions, but is no longer required.</p>
+
+		<p>Here is an example of a control file. The blanks at the beginning of each line are for readability only, and are not part of the
+			file.</p>
+
+		<p>The following control file:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>flc2a
+t # $
+t A-Z a-z</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>will map the &quot;#&quot; character to &quot;$&quot;, and will also convert uppercase ASCII to lowercase ASCII.</p>
+
+		<p>If a number of consecutive &quot;t&quot; commands are given, then for each character processed, only the first applicable
+			command (if any) will be executed. Consider this control file:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>t A B
+t B A</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>It will swap the characters &quot;A&quot; and &quot;B&quot;. If the FIGdriver reads an &quot;A&quot;, the first command will
+			change &quot;A&quot; to &quot;B&quot;, in which case the second will not be executed. If the FIGdriver reads a &quot;B&quot;,
+			the first command will have no effect, and the second command will change &quot;B&quot; to &quot;A&quot;. Here is another
+			control file:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>t A B
+t A C</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>In this example, the second line is never executed. In short, a sequence of
+			&quot;t&quot; lines &quot;does what it ought to&quot;.</p>
+
+		<p>More complex files, in which a single character is acted upon by several &quot;t&quot; commands, can be set up using an
+			&quot;f&quot; command. For example:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>flc2a
+t a-z A-Z
+f
+t Q ~</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>This control file specifies two transformation stages. In the first stage, lowercase ASCII letters are changed to their
+			uppercase equivalents. The second stage maps any Q (whether original or a converted &quot;q&quot;) into the &quot;~&quot;
+			character. If the &quot;f&quot; command were omitted, &quot;q&quot; characters would remain &quot;Q&quot; and not be
+			converted to &quot;~&quot;.</p> <a name="ctrlextended"/>
+		<h3>Extended Commands</h3>
+
+		<p>The &quot;h&quot;, &quot;j&quot;, &quot;b&quot;, &quot;u&quot;, and &quot;g&quot; commands are only understood by FIGlet
+			version 2.2 or later. They control how a FIGdriver interprets bytes in the input. By default, the FIGdriver interprets each byte
+			of input as a distinct character. This mode is suitable for most character encodings. All these commands are logically acted on
+			before any other control file commands, no matter where in the sequence of control files they appear. They are also mutually
+			exclusive; if more than one of these commands is found, only the last is acted on. Multiple &quot;g&quot; commands are
+			permitted, however.</p>
+
+		<p>The &quot;h&quot; command forces the input to be interpreted in HZ mode, which is used for the HZ character encoding of Chinese
+			text. In this mode, the sequence
+			&quot;~{&quot; (which is removed from the input) signals that all following characters are two bytes long until the sequence
+			&quot;~}&quot; is detected. In addition, the sequence &quot;~~&quot; is changed to just &quot;~&quot;, and all other
+			two-byte sequences beginning with &quot;~&quot; are removed from the input. The character code corresponding to a two-byte
+			character is:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>first character * 256 + second character</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>The &quot;j&quot; command forces the input to be interpreted in Shift-JIS mode (also called &quot;MS-Kanji mode&quot;). Input
+			bytes in the ranges 128-159 and 224-239 are read as the high-order byte of a two-byte character; all other bytes are interpreted
+			as one-byte characters. The value of a two-byte character is determined in the same way as in HZ mode.</p>
+
+		<p>The &quot;b&quot; command forces the input to be interpreted in DBCS mode, which is suitable for processing HZ or Shift-GB
+			Chinese text or Korean text. Input bytes in the ranges 128-255 are read as the high-order byte of a two-byte character; all other
+			bytes are interpreted as one-byte characters. The value of a two-byte character is determined in the same way as in HZ mode.</p>
+
+		<p>The &quot;u&quot; command forces the input to be interpreted in UTF-8 mode, which causes any input byte in the range 0x80 to 0xFF to
+			be interpreted as the first byte of a multi-byte Unicode (ISO 10646) character. UTF-8 characters can be from 1 to 6 bytes long. An
+			incorrectly formatted sequence is interpreted as the character 128 (normally an unused control character).</p>
+
+		<p>Otherwise, the input is allowed to contain ISO 2022 escape sequences, which are decoded to generate appropriate character
+			codes. These character codes are *not* a subset of Unicode, but may be more useful in processing East Asian text. A brief
+			explanation of ISO 2022 is given here in order to clarify how a FIGdriver should interpret it. The &quot;g&quot; command
+			provides information for the ISO 2022 interpreter, and is explained below.</p>
+
+		<p>ISO 2022 text is specified using a mixture of registered character sets. At any time, up to four character sets may be available.
+			Character sets have one of three sizes: single-byte character sets with 94 characters (e.g. ASCII), single-byte character
+			sets with 96 characters (e.g. the top halves of ISO Latin-1 to Latin-5), or double-byte character sets with 94 x 94 characters
+			(e.g. JIS 0208X-1983). Each registered character set has a standard designating byte in the range 48 to 125; the bytes are unique
+			withi n character set sizes, but may be reused across sizes. For example, byte 66 designates the 94-character set ASCII, the
+			96-character set ISO Latin-2 (top half), and the 94 x 94 Japanese character set JIS 0208X-1983. In this document, the
+			designating byte of a character set will be represented by &lt;D&gt;.</p>
+
+		<p>The four available character sets are labeled G0, G1, G2, and G3. Initially, G0 is the 94-character set ASCII, and G1 is the
+			96-character set ISO Latin-1 (top half). The other character sets are unassigned. The following escape sequences (where ESC =
+			the byte 27) specify changes to the available character sets:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>ESC ( &lt;D&gt;    Set G0 to the 94-character set &lt;D&gt;
+ESC ) &lt;D&gt;    Set G1 to the 94-character set &lt;D&gt;
+ESC * &lt;D&gt;    Set G2 to the 94-character set &lt;D&gt;
+ESC + &lt;D&gt;    Set G3 to the 94-character set &lt;D&gt;
+ESC - &lt;D&gt;    Set G1 to the 96-character set &lt;D&gt;
+ESC . &lt;D&gt;    Set G2 to the 96-character set &lt;D&gt;
+ESC / &lt;D&gt;    Set G3 to the 96-character set &lt;D&gt;
+ESC $ &lt;D&gt;    Set G0 to the 94 x 94 character set &lt;D&gt;
+ESC $ ( &lt;D&gt;    Set G0 to the 94 x 94 character set &lt;D&gt;
+ESC $ ) &lt;D&gt;    Set G1 to the 94 x 94 character set &lt;D&gt;
+ESC $ * &lt;D&gt;    Set G2 to the 94 x 94 character set &lt;D&gt;
+ESC $ + &lt;D&gt;    Set G3 to the 94 x 94 character set &lt;D&gt;</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Note that G0 may not be a 96-character set, and that there are two ways to specify a 94 x 94 character set in G0, of which the first is
+			deprecated.</p>
+
+		<p>ISO 2022 decoding affects input bytes in the ranges 33 to 126 and 160 to 255, known as &quot;the left half&quot; and &quot;the right
+			half&quot; respectively. All other bytes, unless they belong to a control sequence shown in this document, remain unchanged.
+			Initially, the left half is interpreted as character set G0, and the right half as character set G1. This can be changed by the
+			following control sequences:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>SI (byte 15)    Interpret the left half as G1 characters
+SO (byte 14)    Interpret the left half as G0 characters
+ESC n           Interpret the left half as G2 characters
+ESC o           Interpret the left half as G3 characters
+ESC ~           Interpret the right half as G1 characters
+ESC }           Interpret the right half as G2 characters
+ESC |           Interpret the right half as G3 characters
+SS2 (byte 142)  Interpret next character only as G2
+ESC N           Interpret next character only as G2
+SS3 (byte 143)  Interpret next character only as G3
+ESC O           Interpret next character only as G3</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>This rich schema may be used in various ways. In ISO-2022-JP, the Japanese flavor of ISO 2022, only the bytes 33-126 and the G0
+			character set is used, and escape sequences are used to switch between ASCII, ISO-646-JP (the Japanese national variant of
+			ASCII), and JIS 0208X-1983. In other versions, the G1 character set has 94 x 94 size, and so any byte in the range 160-255 is
+			automatically the first byte of a double-byte character.</p>
+
+		<p>FIGdrivers that support ISO 2022 do so in the following way. Each character i is decoded and assigned to a character set
+			&lt;D&gt;.</p>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>If the character belongs to a 94-bit character set,
+    then if its value exceeds 128, it is reduced by 128,
+    and the value 65536 * &lt;D&gt; is added to it,
+        unless &lt;D&gt; is 66 (ASCII).
+If the character belongs to a 96-bit character set,
+    then if its value is less than 128, it is increased by 128,
+    and the value 65536 * &lt;D&gt; is added to it,
+        unless &lt;D&gt; is 65 (ISO Latin-1).
+If the character belongs to a 94 x 94 character set,
+    then the value is the sum of:
+        the first byte * 256,
+        plus the second byte,
+        plus the value 65536 * &lt;D&gt;.</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>Thus, the character code 65 (&quot;A&quot;) in ASCII remains 65, the character code 196 in ISO Latin-1 (&quot;A-umlaut&quot;)
+			remains 196, the character code 65 (0x41) in ISO-646-JP (whose &lt;D&gt; is 74 = 0x4A) becomes 0x4A0041 =4849729, and the
+			two-byte sequence 33 33 (0x21 0x21) in JIS 0208X-1983 (whose &lt;D&gt; is 65 = 0x41) becomes 0x412121 = 4268321. These codes may
+			be used in compiling FIGfonts suitable for use with ISO 2022 encoded text.</p>
+
+		<p>The initial settings of G0 through G3 and their assignments to the left half and the right half can be altered in a control file by
+			using &quot;g&quot; commands, as follows:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>g {0|1|2|3} {94|96|94x94} [&lt;D&gt;]</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>specifies that one of G0-G3 is a 94, 96, or 94x94 character set with designating character &lt;D&gt;. If no designating character
+			is specified, then a
+			&lt;D&gt; value of zero is assumed.</p>
+
+		<p>For example, the list of control commands:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>g 0 94 B
+g 1 96 A</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>sets the G0 character set to ASCII (94-character set &quot;B&quot;) and the G1 character set to the top half of Latin-1
+			(96-character set &quot;A&quot;). (This is the default setting).</p>
+
+		<p>To change the initial assignments of G0 to the left half and G1 to the right half, &quot;g&quot; commands of the form</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>g {L|R} {0|1|2|3}</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>For example, the command:</p>
+
+		<table align="center">
+			<tr>
+				<td>
+					<pre>g R 2</pre>
+				</td>
+			</tr>
+		</table>
+
+		<p>causes right-half bytes (in the range 160-255) to be interpreted as G2. Whether these bytes are interpreted singly or in pairs
+			depends on the type of character set that is currently available as G2.</p>
+
+		<p>Spaces may be freely used or omitted in &quot;g&quot; commands.</p>
+
+		<p>The standard FIGlet distribution contains mapping tables for Latin-2 (ISO 8859-2), Latin-3 (ISO 8859-3), Latin-4 (ISO
+			8859-4), and Latin-5 (ISO 8859-9). They can be used with the font &quot;standard.flf&quot;, which contains all the characters
+			used in these standards.</p>
+
+		<hr/> <a name="standardizedcapabilities"/>
+		<h2>Standardized Capabilities of current and future FIGdrivers</h2>
+
+		<p>We assert the following as the &quot;Law&quot; of our intentions:</p>
+
+		<h3>Profit</h3>
+
+		<p>All future FIGdrivers shall be FREE OF CHARGE to the general public via the Internet. Any advertisements of other works by the
+			author must be in documentation only, and limited to ONE &quot;screenful&quot;, and shall not appear by normal program
+			behavior, nor interfere with normal behavior. No FIGdriver shall disable itself after a set period of time or request
+			&quot;donations&quot;. No FIGdriver shall offer any other FIGdriver with improved capability for creating FIGures in
+			exchange for money.</p>
+
+		<h3>Required Features of future versions</h3>
+
+		<p>Future FIGdrivers must read and process FIGfont files as described in this document, but are not necessarily expected to process
+			control files, smush, perform fitting or kerning, perform vertical operations, or even produce multiple lines in output
+			FIGures.</p>
+
+		<h3>FIGdriver NAMES</h3>
+
+		<p>Future FIGdrivers must be named to include capitalized "FIG" and shall have an incremental version number specific to its own
+			platform.</p>
+
+		<h3>Backwards Compatibility of future versions</h3>
+
+		<p>Any future FIGdriver created for the same platform as an existing FIGdriver, and using the same name as the existing FIGdriver,
+			shall be considered a new version of the preceding FIGdriver, and shall contain all historical comments of updates to past
+			versions on the same platform, and shall have full capability of the preceding versions. If the source code is not provided to the
+			general public, it shall be at least provided to any potential developers of later versions, and such comments relating to past
+			versions shall be accessible to any user by other means or documentation. If a new program is created on a platform that already
+			has an existing FIGdriver, it must be given a new and distinct name. This allows multiple FIGdrivers to exist for the same
+			platform with different capabilities.</p>
+
+		<p>The format of FIGfonts may not be modified to be non-backwards compatible UNLESS:</p>
+		<ol>
+			<li>The new format is easily editable as an ASCII text file, beginning with the characters "flf" followed by a sequential
+				number.</li>
+
+			<li>At least all of the same information can be derived from the new format as the prior format (currently "flf2"). This includes
+				the main comments which give credit to the FIGfont designer.</li>
+
+			<li>Individuals are found who are willing and have the ability to either port or develop versions for at least UNIX, DOS,
+				Windows, and Amiga which will read both the new formats AND the prior format (currently "flf2"), and retain the capability
+				of past versions. It is intended that this will be expanded to include Macintosh if a GUI version exists. This list of
+				required operating systems may be reduced if an operating system falls out of popularity or increased if a new operating
+				system for which there is a FIGdriver comes into greater popularity, according to the consensus of opinions of past
+				developers for the most popular operating systems.</li>
+
+			<li>A C, Java, or other version must always exist which can receive input and instructions either from a command line, a file, or
+				directly over the internet so that FIGures can be obtained from internet-based services without the need to download any
+				FIGdriver.</li>
+
+			<li>All existing FIGfonts available from the "official" point of distribution
+				(http://st-www.cs.uiuc.edu/users/chai/figlet.html), must be converted to the new format, and offered for download
+				alongsidethe new versions.</li>
+		</ol>
+
+		<h3>The Function of Word Wrapping</h3>
+
+		<p>All future FIGdrivers should duplicate these behaviors, unless a version is only capable of outputting one-line FIGures, which
+			is acceptable as long no preceding versions exist for its platform which can output multiple-line FIGures.</p>
+
+		<p>FIGdrivers which perform word wrapping do so by watching for blanks (spaces) in input text, making sure that the FIGure is no more
+			wide than the maximum width allowed.</p>
+
+		<p>Input text may also include linebreaks, so that a user may specify where lines begin or end instead of relying on the word wrapping
+			of the FIGdriver. (Linebreaks are represented by different bytes on different platforms, so each FIGdriver must watch for the
+			appropriate linebreaks for its particular platform.)</p>
+
+		<p>When a FIGdriver word wraps and there are several consecutive blanks in input text where the wrapping occurred, the FIGdriver
+			will disregard all blanks until the next non-blank input character is encountered. However, if blanks in input text
+			immediately follow a linebreak, or if blanks are the first characters in the input text, the blanks will be "printed", moving any
+			visible FIGcharacters which follow on the same output line to the right. Similarly, if an image is right-aligned, and blanks
+			immediately precede linebreaks or the end of input text, a FIGdriver will move an entire line of output FIGcharacters to the left
+			to make room for the blank FIGcharacters until the left margin is encountered. (If the print direction is right-to-left,
+			everything stated in this paragraph is reversed.)</p>
+
+		<p>Word processing programs or text editors usually behave similarly in all regards to word wrapping.</p>
+
+		<h3>General Intent for Cross-platform Portability</h3>
+
+		<p>Currently, all versions of FIGlet are compiled from C code, while FIGWin 1.0 is written in Visual Basic. Over time it is intended
+			that a later version of FIGWin will be created using a GUI C programming language, and that the FIGlet C code shall continue to be
+			written to be easily "plugged in" to a GUI shell. It is preferable for developers of FIGdrivers for new platforms to use C or a GUI
+			version of C, so that when the core rendering engine of FIGlet is updated, it will be portable to other platforms.</p>
+
+		<h3>Control File Commands</h3>
+
+		<p>New control file commands may be added to later versions of this standard. However, the commands "c", "d", and "s" are permanently
+			reserved and may never be given a meaning.</p>
+
+		<h3>File Compression</h3>
+
+		<p>FIGfonts (and control files) are often quite long, especially if many FIGcharacters are included, or if the FIGcharacters are
+			large. Therefore, some FIGdrivers (at present, only FIGlet version 2.2 or later) allow compressed FIGfonts and control
+			files.</p>
+
+		<p>The standard for FIG compression is to place the FIGfont or control file into a ZIP archive. ZIP archives can be created by the
+			proprietary program PKZIP on DOS and Windows platforms, or by the free program Info-ZIP ZIP on almost all platforms. More
+			information on ZIP can be obtained at http://www.cdrom.com/pub/infozip/Info-Zip.html .</p>
+
+		<p>The ZIP archive must contain only a single file. Any files in the archive after the first are ignored by FIGdrivers. In addition,
+			the standard extension ".zip" of the archive must be changed to ".flf" or ".flc" as appropriate. It does not matter what the name
+			of the file within the archive is.</p>
+
+		<hr/> <a name="chartofcapabilities"/>
+		<h2>Chart of Capabilities of FIGlet 2.2 and FIGWin 1.0</h2>
+
+		<p>The following chart lists all capabilities which are either new with the release of both FIGdrivers, or is not a common capability
+			among both.</p>
+
+		<table align="center" border="1">
+			<tr>
+				<th></th>
+				<th>FIGlet 2.2</th>
+				<th>FIGWin 1.0</th>
+			</tr>
+			<tr>
+				<th align="right">Interpreting the Full_Layout parameter:</th>
+				<td align="center">Yes</td>
+				<td align="center">Yes</td>
+			</tr>
+			<tr>
+				<th align="right">Universal smushing:</th>
+				<td align="center">Yes</td>
+				<td align="center">Yes</td>
+			</tr>
+			<tr>
+				<th align="right">Supporting multi-byte input text formats:</th>
+				<td align="center">Yes</td>
+				<td align="center">No</td>
+			</tr>
+			<tr>
+				<th align="right">Processing control files:</th>
+				<td align="center">Yes</td>
+				<td align="center">No</td>
+			</tr>
+			<tr>
+				<th align="right">Changing default smushing rules:</th>
+				<td align="center">Yes</td>
+				<td align="center">No</td>
+			</tr>
+			<tr>
+				<th align="right">Bundled with a GUI editor of FIGfonts:</th>
+				<td align="center">No</td>
+				<td align="center">Yes</td>
+			</tr>
+			<tr>
+				<th align="right">Vertical fitting and smushing:</th>
+				<td align="center">No</td>
+				<td align="center">Yes</td>
+			</tr>
+		</table>
+
+		<hr/>
+
+		<table align="center">
+			<tr>
+				<td>
+
+
+					<pre>___________           __               _
+\_   _____/ ____     |__| ____ ___ __ | |
+ |    __)_ /    \    |  |/  _ &lt;   |  || |
+ |        \   |  \   |  (  &lt;_&gt; )___  | \|
+/_______  /___|  /\__|  |\____// ____| __
+        \/     \/\______|      \/      \/</pre>
+				</td>
+			</tr>
+		</table>
+
+		<hr/>
+		<p>(Converted <a href="figfont.txt">original document</a> from txt to HTML by Markus Gebhard 2008)</p> </body>
+</html>

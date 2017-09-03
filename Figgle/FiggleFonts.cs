@@ -22,6 +22,14 @@ using System.Reflection;
 
 namespace Figgle
 {
+    /// <summary>
+    /// Collection of bundled fonts, ready for use.
+    /// </summary>
+    /// <remarks>
+    /// Fonts are lazily loaded upon property access. Only the fonts you use will be loaded.
+    /// <para />
+    /// Fonts are stored as an embedded ZIP archive within the assembly.
+    /// </remarks>
     public static class FiggleFonts
     {
         private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new ConcurrentDictionary<string, FiggleFont>();

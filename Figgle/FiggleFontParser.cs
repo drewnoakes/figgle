@@ -25,6 +25,9 @@ namespace Figgle
 {
     // TODO add static IReadOnlyList<string> ExtractComments(Stream stream)
 
+    /// <summary>
+    /// Parses FIGlet font files.
+    /// </summary>
     public static class FiggleFontParser
     {
         private static readonly Regex _firstLinePattern = new Regex(
@@ -42,6 +45,14 @@ namespace Figgle
               (\s|$)",
             RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
+        /// <summary>
+        /// Parses a FIGlet font description stream, and returns a usable <see cref="FiggleFont"/>.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="pool">An optional string pool for merging identical string references.</param>
+        /// <returns>The font described by the stream.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
+        /// <exception cref="FiggleException">The stream contained an error and could not be parsed.</exception>
         public static FiggleFont Parse(Stream stream, StringPool pool = null)
         {
             if (stream == null)

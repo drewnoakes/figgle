@@ -44,20 +44,32 @@ namespace Figgle
         public FiggleCharacter(IReadOnlyList<Line> lines) => Lines = lines;
     }
 
+    /// <summary>Enumeration of possible text directions.</summary>
     public enum FiggleTextDirection
     {
+        /// <summary>Text flows from the left to the right.</summary>
         LeftToRight = 0,
+        /// <summary>Text flows from the right to the left.</summary>
         RightToLeft = 1
     }
 
+    /// <summary>
+    /// Holds metadata and glyphs for rendering characters in this font.
+    /// </summary>
     public sealed class FiggleFont
     {
         private readonly IReadOnlyList<FiggleCharacter> _requiredCharacters;
         private readonly IReadOnlyDictionary<int, FiggleCharacter> _sparseCharacters;
         private readonly char _hardBlank;
 
+        /// <summary>The height of each character, in rows.</summary>
         public int Height { get; }
+        
+        /// <summary>The number of rows from the top of the font to the baseline, excluding descenders.</summary>
+        /// <remarks>Must be less than or equal to <see cref="Height"/>.</remarks>
         public int Baseline { get; }
+        
+        /// <summary>The direction that text reads when rendered with this font.</summary>
         public FiggleTextDirection Direction { get; }
 
         internal FiggleFont(IReadOnlyList<FiggleCharacter> requiredCharacters, IReadOnlyDictionary<int, FiggleCharacter> sparseCharacters, char hardBlank, int height, int baseline, FiggleTextDirection direction)
@@ -83,6 +95,10 @@ namespace Figgle
             return _requiredCharacters[i] ?? _requiredCharacters[0];
         }
 
+        /// <summary>Gets whether this font contains the specified character.</summary>
+        /// <remarks>Note that during rendering, if a character is not found then a character with value zero will be used instead, if present.</remarks>
+        /// <param name="c">The character to test for.</param>
+        /// <returns><c>true</c> if the character is present, otherwise <c>false</c>.</returns>
         public bool Contains(char c)
         {
             var i = (int)c;
@@ -91,6 +107,12 @@ namespace Figgle
                 : _sparseCharacters.ContainsKey(i);
         }
 
+        /// <summary>
+        /// Renders <paramref name="message"/> using this font.
+        /// </summary>
+        /// <param name="message">The text to render.</param>
+        /// <param name="fitCharacters">Whether fitting should be applied. Defaults to <c>true</c>.</param>
+        /// <returns></returns>
         public string Format(string message, bool fitCharacters = true)
         {
             var outputLines = Enumerable.Range(0, Height).Select(_ => new StringBuilder()).ToList();

@@ -29,7 +29,7 @@ namespace Figgle.Cmd
         {
             FiggleFont font;
             using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream("Figgle.Cmd.Fonts.standard.flf"))
-                font = new FiggleFont(stream);
+                font = FiggleFontParser.Parse(stream);
 
             while (true)
             {

@@ -193,7 +193,7 @@ namespace Figgle
                     break;
 
                 if (!ParseUtil.TryParse(line, out int code))
-                    throw new FiggleException($"Unsupported code-tagged character code string: {line}");
+                    throw new FiggleException($"Unsupported code-tagged character code string \"{line}\".");
 
                 if (code >= 0 && code < 256)
                     requiredCharacters[code] = ReadCharacter();

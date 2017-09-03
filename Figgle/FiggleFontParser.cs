@@ -34,7 +34,7 @@ namespace Figgle
               \s(?<height>\d+)              # the number of rows, shared across all characters
               \s(?<baseline>\d+)            # the number of rows from the top of the char to the baseline (excludes descenders)
               \s(\d+)                       # the maximum width of character data in the file, including endmarks
-              \s(?<layoutold>\d+)           # layout settings (old format)
+              \s(?<layoutold>-?\d+)         # layout settings (old format)
               \s(?<commentlinecount>\d+)    # number of comment lines after first line, before first character
               (\s(?<direction>\d+))?        # print direction (0 is left-to-right, 1 is right-to-left)
               (\s(?<layoutnew>\d+))?        # layout settings (new format)

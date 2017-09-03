@@ -30,6 +30,10 @@ namespace Figgle
     /// </summary>
     public static class FiggleFontParser
     {
+        private const int SM_SMUSH = 128;
+        private const int SM_KERN = 64;
+        private const int SM_FULLWIDTH = 0;
+        
         private static readonly Regex _firstLinePattern = new Regex(
             @"^flf2                         # signature
               a                             # always 'a'
@@ -77,6 +81,20 @@ namespace Figgle
             var layoutOld = int.Parse(match.Groups["layoutold"].Value);
             var commentLineCount = int.Parse(match.Groups["commentlinecount"].Value);
 
+            var layoutNewMatch = match.Groups["layoutnew"];
+            var layoutNew = layoutNewMatch.Success
+                ? int.Parse(layoutNewMatch.Value)
+                : UpgradeLayout();
+
+            int UpgradeLayout()
+            {
+                if (layoutOld == 0)
+                    return SM_KERN;
+                if (layoutOld < 0)
+                    return SM_FULLWIDTH;
+                return (layoutOld & 0x1F) | SM_SMUSH;
+            }
+            
             var dirMatch = match.Groups["direction"];
             var direction = dirMatch.Success
                 ? (FiggleTextDirection)int.Parse(dirMatch.Value)
@@ -216,7 +234,7 @@ readLine:
                     sparseCharacters[code] = ReadCharacter();
             }
 
-            return new FiggleFont(requiredCharacters, sparseCharacters, hardBlank, height, baseline, direction);
+            return new FiggleFont(requiredCharacters, sparseCharacters, hardBlank, height, baseline, direction, layoutNew);
         }
     }
 }

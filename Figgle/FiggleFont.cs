@@ -22,6 +22,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
+// TODO support right to left fonts
+// TODO include comments/sample output in XML docs of FiggleFonts
+// TODO have a utility that produces example output for each font in a markdown document
+// TODO have a means of enumerating all fonts in FiggleFonts
+
 namespace Figgle
 {
     internal struct Line
@@ -29,6 +34,9 @@ namespace Figgle
         public string Content { get; }
         public byte SpaceBefore { get; }
         public byte SpaceAfter { get; }
+        
+        public char FrontChar => Content.Length == SpaceBefore ? ' ' : Content[SpaceBefore];
+        public char BackChar  => Content.Length == SpaceAfter  ? ' ' : Content[Content.Length - SpaceAfter - 1];
 
         public Line(string content, byte spaceBefore, byte spaceAfter)
         {
@@ -61,6 +69,17 @@ namespace Figgle
         private readonly IReadOnlyList<FiggleCharacter> _requiredCharacters;
         private readonly IReadOnlyDictionary<int, FiggleCharacter> _sparseCharacters;
         private readonly char _hardBlank;
+        private readonly int _smushMode;
+
+        private const int SM_SMUSH     = 0b10000000;
+        private const int SM_KERN      = 0b01000000;
+        private const int SM_HARDBLANK = 0b00100000;
+        private const int SM_BIGX      = 0b00010000;
+        private const int SM_PAIR      = 0b00001000;
+        private const int SM_HIERARCHY = 0b00000100;
+        private const int SM_LOWLINE   = 0b00000010;
+        private const int SM_EQUAL     = 0b00000001;
+        private const int SM_FULLWIDTH = 0;
 
         /// <summary>The height of each character, in rows.</summary>
         public int Height { get; }
@@ -72,11 +91,12 @@ namespace Figgle
         /// <summary>The direction that text reads when rendered with this font.</summary>
         public FiggleTextDirection Direction { get; }
 
-        internal FiggleFont(IReadOnlyList<FiggleCharacter> requiredCharacters, IReadOnlyDictionary<int, FiggleCharacter> sparseCharacters, char hardBlank, int height, int baseline, FiggleTextDirection direction)
+        internal FiggleFont(IReadOnlyList<FiggleCharacter> requiredCharacters, IReadOnlyDictionary<int, FiggleCharacter> sparseCharacters, char hardBlank, int height, int baseline, FiggleTextDirection direction, int smushMode)
         {
             _requiredCharacters = requiredCharacters;
             _sparseCharacters = sparseCharacters;
             _hardBlank = hardBlank;
+            _smushMode = smushMode;
             Height = height;
             Baseline = baseline;
             Direction = direction;
@@ -111,13 +131,13 @@ namespace Figgle
         /// Renders <paramref name="message"/> using this font.
         /// </summary>
         /// <param name="message">The text to render.</param>
-        /// <param name="fitCharacters">Whether fitting should be applied. Defaults to <c>true</c>.</param>
+        /// <param name="smushOverride">Optional override for the smush settings. Defaults to <c>null</c>, meaning the font's default setting is used.</param>
         /// <returns></returns>
-        public string Format(string message, bool fitCharacters = true)
+        public string Format(string message, int? smushOverride = null)
         {
+            var smush = smushOverride ?? _smushMode;
+            
             var outputLines = Enumerable.Range(0, Height).Select(_ => new StringBuilder()).ToList();
-
-            // TODO support smushing
 
             FiggleCharacter lastCh = null;
 
@@ -128,14 +148,14 @@ namespace Figgle
                 if (ch == null)
                     continue;
 
-                var fitMove = fitCharacters ? CalculateFitMove(lastCh, ch) : 0;
+                var fitMove = CalculateFitMove(lastCh, ch);
 
                 for (var row = 0; row < Height; row++)
                 {
                     var charLine = ch.Lines[row];
                     var outputLine = outputLines[row];
 
-                    if (fitCharacters && fitMove != 0)
+                    if (fitMove != 0)
                     {
                         var toMove = fitMove;
                         if (lastCh != null)
@@ -148,7 +168,19 @@ namespace Figgle
                                 outputLine.Length -= lineSpaceTrim;
                             }
                         }
+                        
+                        var smushCharIndex = outputLine.Length - 1;
+                        var cl = outputLine[smushCharIndex];
+                        
                         outputLine.Append(toMove == 0 ? charLine.Content : charLine.Content.Substring(toMove));
+                        
+                        if (toMove != 0 && outputLine.Length != 0 && ch.Lines[row].Content.Length != 0)
+                        {
+                            var cr = ch.Lines[row].Content[toMove - 1];
+                            var sc = TrySmush(cl, cr);
+                            if (sc != '\0' && smushCharIndex >= 0)
+                                outputLine[smushCharIndex] = sc;
+                        }
                     }
                     else
                     {
@@ -166,19 +198,26 @@ namespace Figgle
 
             return res.ToString();
 
-            int CalculateFitMove(FiggleCharacter a, FiggleCharacter b)
+            int CalculateFitMove(FiggleCharacter l, FiggleCharacter r)
             {
-                if (a == null)
+                if (smush == SM_FULLWIDTH)
+                    return 0;
+                
+                if (l == null)
                     return 0; // TODO could still shift b if it had whitespace in the first column
 
                 var minMove = int.MaxValue;
 
                 for (var row = 0; row < Height; row++)
                 {
-                    var after  = a.Lines[row].SpaceAfter;
-                    var before = b.Lines[row].SpaceBefore;
+                    var ll = l.Lines[row];
+                    var rl = r.Lines[row];
 
-                    var move = after + before;
+                    var move = ll.SpaceAfter + rl.SpaceBefore;
+
+                    if (TrySmush(ll.BackChar, rl.FrontChar) != '\0')
+                        move++;
+                    
                     if (move < minMove)
                         minMove = move;
                 }
@@ -186,6 +225,77 @@ namespace Figgle
                 Debug.Assert(minMove >= 0, "minMove >= 0");
 
                 return minMove;
+            }
+
+            // TODO disallow smushing if either char's line has a length < 2
+            char TrySmush(char l, char r)
+            {
+                if (l == ' ') return r;
+                if (r == ' ') return l;
+
+                // kerning
+                if ((_smushMode & SM_SMUSH) == 0)
+                    return '\0';
+
+                // universal smushing
+                if ((_smushMode & 0b00111111) == 0)
+                {
+                    // prefer visible character in case of hard blanks
+                    if (l == _hardBlank) return r;
+                    if (r == _hardBlank) return l;
+
+                    // prefer overlapping character depending upon text direction
+                    return Direction == FiggleTextDirection.LeftToRight ? r : l;
+                }
+
+                if ((_smushMode & SM_HARDBLANK) != 0 && l == _hardBlank && r == _hardBlank)
+                    return l;
+
+                if (l == _hardBlank && r == _hardBlank)
+                    return '\0';
+
+                if ((_smushMode & SM_EQUAL) != 0 && l == r)
+                    return l;
+
+                if ((_smushMode & SM_LOWLINE) != 0)
+                {
+                    const string lowLineChars = @"|/\[]{}()<>";
+                    if (l == '_' && lowLineChars.Contains(r)) return r;
+                    if (r == '_' && lowLineChars.Contains(l)) return l;
+                }
+                
+                if ((_smushMode & SM_HIERARCHY) != 0)
+                {
+                    if (l == '|' && @"/\[]{}()<>".Contains(r)) return r;
+                    if (r == '|' && @"/\[]{}()<>".Contains(l)) return l;
+                    if ("/\\".Contains(l) && "[]{}()<>".Contains(r)) return r;
+                    if ("/\\".Contains(r) && "[]{}()<>".Contains(l)) return l;
+                    if ("[]".Contains(l)  && "{}()<>".Contains(r)) return r;
+                    if ("[]".Contains(r)  && "{}()<>".Contains(l)) return l;
+                    if ("{}".Contains(l)  && "()<>".Contains(r)) return r;
+                    if ("{}".Contains(r)  && "()<>".Contains(l)) return l;
+                    if ("()".Contains(l)  && "<>".Contains(r)) return r;
+                    if ("()".Contains(r)  && "<>".Contains(l)) return l;
+                }
+                
+                if ((_smushMode & SM_PAIR) != 0)
+                {
+                    if (l == '[' && r == ']') return '|';
+                    if (r == '[' && l == ']') return '|';
+                    if (l == '{' && r == '}') return '|';
+                    if (r == '{' && l == '}') return '|';
+                    if (l == '(' && r == ')') return '|';
+                    if (r == '(' && l == ')') return '|';
+                }
+
+                if ((_smushMode & SM_BIGX) != 0)
+                {
+                    if (l == '/' && r == '\\') return '|';
+                    if (r == '/' && l == '\\') return 'Y';
+                    if (l == '>' && r == '<')  return 'X';
+                }
+
+                return '\0';
             }
         }
     }

@@ -221,6 +221,14 @@ namespace Figgle
             return _requiredCharacters[i] ?? _requiredCharacters[0];
         }
 
+        public bool Contains(char c)
+        {
+            var i = (int)c;
+            return i >= 0 && i <= 255 
+                ? _requiredCharacters[i] != null 
+                : _sparseCharacters.ContainsKey(i);
+        }
+
         public string Format(string message, bool fitCharacters = true)
         {
             var outputLines = Enumerable.Range(0, _characterHeight).Select(_ => new StringBuilder()).ToList();

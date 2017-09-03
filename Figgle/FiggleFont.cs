@@ -48,12 +48,28 @@ namespace Figgle
 
     public sealed class FiggleFont
     {
-        private static readonly Regex _firstLinePattern = new Regex(@"^flf2a(?<hardblank>.) (?<height>\d+) \d+ \d+ \d+ (?<commentlinecount>\d+)");
+        private static readonly Regex _firstLinePattern = new Regex(
+            @"^flf2                         # signature
+              a                             # always 'a'
+              (?<hardblank>.)               # any single character
+              \s(?<height>\d+)              # the number of rows, shared across all characters
+              \s(?<baseline>\d+)            # the number of rows from the top of the char to the baseline (excludes descenders)
+              \s(\d+)                       # the maximum width of character data in the file, including endmarks
+              \s(?<layoutold>\d+)           # layout settings (old format)
+              \s(?<commentlinecount>\d+)    # number of comment lines after first line, before first character
+              (\s(?<direction>\d+))?        # print direction (0 is left-to-right, 1 is right-to-left)
+              (\s(?<layoutnew>\d+))?        # layout settings (new format)
+              (\s(\d+))?                    # number of code-tagged (non-required) characters in the font, equal to total number of characters minus 102
+              $",
+            RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
         private readonly IReadOnlyList<FiggleCharacter> _requiredCharacters;
         private readonly IReadOnlyDictionary<int, FiggleCharacter> _sparseCharacters;
         private readonly char _hardBlank;
-        private readonly int _characterHeight;
+        
+        public int Height { get; }
+        public int Baseline { get; }
+        public FiggleFontDirection Direction { get; }
 
         public FiggleFont(Stream stream, StringPool pool = null)
         {
@@ -74,9 +90,16 @@ namespace Figgle
                 throw new FiggleException("Font file has invalid first line.");
 
             _hardBlank = match.Groups["hardblank"].Value[0];
-            _characterHeight = int.Parse(match.Groups["height"].Value);
+            Height = int.Parse(match.Groups["height"].Value);
+            Baseline = int.Parse(match.Groups["baseline"].Value);
+            var layoutOld = int.Parse(match.Groups["layoutold"].Value);
             var commentLineCount = int.Parse(match.Groups["commentlinecount"].Value);
-            
+
+            var dirMatch = match.Groups["direction"];
+            Direction = dirMatch.Success 
+                ? (FiggleFontDirection)int.Parse(dirMatch.Value) 
+                : FiggleFontDirection.LeftToRight;
+
             // skip comment lines
             for (var i = 0; i < commentLineCount; i++)
                 reader.ReadLine();
@@ -141,9 +164,9 @@ namespace Figgle
 
             FiggleCharacter ReadCharacter()
             {
-                var lines = new Line[_characterHeight];
+                var lines = new Line[Height];
                 
-                for (var i = 0; i < _characterHeight; i++)
+                for (var i = 0; i < Height; i++)
                 {
                     var line = reader.ReadLine();
                     if (line == null)
@@ -231,7 +254,7 @@ namespace Figgle
 
         public string Format(string message, bool fitCharacters = true)
         {
-            var outputLines = Enumerable.Range(0, _characterHeight).Select(_ => new StringBuilder()).ToList();
+            var outputLines = Enumerable.Range(0, Height).Select(_ => new StringBuilder()).ToList();
             
             // TODO support smushing
 
@@ -246,7 +269,7 @@ namespace Figgle
                 
                 var fitMove = fitCharacters ? CalculateFitMove(lastCh, ch) : 0;
 
-                for (var row = 0; row < _characterHeight; row++)
+                for (var row = 0; row < Height; row++)
                 {
                     var charLine = ch.Lines[row];
                     var outputLine = outputLines[row];
@@ -289,7 +312,7 @@ namespace Figgle
 
                 var minMove = int.MaxValue;
 
-                for (var row = 0; row < _characterHeight; row++)
+                for (var row = 0; row < Height; row++)
                 {
                     var after  = a.Lines[row].SpaceAfter;
                     var before = b.Lines[row].SpaceBefore;

@@ -18,16 +18,32 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Figgle
 {
+    internal struct Line
+    {
+        public string Content { get; }
+        public byte SpaceBefore { get; }
+        public byte SpaceAfter { get; }
+
+        public Line(string content, byte spaceBefore, byte spaceAfter)
+        {
+            Content = content;
+            SpaceBefore = spaceBefore;
+            SpaceAfter = spaceAfter;
+        }
+    }
+    
     internal sealed class FiggleCharacter
     {
-        public IReadOnlyList<string> Lines { get; }
-        public FiggleCharacter(IReadOnlyList<string> lines) => Lines = lines;
+        public IReadOnlyList<Line> Lines { get; }
+        public FiggleCharacter(IReadOnlyList<Line> lines) => Lines = lines;
     }
 
     public sealed class FiggleFont
@@ -125,17 +141,35 @@ namespace Figgle
 
             FiggleCharacter ReadCharacter()
             {
-                var lines = new string[_characterHeight];
+                var lines = new Line[_characterHeight];
                 
                 for (var i = 0; i < _characterHeight; i++)
                 {
                     var line = reader.ReadLine();
                     if (line == null)
                         throw new FiggleException("Unexpected EOF in Font file.");
-                    lines[i] = pool.Pool(line);
+                    var endmark = line[line.Length - 1];
+                    line = line.TrimEnd(endmark);
+                    lines[i] = new Line(pool.Pool(line), CountSolSpaces(line), CountEolSpaces(line));
                 }
                 
                 return new FiggleCharacter(lines);
+                
+                byte CountSolSpaces(string s)
+                {
+                    byte count = 0;
+                    for (; count < s.Length && s[count] == ' '; count++)
+                    {}
+                    return count;
+                }
+                
+                byte CountEolSpaces(string s)
+                {
+                    byte count = 0;
+                    for (var i = s.Length - 1; i > 0 && s[i] == ' '; i--, count++)
+                    {}
+                    return count;
+                }
             }
 
             var requiredCharacters = new FiggleCharacter[256];
@@ -187,34 +221,80 @@ namespace Figgle
             return _requiredCharacters[i] ?? _requiredCharacters[0];
         }
 
-        public string Format(string message)
+        public string Format(string message, bool fitCharacters = true)
         {
-            var res = new StringBuilder();
+            var outputLines = Enumerable.Range(0, _characterHeight).Select(_ => new StringBuilder()).ToList();
             
-            // TODO support fitting and smushing
+            // TODO support smushing
+
+            FiggleCharacter lastCh = null;
             
-            for (var row = 0; row < _characterHeight; row++)
+            foreach (var c in message)
             {
-                foreach (var c in message)
-                {
-                    var ch = GetCharacter(c);
+                var ch = GetCharacter(c);
 
-                    if (ch == null)
-                        continue;
-
-                    var line = ch.Lines[row];
-                    
-                    var lastChar = line[line.Length - 1];
-
-                    line = line.TrimEnd(lastChar).Replace(_hardBlank, ' ');
-                    
-                    res.Append(line);
-                }
+                if (ch == null)
+                    continue;
                 
-                res.AppendLine();
+                var fitMove = fitCharacters ? CalculateFitMove(lastCh, ch) : 0;
+
+                for (var row = 0; row < _characterHeight; row++)
+                {
+                    var charLine = ch.Lines[row];
+                    var outputLine = outputLines[row];
+                    
+                    if (fitCharacters && fitMove != 0)
+                    {
+                        var toMove = fitMove;
+                        if (lastCh != null)
+                        {
+                            var lineSpace = lastCh.Lines[row].SpaceAfter;
+                            if (lineSpace != 0)
+                            {
+                                var lineSpaceTrim = Math.Min(lineSpace, toMove);
+                                toMove -= lineSpaceTrim;
+                                outputLine.Length -= lineSpaceTrim;
+                            }
+                        }
+                        outputLine.Append(toMove == 0 ? charLine.Content : charLine.Content.Substring(toMove));
+                    }
+                    else
+                    {
+                        outputLine.Append(charLine.Content);
+                    }
+                }
+
+                lastCh = ch;
             }
-            
+
+            var res = new StringBuilder();
+
+            foreach (var outputLine in outputLines)
+                res.AppendLine(outputLine.Replace(_hardBlank, ' ').ToString());
+
             return res.ToString();
+
+            int CalculateFitMove(FiggleCharacter a, FiggleCharacter b)
+            {
+                if (a == null)
+                    return 0; // TODO could still shift b if it had whitespace in the first column
+
+                var minMove = int.MaxValue;
+
+                for (var row = 0; row < _characterHeight; row++)
+                {
+                    var after  = a.Lines[row].SpaceAfter;
+                    var before = b.Lines[row].SpaceBefore;
+
+                    var move = after + before;
+                    if (move < minMove)
+                        minMove = move;
+                }
+
+                Debug.Assert(minMove >= 0, "minMove >= 0");
+                
+                return minMove;
+            }
         }
     }
 }

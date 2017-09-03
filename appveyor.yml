@@ -1,0 +1,16 @@
+version: 1.0.{build}
+skip_tags: true
+image: Visual Studio 2017
+configuration:
+- Release
+- Debug
+before_build:
+  appveyor-retry nuget restore
+build:
+  parallel: true
+  verbosity: minimal
+test:
+  assemblies:
+    - Figgle.Tests.dll
+test_script:
+  - dotnet test .\Figgle.Tests\Figgle.Tests.csproj --no-build

@@ -187,10 +187,14 @@ namespace Figgle
 
             while (true)
             {
+readLine:
                 var line = reader.ReadLine();
 
                 if (line == null)
                     break;
+
+                if (string.IsNullOrWhiteSpace(line))
+                    goto readLine;
 
                 if (!ParseUtil.TryParse(line, out int code))
                     throw new FiggleException($"Unsupported code-tagged character code string \"{line}\".");

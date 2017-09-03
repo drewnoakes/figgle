@@ -6,6 +6,9 @@
         |___|___|      
 ```
 
+[![Figgle Build Status](https://ci.appveyor.com/api/projects/status/2vvwieg2ou7pkhst?svg=true)](https://ci.appveyor.com/project/drewnoakes/figgle)
+[![Figgle NuGet version](https://img.shields.io/nuget/v/Figgle.svg)](https://www.nuget.org/packages/Figgle/)
+
 ## ASCII banner generation for .NET
 
 ```c#

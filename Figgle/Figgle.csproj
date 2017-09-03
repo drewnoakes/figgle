@@ -1,6 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Drew Noakes</Authors>
+    <Company />
+    <Description>ASCII banner generation for .NET</Description>
+    <Copyright>Copyright Drew Noakes 2017</Copyright>
+    <AssemblyName>Figgle</AssemblyName>
+    <PackageId>Figgle</PackageId>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/drewnoakes/figgle.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>figlet;ascii;banner;headings</PackageTags>
+    <DebugType>portable</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.3\Figgle.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Fonts.zip" />

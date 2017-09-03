@@ -26,6 +26,7 @@ namespace Figgle
     {
         private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new ConcurrentDictionary<string, FiggleFont>();
 
+#pragma warning disable CS1591
         public static FiggleFont OneRow => Lookup("1row");
         public static FiggleFont ThreeD => Lookup("3-d");
         public static FiggleFont ThreeDDiagonal => Lookup("3d_diagonal");
@@ -291,6 +292,7 @@ namespace Figgle
         public static FiggleFont WetLetter => Lookup("wetletter");
         public static FiggleFont Whimsy => Lookup("whimsy");
         public static FiggleFont Wow => Lookup("wow");
+#pragma warning restore CS1591
 
         private static FiggleFont Lookup(string name) => _fontByName.GetOrAdd(name, FontFactory);
 

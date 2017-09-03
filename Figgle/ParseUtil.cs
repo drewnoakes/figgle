@@ -81,6 +81,9 @@ namespace Figgle
                             case 'h':
                                 state = startingHex;
                                 break;
+                            case ' ':
+                                i = 0;
+                                return true;
                             default:
                                 if (char.IsDigit(c))
                                 {
@@ -164,7 +167,9 @@ namespace Figgle
                 case hex:
                     i = isNegative ? -value : value;
                     return true;
-
+                case leadingZero:
+                    i = 0;
+                    return true;
                 default:
                     i = 0;
                     return false;

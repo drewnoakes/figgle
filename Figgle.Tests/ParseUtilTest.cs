@@ -71,6 +71,15 @@ namespace Figgle.Tests
             Test(" 002322  ", 1234);
             Test(" 0002322  ", 1234);
 
+            Test("0", 0);
+            Test("00", 0);
+            Test("000", 0);
+            Test("0x0", 0);
+            Test(" 0 ", 0);
+            Test(" 00 ", 0);
+            Test(" 000 ", 0);
+            Test(" 0x0 ", 0);
+
             TestFails("Hello");
             TestFails("0Hello");
             TestFails("0xx1234");

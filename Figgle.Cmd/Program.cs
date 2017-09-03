@@ -17,7 +17,6 @@
 #endregion
 
 using System;
-using System.Reflection;
 
 // ReSharper disable FunctionNeverReturns
 
@@ -27,10 +26,6 @@ namespace Figgle.Cmd
     {
         private static void Main()
         {
-            FiggleFont font;
-            using (var stream = Assembly.GetEntryAssembly().GetManifestResourceStream("Figgle.Cmd.Fonts.standard.flf"))
-                font = FiggleFontParser.Parse(stream);
-
             while (true)
             {
                 Console.Write("Message: ");
@@ -39,7 +34,7 @@ namespace Figgle.Cmd
 
                 try
                 {
-                    Console.WriteLine(font.Format(message));
+                    Console.WriteLine(FiggleFonts.Standard.Format(message));
                 }
                 catch (Exception e)
                 {

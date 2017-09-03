@@ -5,6 +5,5 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Figgle\Figgle.csproj" />
-    <EmbeddedResource Include="Fonts\*.flf" />
   </ItemGroup>
 </Project>

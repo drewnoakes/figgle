@@ -39,7 +39,7 @@ namespace Figgle
               (\s(?<direction>\d+))?        # print direction (0 is left-to-right, 1 is right-to-left)
               (\s(?<layoutnew>\d+))?        # layout settings (new format)
               (\s(\d+))?                    # number of code-tagged (non-required) characters in the font, equal to total number of characters minus 102
-              $",
+              \s*$",
             RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
         public static FiggleFont Parse(Stream stream, StringPool pool = null)

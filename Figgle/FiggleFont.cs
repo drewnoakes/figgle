@@ -44,7 +44,7 @@ namespace Figgle
         public FiggleCharacter(IReadOnlyList<Line> lines) => Lines = lines;
     }
 
-    public enum FiggleFontDirection
+    public enum FiggleTextDirection
     {
         LeftToRight = 0,
         RightToLeft = 1
@@ -58,9 +58,9 @@ namespace Figgle
 
         public int Height { get; }
         public int Baseline { get; }
-        public FiggleFontDirection Direction { get; }
+        public FiggleTextDirection Direction { get; }
 
-        internal FiggleFont(IReadOnlyList<FiggleCharacter> requiredCharacters, IReadOnlyDictionary<int, FiggleCharacter> sparseCharacters, char hardBlank, int height, int baseline, FiggleFontDirection direction)
+        internal FiggleFont(IReadOnlyList<FiggleCharacter> requiredCharacters, IReadOnlyDictionary<int, FiggleCharacter> sparseCharacters, char hardBlank, int height, int baseline, FiggleTextDirection direction)
         {
             _requiredCharacters = requiredCharacters;
             _sparseCharacters = sparseCharacters;

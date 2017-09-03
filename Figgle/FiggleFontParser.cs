@@ -68,8 +68,8 @@ namespace Figgle
 
             var dirMatch = match.Groups["direction"];
             var direction = dirMatch.Success
-                ? (FiggleFontDirection)int.Parse(dirMatch.Value)
-                : FiggleFontDirection.LeftToRight;
+                ? (FiggleTextDirection)int.Parse(dirMatch.Value)
+                : FiggleTextDirection.LeftToRight;
 
             // skip comment lines
             for (var i = 0; i < commentLineCount; i++)

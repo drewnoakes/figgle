@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		spec\figfont.txt = spec\figfont.txt
 		LICENSE = LICENSE
 		README.md = README.md
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Figgle.Tests", "Figgle.Tests\Figgle.Tests.csproj", "{70205C92-9AEF-422F-AEDF-8EB07BFC554E}"

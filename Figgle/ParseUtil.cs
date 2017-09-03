@@ -23,14 +23,16 @@ namespace Figgle
         public static bool TryParse(string s, out int i)
         {
             const int starting = 0;
-            const int leadingZero = 1;
-            const int dec = 2;
-            const int oct = 3;
-            const int startingHex = 4;
-            const int hex = 5;
+            const int negative = 1;
+            const int leadingZero = 2;
+            const int dec = 3;
+            const int oct = 4;
+            const int startingHex = 5;
+            const int hex = 6;
 
             var state = starting;
             var value = 0;
+            var isNegative = false;
 
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var idx = 0; idx < s.Length; idx++)
@@ -40,21 +42,31 @@ namespace Figgle
                 switch (state)
                 {
                     case starting:
+                    case negative:
                     {
                         switch (c)
                         {
                             case '0':
                                 state = leadingZero;
                                 break;
-                            default:
-                                if (char.IsWhiteSpace(c))
+                            case '-':
+                                if (state == starting)
+                                {
+                                    isNegative = true;
+                                    state = negative;
                                     break;
+                                }
+                                i = default(int);
+                                return false;
+                            default:
                                 if (char.IsDigit(c))
                                 {
                                     value = c - '0';
                                     state = dec;
                                     break;
                                 }
+                                if (state == starting && char.IsWhiteSpace(c))
+                                    break;
                                 i = default(int);
                                 return false;
                         }
@@ -91,7 +103,7 @@ namespace Figgle
                         }
                         if (char.IsWhiteSpace(c))
                         {
-                            i = value;
+                            i = isNegative ? -value : value;
                             return true;
                         }
                         i = default(int);
@@ -108,7 +120,7 @@ namespace Figgle
                         }
                         if (char.IsWhiteSpace(c))
                         {
-                            i = value;
+                            i = isNegative ? -value : value;
                             return true;
                         }
                         i = default(int);
@@ -136,7 +148,7 @@ namespace Figgle
                         }
                         if (state == hex && char.IsWhiteSpace(c))
                         {
-                            i = value;
+                            i = isNegative ? -value : value;
                             return true;
                         }
                         i = default(int);
@@ -150,7 +162,7 @@ namespace Figgle
                 case dec:
                 case oct:
                 case hex:
-                    i = value;
+                    i = isNegative ? -value : value;
                     return true;
 
                 default:

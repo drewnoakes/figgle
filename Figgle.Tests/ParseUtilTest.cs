@@ -18,6 +18,8 @@
 
 using Xunit;
 
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
+
 namespace Figgle.Tests
 {
     public class ParseUtilTest
@@ -45,6 +47,18 @@ namespace Figgle.Tests
             Test("002322  ", 1234);
             Test("0002322  ", 1234);
 
+            Test("-1234", -1234);
+            Test("-1234 ", -1234);
+            Test("-1234  ", -1234);
+            Test("-0X4D2", -1234);
+            Test("-0h4D2", -1234);
+            Test("-0x4d2", -1234);
+            Test("-0x4D2  ", -1234);
+            Test("-02322", -1234);
+            Test("-02322  ", -1234);
+            Test("-002322  ", -1234);
+            Test("-0002322  ", -1234);
+
             Test(" 1234", 1234);
             Test(" 1234 ", 1234);
             Test("  1234  ", 1234);
@@ -66,6 +80,8 @@ namespace Figgle.Tests
             TestFails("0x");
             TestFails("0x ");
             TestFails(" 0x ");
+            TestFails("- 123");
+            TestFails("--123");
         }
     }
 }

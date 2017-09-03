@@ -1,13 +1,13 @@
 ﻿#region License
 
 // Copyright 2017 Drew Noakes
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //   http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ namespace Figgle
             SpaceAfter = spaceAfter;
         }
     }
-    
+
     internal sealed class FiggleCharacter
     {
         public IReadOnlyList<Line> Lines { get; }
@@ -55,7 +55,7 @@ namespace Figgle
         private readonly IReadOnlyList<FiggleCharacter> _requiredCharacters;
         private readonly IReadOnlyDictionary<int, FiggleCharacter> _sparseCharacters;
         private readonly char _hardBlank;
-        
+
         public int Height { get; }
         public int Baseline { get; }
         public FiggleFontDirection Direction { get; }
@@ -86,33 +86,33 @@ namespace Figgle
         public bool Contains(char c)
         {
             var i = (int)c;
-            return i >= 0 && i <= 255 
-                ? _requiredCharacters[i] != null 
+            return i >= 0 && i <= 255
+                ? _requiredCharacters[i] != null
                 : _sparseCharacters.ContainsKey(i);
         }
 
         public string Format(string message, bool fitCharacters = true)
         {
             var outputLines = Enumerable.Range(0, Height).Select(_ => new StringBuilder()).ToList();
-            
+
             // TODO support smushing
 
             FiggleCharacter lastCh = null;
-            
+
             foreach (var c in message)
             {
                 var ch = GetCharacter(c);
 
                 if (ch == null)
                     continue;
-                
+
                 var fitMove = fitCharacters ? CalculateFitMove(lastCh, ch) : 0;
 
                 for (var row = 0; row < Height; row++)
                 {
                     var charLine = ch.Lines[row];
                     var outputLine = outputLines[row];
-                    
+
                     if (fitCharacters && fitMove != 0)
                     {
                         var toMove = fitMove;
@@ -162,7 +162,7 @@ namespace Figgle
                 }
 
                 Debug.Assert(minMove >= 0, "minMove >= 0");
-                
+
                 return minMove;
             }
         }

@@ -1,13 +1,13 @@
 #region License
 
 // Copyright 2017 Drew Noakes
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //   http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ using System.Text.RegularExpressions;
 namespace Figgle
 {
     // TODO add static IReadOnlyList<string> ExtractComments(Stream stream)
-    
+
     public static class FiggleFontParser
     {
         private static readonly Regex _firstLinePattern = new Regex(
@@ -46,7 +46,7 @@ namespace Figgle
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            
+
             // TODO allow specifying encoding
             var reader = new StreamReader(stream);
 
@@ -56,7 +56,7 @@ namespace Figgle
                 throw new FiggleException("Font file is empty.");
 
             var match = _firstLinePattern.Match(firstLine);
-            
+
             if (!match.Success)
                 throw new FiggleException("Font file has invalid first line.");
 
@@ -67,8 +67,8 @@ namespace Figgle
             var commentLineCount = int.Parse(match.Groups["commentlinecount"].Value);
 
             var dirMatch = match.Groups["direction"];
-            var direction = dirMatch.Success 
-                ? (FiggleFontDirection)int.Parse(dirMatch.Value) 
+            var direction = dirMatch.Success
+                ? (FiggleFontDirection)int.Parse(dirMatch.Value)
                 : FiggleFontDirection.LeftToRight;
 
             // skip comment lines
@@ -77,10 +77,10 @@ namespace Figgle
 
             if (pool == null)
                 pool = new StringPool();
-            
+
             /*
             Characters 0-31 are control characters.
-            
+
             Characters 32-126 appear in order:
 
             32 (blank/space) 64 @             96  `
@@ -115,9 +115,9 @@ namespace Figgle
             61 =             93 ]             125 }
             62 >             94 ^             126 ~
             63 ?             95 _
-        
+
             Then codes:
-            
+
             196 Ä
             214 Ö
             220 Ü
@@ -127,16 +127,16 @@ namespace Figgle
             223 ß
 
             If some of these characters are not desired, empty characters may be used, having endmarks flush with the margin.
-            
+
             After the required characters come "code tagged characters" in range -2147483648 to +2147483647, excluding -1. The assumed mapping is to ASCII/Latin-1/Unicode.
-            
+
             A zero character is treated as the character to be used whenever a required character is missing. If no zero character is available, nothing will be printed.
             */
 
             FiggleCharacter ReadCharacter()
             {
                 var lines = new Line[height];
-                
+
                 for (var i = 0; i < height; i++)
                 {
                     var line = reader.ReadLine();
@@ -149,9 +149,9 @@ namespace Figgle
                     line = line.TrimEnd(endmark);
                     lines[i] = new Line(pool.Pool(line), CountSolSpaces(line), CountEolSpaces(line));
                 }
-                
+
                 return new FiggleCharacter(lines);
-                
+
                 byte CountSolSpaces(string s)
                 {
                     byte count = 0;
@@ -159,7 +159,7 @@ namespace Figgle
                     {}
                     return count;
                 }
-                
+
                 byte CountEolSpaces(string s)
                 {
                     byte count = 0;
@@ -194,7 +194,7 @@ namespace Figgle
 
                 if (!ParseUtil.TryParse(line, out int code))
                     throw new FiggleException($"Unsupported code-tagged character code string: {line}");
-                
+
                 if (code >= 0 && code < 256)
                     requiredCharacters[code] = ReadCharacter();
                 else

@@ -13,7 +13,7 @@
 
 ```c#
 Console.WriteLine(
-    FiggleFonts.Standard.Format("Hello, World!"));
+    FiggleFonts.Standard.Render("Hello, World!"));
 ```
 
 Produces...

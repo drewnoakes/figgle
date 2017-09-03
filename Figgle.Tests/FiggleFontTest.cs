@@ -75,7 +75,7 @@ namespace Figgle.Tests
             // ReSharper disable once UnusedParameter.Local
             void Test(FiggleFont font, string s, int? smushOverride = null, params string[] expected)
             {
-                var output = font.Format(s, smushOverride);
+                var output = font.Render(s, smushOverride);
                 var actual = output.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
                 actual = actual.Take(Math.Max(0, actual.Length - 1)).ToArray();
                 Assert.Equal(expected.Length, actual.Length);

@@ -133,7 +133,7 @@ namespace Figgle
         /// <param name="message">The text to render.</param>
         /// <param name="smushOverride">Optional override for the smush settings. Defaults to <c>null</c>, meaning the font's default setting is used.</param>
         /// <returns></returns>
-        public string Format(string message, int? smushOverride = null)
+        public string Render(string message, int? smushOverride = null)
         {
             var smush = smushOverride ?? _smushMode;
             

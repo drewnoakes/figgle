@@ -34,7 +34,7 @@ namespace Figgle
         public string Content { get; }
         public byte SpaceBefore { get; }
         public byte SpaceAfter { get; }
-        
+
         public char FrontChar => Content.Length == SpaceBefore ? ' ' : Content[SpaceBefore];
         public char BackChar  => Content.Length == SpaceAfter  ? ' ' : Content[Content.Length - SpaceAfter - 1];
 
@@ -83,11 +83,11 @@ namespace Figgle
 
         /// <summary>The height of each character, in rows.</summary>
         public int Height { get; }
-        
+
         /// <summary>The number of rows from the top of the font to the baseline, excluding descenders.</summary>
         /// <remarks>Must be less than or equal to <see cref="Height"/>.</remarks>
         public int Baseline { get; }
-        
+
         /// <summary>The direction that text reads when rendered with this font.</summary>
         public FiggleTextDirection Direction { get; }
 
@@ -136,7 +136,7 @@ namespace Figgle
         public string Render(string message, int? smushOverride = null)
         {
             var smush = smushOverride ?? _smushMode;
-            
+
             var outputLines = Enumerable.Range(0, Height).Select(_ => new StringBuilder()).ToList();
 
             FiggleCharacter lastCh = null;
@@ -168,12 +168,12 @@ namespace Figgle
                                 outputLine.Length -= lineSpaceTrim;
                             }
                         }
-                        
+
                         var smushCharIndex = outputLine.Length - 1;
                         var cl = outputLine[smushCharIndex];
-                        
+
                         outputLine.Append(toMove == 0 ? charLine.Content : charLine.Content.Substring(toMove));
-                        
+
                         if (toMove != 0 && outputLine.Length != 0 && ch.Lines[row].Content.Length != 0)
                         {
                             var cr = ch.Lines[row].Content[toMove - 1];
@@ -202,7 +202,7 @@ namespace Figgle
             {
                 if (smush == SM_FULLWIDTH)
                     return 0;
-                
+
                 if (l == null)
                     return 0; // TODO could still shift b if it had whitespace in the first column
 
@@ -217,7 +217,7 @@ namespace Figgle
 
                     if (TrySmush(ll.BackChar, rl.FrontChar) != '\0')
                         move++;
-                    
+
                     if (move < minMove)
                         minMove = move;
                 }
@@ -263,21 +263,21 @@ namespace Figgle
                     if (l == '_' && lowLineChars.Contains(r)) return r;
                     if (r == '_' && lowLineChars.Contains(l)) return l;
                 }
-                
+
                 if ((_smushMode & SM_HIERARCHY) != 0)
                 {
-                    if (l == '|' && @"/\[]{}()<>".Contains(r)) return r;
-                    if (r == '|' && @"/\[]{}()<>".Contains(l)) return l;
-                    if ("/\\".Contains(l) && "[]{}()<>".Contains(r)) return r;
-                    if ("/\\".Contains(r) && "[]{}()<>".Contains(l)) return l;
-                    if ("[]".Contains(l)  && "{}()<>".Contains(r)) return r;
-                    if ("[]".Contains(r)  && "{}()<>".Contains(l)) return l;
-                    if ("{}".Contains(l)  && "()<>".Contains(r)) return r;
-                    if ("{}".Contains(r)  && "()<>".Contains(l)) return l;
-                    if ("()".Contains(l)  && "<>".Contains(r)) return r;
-                    if ("()".Contains(r)  && "<>".Contains(l)) return l;
+                    if (l == '|'          && @"/\[]{}()<>".Contains(r)) return r;
+                    if (r == '|'          && @"/\[]{}()<>".Contains(l)) return l;
+                    if ("/\\".Contains(l) &&    "[]{}()<>".Contains(r)) return r;
+                    if ("/\\".Contains(r) &&    "[]{}()<>".Contains(l)) return l;
+                    if ("[]" .Contains(l) &&      "{}()<>".Contains(r)) return r;
+                    if ("[]" .Contains(r) &&      "{}()<>".Contains(l)) return l;
+                    if ("{}" .Contains(l) &&        "()<>".Contains(r)) return r;
+                    if ("{}" .Contains(r) &&        "()<>".Contains(l)) return l;
+                    if ("()" .Contains(l) &&          "<>".Contains(r)) return r;
+                    if ("()" .Contains(r) &&          "<>".Contains(l)) return l;
                 }
-                
+
                 if ((_smushMode & SM_PAIR) != 0)
                 {
                     if (l == '[' && r == ']') return '|';

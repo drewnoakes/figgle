@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
     <VersionPrefix>0.2.0</VersionPrefix>
     <Authors>Drew Noakes</Authors>
     <Company />
@@ -25,7 +25,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Fonts.zip" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
+    <Reference Include="System.IO.Compression" />
   </ItemGroup>
 </Project>

@@ -39,8 +39,6 @@ Targets .NET Standard 1.3, so runs pretty much anywhere.
 
 ## Other samples
 
-_(Note these samples will look different once smushing is implemented.)_
-
 Using `FiggleFonts.Graffiti`:
 
 ```

@@ -218,6 +218,8 @@ namespace Figgle
                     if (TrySmush(ll.BackChar, rl.FrontChar) != '\0')
                         move++;
 
+                    move = Math.Min(move, rl.Content.Length);
+
                     if (move < minMove)
                         minMove = move;
                 }

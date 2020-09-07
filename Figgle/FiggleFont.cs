@@ -164,8 +164,12 @@ namespace Figgle
                             if (lineSpace != 0)
                             {
                                 var lineSpaceTrim = Math.Min(lineSpace, toMove);
-                                toMove -= lineSpaceTrim;
-                                outputLine.Length -= lineSpaceTrim;
+                                for (int i = 0; i < lineSpaceTrim; i++)
+                                {
+                                    if (outputLine[outputLine.Length - 1] != ' ') break;
+                                    toMove--;
+                                    outputLine.Length--;
+                                }
                             }
                         }
 
@@ -217,6 +221,8 @@ namespace Figgle
 
                     if (TrySmush(ll.BackChar, rl.FrontChar) != '\0')
                         move++;
+
+                    move = Math.Min(move, rl.Content.Length);
 
                     if (move < minMove)
                         minMove = move;

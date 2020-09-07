@@ -181,7 +181,7 @@ namespace Figgle
 
                 return new FiggleCharacter(lines);
 
-                byte CountSolSpaces(string s)
+                static byte CountSolSpaces(string s)
                 {
                     byte count = 0;
                     for (; count < s.Length && s[count] == ' '; count++)
@@ -189,7 +189,7 @@ namespace Figgle
                     return count;
                 }
 
-                byte CountEolSpaces(string s)
+                static byte CountEolSpaces(string s)
                 {
                     byte count = 0;
                     for (var i = s.Length - 1; i > 0 && s[i] == ' '; i--, count++)

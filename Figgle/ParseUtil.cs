@@ -56,7 +56,7 @@ namespace Figgle
                                     state = negative;
                                     break;
                                 }
-                                i = default(int);
+                                i = default;
                                 return false;
                             default:
                                 if (char.IsDigit(c))
@@ -67,7 +67,7 @@ namespace Figgle
                                 }
                                 if (state == starting && char.IsWhiteSpace(c))
                                     break;
-                                i = default(int);
+                                i = default;
                                 return false;
                         }
                         break;
@@ -91,7 +91,7 @@ namespace Figgle
                                     state = oct;
                                     break;
                                 }
-                                i = default(int);
+                                i = default;
                                 return false;
                         }
                         break;
@@ -109,7 +109,7 @@ namespace Figgle
                             i = isNegative ? -value : value;
                             return true;
                         }
-                        i = default(int);
+                        i = default;
                         return false;
                     }
                     case oct:
@@ -126,7 +126,7 @@ namespace Figgle
                             i = isNegative ? -value : value;
                             return true;
                         }
-                        i = default(int);
+                        i = default;
                         return false;
                     }
                     case hex:
@@ -154,7 +154,7 @@ namespace Figgle
                             i = isNegative ? -value : value;
                             return true;
                         }
-                        i = default(int);
+                        i = default;
                         return false;
                     }
                 }

@@ -164,7 +164,7 @@ namespace Figgle
                             if (lineSpace != 0)
                             {
                                 var lineSpaceTrim = Math.Min(lineSpace, toMove);
-                                for (int i = 0; i < lineSpaceTrim; i++)
+                                for (var i = 0; i < lineSpaceTrim; i++)
                                 {
                                     if (outputLine[outputLine.Length - 1] != ' ') break;
                                     toMove--;

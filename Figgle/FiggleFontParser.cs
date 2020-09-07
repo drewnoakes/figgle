@@ -225,7 +225,7 @@ readLine:
                 if (string.IsNullOrWhiteSpace(line))
                     goto readLine;
 
-                if (!ParseUtil.TryParse(line, out int code))
+                if (!ParseUtil.TryParse(line, out var code))
                     throw new FiggleException($"Unsupported code-tagged character code string \"{line}\".");
 
                 if (code >= 0 && code < 256)

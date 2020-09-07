@@ -29,7 +29,7 @@ using System.Text;
 
 namespace Figgle
 {
-    internal struct Line
+    internal readonly struct Line
     {
         public string Content { get; }
         public byte SpaceBefore { get; }

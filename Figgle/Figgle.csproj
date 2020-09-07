@@ -19,9 +19,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.3\Figgle.xml</DocumentationFile>
-  </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Fonts.zip" />
   </ItemGroup>

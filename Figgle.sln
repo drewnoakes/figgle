@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A36A179-AB9F-4D63-8409-A7400F65C139}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		spec\figfont.html = spec\figfont.html
 		spec\figfont.txt = spec\figfont.txt
 		LICENSE = LICENSE

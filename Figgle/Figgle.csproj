@@ -10,7 +10,7 @@
     <PackageId>Figgle</PackageId>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/drewnoakes/figgle/master/images/logo-square-256px.png</PackageIconUrl>
+    <PackageIcon>logo-square-256px.png</PackageIcon>
     <RepositoryUrl>https://github.com/drewnoakes/figgle.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>figlet;ascii;banner;headings</PackageTags>
@@ -21,6 +21,7 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Fonts.zip" />
+    <None Include="../images/logo-square-256px.png" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />

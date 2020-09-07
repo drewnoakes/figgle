@@ -310,17 +310,17 @@ namespace Figgle
 
         private static FiggleFont FontFactory(string name)
         {
-            using (var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip"))
-            using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
-            {
-                var entry = zip.GetEntry(name + ".flf");
+            using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+            using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+         
+            var entry = zip.GetEntry(name + ".flf");
 
-                if (entry == null)
-                    throw new FiggleException($"No embedded font exists with name \"{name}\".");
+            if (entry == null)
+                throw new FiggleException($"No embedded font exists with name \"{name}\".");
 
-                using (var entryStream = entry.Open())
-                    return FiggleFontParser.Parse(entryStream, _stringPool);
-            }
+            using var entryStream = entry.Open();
+                
+            return FiggleFontParser.Parse(entryStream, _stringPool);
         }
     }
 }

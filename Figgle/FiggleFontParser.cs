@@ -57,7 +57,7 @@ namespace Figgle
         /// <returns>The font described by the stream.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
         /// <exception cref="FiggleException">The stream contained an error and could not be parsed.</exception>
-        public static FiggleFont Parse(Stream stream, StringPool pool = null)
+        public static FiggleFont Parse(Stream stream, StringPool? pool = null)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));

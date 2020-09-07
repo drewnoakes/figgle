@@ -3,7 +3,7 @@
     <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
-    <VersionPrefix>0.3.0</VersionPrefix>
+    <VersionPrefix>0.4.0</VersionPrefix>
     <Authors>Drew Noakes</Authors>
     <Company />
     <Description>ASCII banner generation for .NET</Description>

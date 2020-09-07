@@ -1,4 +1,6 @@
-﻿using System.IO.Compression;
+﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
+
+using System.IO.Compression;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;

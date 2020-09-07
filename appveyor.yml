@@ -5,12 +5,13 @@ configuration:
 - Release
 - Debug
 before_build:
-  appveyor-retry nuget restore
+  - appveyor-retry nuget restore
 build:
   parallel: true
   verbosity: minimal
 test:
   assemblies:
-    - Figgle.Tests.dll
+    only:
+      - Figgle.Tests.dll
 test_script:
   - dotnet test .\Figgle.Tests\Figgle.Tests.csproj --no-build

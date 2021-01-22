@@ -7,7 +7,8 @@
 ```
 
 [![Figgle Build Status](https://ci.appveyor.com/api/projects/status/2vvwieg2ou7pkhst?svg=true)](https://ci.appveyor.com/project/drewnoakes/figgle)
-[![Figgle NuGet version](https://img.shields.io/nuget/v/Figgle.svg)](https://www.nuget.org/packages/Figgle/)
+[![Figgle NuGet version](https://img.shields.io/nuget/v/Figgle)](https://www.nuget.org/packages/Figgle/)
+[![Figgle Nuget download count](https://img.shields.io/nuget/dt/Figgle)](https://www.nuget.org/packages/Figgle/)
 
 ## ASCII banner generation for .NET
 

@@ -90,3 +90,15 @@ Using `FiggleFonts.Slant`:
 /_/ /_/\___/_/_/\____( )     |__/|__/\____/_/  /_/\__,_(_)   
                      |/                                      
 ```
+
+## Loading external fonts
+
+Figgle ships with a bunch of fonts (in the `FiggleFonts` class). If you prefer, you can load your own.
+
+Here's an example that loads a font from disk and renders some text with it:
+
+```c#
+using var fontStream = System.IO.File.OpenRead("myfont.flf");
+var font = FiggleFontParser.Parse(fontStream);
+var text = font.Render("Hello World, from My Font");
+```

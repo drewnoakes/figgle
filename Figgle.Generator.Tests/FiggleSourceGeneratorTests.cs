@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -527,7 +528,8 @@ namespace Figgle.Generator.Tests
 
             Assert.Equal(
                 new[] { source, FiggleSourceGenerator.AttributeSource }.Concat(outputs),
-                compilation.SyntaxTrees.Select(tree => tree.ToString()));
+                compilation.SyntaxTrees.Select(tree => tree.ToString()),
+                NewlineIgnoreComparer.Instance);
         }
 
         private (Compilation Compilation, ImmutableArray<Diagnostic> Diagnostics) RunGenerator(string source)
@@ -566,6 +568,24 @@ namespace Figgle.Generator.Tests
                         Environment.NewLine,
                         errors.Select(error => error.GetMessage())));
             }
+        }
+
+        private sealed class NewlineIgnoreComparer : IEqualityComparer<string>
+        {
+            public static NewlineIgnoreComparer Instance { get; } = new();
+
+            public bool Equals(string? x, string? y)
+            {
+                return StringComparer.Ordinal.Equals(Normalize(x), Normalize(y));
+            }
+
+            public int GetHashCode(string obj)
+            {
+                return StringComparer.Ordinal.GetHashCode(Normalize(obj));
+            }
+
+            [return: NotNullIfNotNull("s")]
+            private static string? Normalize(string? s) => s?.Replace("\r", "");
         }
     }
 }

@@ -295,6 +295,10 @@ namespace Figgle
         private static FiggleFont FontFactory(string name)
         {
             using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+
+            if (stream is null)
+                throw new FiggleException("Unable to open embedded font archive.");
+
             using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
          
             var entry = zip.GetEntry(name + ".flf");

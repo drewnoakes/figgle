@@ -1,34 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
     <Description>ASCII banner generation for .NET</Description>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
-    <PackageIcon>logo-square-256px.png</PackageIcon>
-    <RepositoryUrl>https://github.com/drewnoakes/figgle.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>figlet;ascii;banner;headings</PackageTags>
+    <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- deterministic builds -->
-    <Deterministic>true</Deterministic>
-    <DeterministicSourcePaths>true</DeterministicSourcePaths>
-    <!-- debug symbols -->
-    <DebugType>portable</DebugType>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <!-- source path -->
-    <IncludeSource>true</IncludeSource>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <EmbeddedResource Include="Fonts.zip" />
-    <None Include="../images/logo-square-256px.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
   </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)'=='net452'">
     <Reference Include="System.IO.Compression" />
   </ItemGroup>
+
 </Project>

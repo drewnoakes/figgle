@@ -206,3 +206,5 @@ dotnet_diagnostic.RS0100.severity = none        # Statements must be placed on t
 dotnet_diagnostic.IDE0073.severity = warning      # Enforce file header
 file_header_template = Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
+# RS2008: Enable analyzer release tracking
+dotnet_diagnostic.RS2008.severity = none

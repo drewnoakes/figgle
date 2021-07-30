@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Figgle.Generator": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Figgle.Generator.Sample\\Figgle.Generator.Sample.csproj"
+    }
+  }
+}

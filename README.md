@@ -28,6 +28,8 @@ Produces...
                      |/
 ```
 
+Alternatively, use Figgle's source generator to generate output during compilation, so you don't need to ship Figgle binaries with your app. See below for details.
+
 The library bundles 265 [FIGlet](http://www.figlet.org/) [fonts](http://www.jave.de/figlet/fonts.html). You can add your own if that's not enough! 
 
 ## Installation
@@ -101,4 +103,41 @@ Here's an example that loads a font from disk and renders some text with it:
 using var fontStream = System.IO.File.OpenRead("myfont.flf");
 var font = FiggleFontParser.Parse(fontStream);
 var text = font.Render("Hello World, from My Font");
+```
+
+## Using the Source Generator
+
+If the text you want Figgle to render is known at compile time, this section is for you.
+
+Instead of having Figgle render text at runtime, you can use Figgle's _source generator_ to
+do the rendering at compile time. This has two benefits:
+
+- Faster runtime performance, as no Figgle code is executed
+- Less memory consumption, as no Figgle code is loaded
+- Smaller application footprint, as you don't need to ship Figgle binaries
+
+In your code:
+
+```c#
+namespace MyNamespace
+{
+    [GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
+    internal partial class MyClass
+    {
+    }
+}
+```
+
+By adding this attribute to a partial class, Figgle will automatically generate the corresponding
+member in another part of the partial class, resembling:
+
+```c#
+namespace MyNamespace
+{
+    [GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
+    partial class MyClass
+    {
+        public static string HelloWorldString { get; } = "...rendered text here...";
+    }
+}
 ```

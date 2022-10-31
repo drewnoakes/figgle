@@ -24,11 +24,14 @@ namespace Figgle
         /// <returns>A reference to the pooled string.</returns>
         public string Pool(string s)
         {
-            if (_pool.TryGetValue(s, out var pooled))
-                return pooled;
+            lock (_pool)
+            {
+                if (_pool.TryGetValue(s, out var pooled))
+                    return pooled;
 
-            _pool[s] = s;
-            return s;
+                _pool[s] = s;
+                return s;
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Figgle
         private const int SM_KERN = 64;
         private const int SM_FULLWIDTH = 0;
         
-        private static readonly Regex _firstLinePattern = new Regex(
+        private static readonly Regex _firstLinePattern = new(
             @"^flf2                         # signature
               a                             # always 'a'
               (?<hardblank>.)               # any single character

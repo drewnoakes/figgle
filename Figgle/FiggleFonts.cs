@@ -16,7 +16,7 @@ namespace Figgle
     /// </remarks>
     public static class FiggleFonts
     {
-        private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new ConcurrentDictionary<string, FiggleFont>();
+        private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new();
 
 #pragma warning disable CS1591
 // ReSharper disable UnusedMember.Global
@@ -290,7 +290,7 @@ namespace Figgle
 
         private static FiggleFont Lookup(string name) => _fontByName.GetOrAdd(name, FontFactory);
 
-        private static readonly StringPool _stringPool = new StringPool();
+        private static readonly StringPool _stringPool = new();
 
         private static FiggleFont FontFactory(string name)
         {

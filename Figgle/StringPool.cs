@@ -14,7 +14,7 @@ namespace Figgle
     /// </remarks>
     public sealed class StringPool
     {
-        private readonly Dictionary<string, string> _pool = new Dictionary<string, string>(StringComparer.Ordinal);
+        private readonly Dictionary<string, string> _pool = new(StringComparer.Ordinal);
 
         /// <summary>
         /// Returns a reference to a string equal to <paramref name="s"/> from the pool.

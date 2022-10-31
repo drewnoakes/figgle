@@ -88,8 +88,7 @@ namespace Figgle
             for (var i = 0; i < commentLineCount; i++)
                 reader.ReadLine();
 
-            if (pool == null)
-                pool = new StringPool();
+            pool ??= new StringPool();
 
             /*
             Characters 0-31 are control characters.

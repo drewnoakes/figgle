@@ -1,13 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
-    <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-    <VersionPrefix>0.4.0</VersionPrefix>
-    <Authors>Drew Noakes</Authors>
-    <Company />
     <Description>ASCII banner generation for .NET</Description>
-    <Copyright>Copyright Drew Noakes 2017-2022</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
     <PackageIcon>logo-square-256px.png</PackageIcon>
@@ -28,8 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0" PrivateAssets="all" />
-    <PackageReference Include="Roslyn.Diagnostics.Analyzers" Version="3.3.0" PrivateAssets="all" />
     <EmbeddedResource Include="Fonts.zip" />
     <None Include="../images/logo-square-256px.png" Pack="true" PackagePath="\" />
   </ItemGroup>

@@ -8,8 +8,6 @@
     <Company />
     <Description>ASCII banner generation for .NET</Description>
     <Copyright>Copyright Drew Noakes 2017-2020</Copyright>
-    <AssemblyName>Figgle</AssemblyName>
-    <PackageId>Figgle</PackageId>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
     <PackageIcon>logo-square-256px.png</PackageIcon>

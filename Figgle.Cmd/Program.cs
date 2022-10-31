@@ -9,6 +9,9 @@ while (true)
 
     var message = Console.ReadLine();
 
+    if (message is null)
+        break;
+
     try
     {
         Console.WriteLine(FiggleFonts.Standard.Render(message));

@@ -16,16 +16,18 @@ namespace Figgle.Tests
         [Fact]
         public void ParseAllEmbeddedFonts()
         {
-            using (var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip"))
-            using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
-            {
-                foreach (var entry in zip.Entries)
-                {
-                    _output.WriteLine($"Parsing: {entry.Name}");
+            using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
 
-                    using (var entryStream = entry.Open())
-                        FiggleFontParser.Parse(entryStream);
-                }
+            Assert.NotNull(stream);
+            
+            using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+
+            foreach (var entry in zip.Entries)
+            {
+                _output.WriteLine($"Parsing: {entry.Name}");
+
+                using (var entryStream = entry.Open())
+                    FiggleFontParser.Parse(entryStream);
             }
         }
     }

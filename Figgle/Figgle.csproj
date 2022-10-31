@@ -7,7 +7,7 @@
     <Authors>Drew Noakes</Authors>
     <Company />
     <Description>ASCII banner generation for .NET</Description>
-    <Copyright>Copyright Drew Noakes 2017-2020</Copyright>
+    <Copyright>Copyright Drew Noakes 2017-2022</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
     <PackageIcon>logo-square-256px.png</PackageIcon>

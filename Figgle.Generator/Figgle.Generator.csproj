@@ -29,11 +29,11 @@
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers\dotnet\cs" Visible="false" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup Condition="'$(IsPackaging)' != 'true'">
     <ProjectReference Include="..\Figgle\Figgle.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+  <ItemGroup Condition="'$(IsPackaging)' == 'true'">
     <PackageReference Include="Figgle" Version="$(Version)" PrivateAssets="all" GeneratePathProperty="true" />
     <None Include="$(PkgFiggle)\lib\netstandard1.3\*.dll" Pack="true" PackagePath="analyzers\dotnet\cs" Visible="false" />
   </ItemGroup>

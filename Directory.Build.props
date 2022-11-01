@@ -5,7 +5,8 @@
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    
+    <AnalysisLevel>latest</AnalysisLevel>
+
     <Version>0.5.0</Version>
 
     <Authors>Drew Noakes</Authors>

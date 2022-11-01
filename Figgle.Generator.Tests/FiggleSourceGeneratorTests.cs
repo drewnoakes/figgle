@@ -373,7 +373,7 @@ namespace Figgle.Generator.Tests
                 }
                 """;
 
-            Assert.Equal(expected, compilation.SyntaxTrees.Last().ToString());
+            Assert.Equal(expected, compilation.SyntaxTrees.Last().ToString(), NewlineIgnoreComparer.Instance);
         }
 
         [Fact]
@@ -470,7 +470,7 @@ namespace Figgle.Generator.Tests
                 }
                 """;
 
-            Assert.Equal(expected, compilation.SyntaxTrees.Last().ToString());
+            Assert.Equal(expected, compilation.SyntaxTrees.Last().ToString(), NewlineIgnoreComparer.Instance);
         }
 
         [Fact]

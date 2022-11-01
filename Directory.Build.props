@@ -40,7 +40,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0" PrivateAssets="all" />
-    <PackageReference Include="Roslyn.Diagnostics.Analyzers" Version="3.3.0" PrivateAssets="all" />
+    <PackageReference Include="Roslyn.Diagnostics.Analyzers" Version="3.3.3" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

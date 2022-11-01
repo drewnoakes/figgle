@@ -13,7 +13,6 @@
       at the same time.
     </Description>
     <IsPackable>true</IsPackable>
-    <SymbolPackageFormat></SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

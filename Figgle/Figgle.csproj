@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netstandard1.3</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>ASCII banner generation for .NET</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
@@ -24,11 +24,5 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <EmbeddedResource Include="Fonts.zip" />
     <None Include="../images/logo-square-256px.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net452'">
-    <Reference Include="System.IO.Compression" />
   </ItemGroup>
 </Project>

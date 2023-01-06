@@ -7,6 +7,7 @@
     <Authors>Drew Noakes</Authors>
     <Company />
     <Copyright>Copyright Drew Noakes 2017-2023</Copyright>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
   </PropertyGroup>
 
   <ItemGroup>

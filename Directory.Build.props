@@ -8,6 +8,7 @@
     <Company />
     <Copyright>Copyright Drew Noakes 2017-2023</Copyright>
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+    <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>

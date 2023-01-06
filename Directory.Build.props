@@ -6,7 +6,7 @@
     <VersionPrefix>0.4.1</VersionPrefix>
     <Authors>Drew Noakes</Authors>
     <Company />
-    <Copyright>Copyright Drew Noakes 2017-2022</Copyright>
+    <Copyright>Copyright Drew Noakes 2017-2023</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

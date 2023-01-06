@@ -1,4 +1,4 @@
-version: 0.4.{build}
+version: 0.5.{build}
 skip_tags: true
 image: Visual Studio 2022
 configuration:
@@ -13,5 +13,7 @@ test:
   assemblies:
     only:
       - Figgle.Tests.dll
+      - Figgle.Generator.Tests.dll
 test_script:
   - dotnet test .\Figgle.Tests\Figgle.Tests.csproj --no-build
+  - dotnet test .\Figgle.Generator.Tests\Figgle.Generator.Tests.csproj --no-build

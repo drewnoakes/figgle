@@ -3,7 +3,7 @@
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
-    <VersionPrefix>0.4.2</VersionPrefix>
+    <VersionPrefix>0.4.3</VersionPrefix>
     <Authors>Drew Noakes</Authors>
     <Company />
     <Copyright>Copyright Drew Noakes 2017-2023</Copyright>

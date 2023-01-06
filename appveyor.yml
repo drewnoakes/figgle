@@ -1,4 +1,4 @@
-version: 0.3.{build}
+version: 0.4.{build}
 skip_tags: true
 image: Visual Studio 2022
 configuration:

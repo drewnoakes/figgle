@@ -5,30 +5,30 @@ using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Figgle.Tests
+namespace Figgle.Tests;
+
+public sealed class FiggleFontParserTest
 {
-    public sealed class FiggleFontParserTest
+    private readonly ITestOutputHelper _output;
+
+    public FiggleFontParserTest(ITestOutputHelper output) => _output = output;
+
+    [Fact]
+    public void ParseAllEmbeddedFonts()
     {
-        private readonly ITestOutputHelper _output;
+        using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
 
-        public FiggleFontParserTest(ITestOutputHelper output) => _output = output;
+        Assert.NotNull(stream);
 
-        [Fact]
-        public void ParseAllEmbeddedFonts()
+        using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+
+        foreach (var entry in zip.Entries)
         {
-            using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+            _output.WriteLine($"Parsing: {entry.Name}");
 
-            Assert.NotNull(stream);
-            
-            using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+            using var entryStream = entry.Open();
 
-            foreach (var entry in zip.Entries)
-            {
-                _output.WriteLine($"Parsing: {entry.Name}");
-
-                using (var entryStream = entry.Open())
-                    FiggleFontParser.Parse(entryStream);
-            }
+            FiggleFontParser.Parse(entryStream);
         }
     }
 }

@@ -2,19 +2,18 @@
 
 using System;
 
-namespace Figgle
+namespace Figgle;
+
+/// <summary>
+/// Type for exceptions raised by Figgle.
+/// </summary>
+public sealed class FiggleException : Exception
 {
     /// <summary>
-    /// Type for exceptions raised by Figgle.
+    /// Constructs a new Figgle exception.
     /// </summary>
-    public sealed class FiggleException : Exception
+    /// <param name="message">A message explaining the exception.</param>
+    public FiggleException(string message) : base(message)
     {
-        /// <summary>
-        /// Constructs a new Figgle exception.
-        /// </summary>
-        /// <param name="message">A message explaining the exception.</param>
-        public FiggleException(string message) : base(message)
-        {
-        }
     }
 }

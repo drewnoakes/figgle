@@ -1,7 +1,10 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
 using System;
+using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -110,6 +113,32 @@ namespace Figgle.Tests
                         }
                     }
                 }
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(EnumerateAllFonts))]
+        public void RenderStressTest(string name, FiggleFont font)
+        {
+            _ = font.Render("Hello, World!");
+        }
+
+        public static IEnumerable<object[]> EnumerateAllFonts()
+        {
+            using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+
+            if (stream is null)
+                throw new FiggleException("Unable to open embedded font archive.");
+
+            using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+
+            StringPool stringPool = new();
+
+            foreach (var entry in zip.Entries)
+            {
+                using var entryStream = entry.Open();
+
+                yield return new object[] { entry.Name, FiggleFontParser.Parse(entryStream, stringPool) };
             }
         }
     }

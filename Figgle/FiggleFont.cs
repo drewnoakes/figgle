@@ -157,17 +157,20 @@ namespace Figgle
                             }
                         }
 
-                        var smushCharIndex = outputLine.Length - 1;
-                        var cl = outputLine[smushCharIndex];
-
-                        outputLine.Append(toMove == 0 ? charLine.Content : charLine.Content.Substring(toMove));
-
-                        if (toMove != 0 && outputLine.Length != 0 && ch.Lines[row].Content.Length != 0)
+                        if (outputLine.Length != 0)
                         {
-                            var cr = ch.Lines[row].Content[toMove - 1];
-                            var sc = TrySmush(cl, cr);
-                            if (sc != '\0' && smushCharIndex >= 0)
-                                outputLine[smushCharIndex] = sc;
+                            var smushCharIndex = outputLine.Length - 1;
+                            var cl = outputLine[smushCharIndex];
+
+                            outputLine.Append(toMove == 0 ? charLine.Content : charLine.Content.Substring(toMove));
+
+                            if (toMove != 0 && outputLine.Length != 0 && ch.Lines[row].Content.Length != 0)
+                            {
+                                var cr = ch.Lines[row].Content[toMove - 1];
+                                var sc = TrySmush(cl, cr);
+                                if (sc != '\0' && smushCharIndex >= 0)
+                                    outputLine[smushCharIndex] = sc;
+                            }
                         }
                     }
                     else

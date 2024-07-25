@@ -496,8 +496,8 @@ typing a character code on the numeric keypad.  Try it!)
 
 Below are characters 160 through 255, AS REPRESENTED ON YOUR SYSTEM.
 
-        ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏ
-       ĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ
+       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 IMPORTANT NOTE: Depending on which character set is active on your system,
 you may see different characters.  This document (like all computer
@@ -1196,7 +1196,7 @@ the endmarks.  (FIGWin 1.0 will not consider blanks to be endmarks.)
 Errors in a FIGfont can be detected by using the "chkfont" program,
 part of the standard FIGlet package, and also available, as of this
 writing from http://st-www.cs.uiuc.edu/users/chai/figlet.html.
-…
+ï¿½
 For FIGWin users, the FIGWin program will report errors when a FIGfont is
 read in; it is less forgiving than FIGlet, which can produce nonsense if the
 FIGfont is incorrectly formatted.

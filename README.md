@@ -142,3 +142,19 @@ namespace MyNamespace
     }
 }
 ```
+
+If you want to use an external font, include the external font file as an additional file in your csproj:
+
+```xml
+<ItemGroup>
+    <AdditionalFiles Include="myfont.flf" />
+</ItemGroup>
+```
+
+Then specify the font name in the attribute:
+
+```c#
+[GenerateFiggleText("HelloWorldString", "myfont", "Hello world")]
+```
+
+Note the font name is case-sensitive and must match the name in the font file.

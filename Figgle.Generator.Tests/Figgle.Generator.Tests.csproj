@@ -22,4 +22,10 @@
     <ProjectReference Include="..\Figgle.Generator\Figgle.Generator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ANSI Shadow.flf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

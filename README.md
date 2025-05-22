@@ -157,4 +157,4 @@ Then specify the font name in the attribute:
 [GenerateFiggleText("HelloWorldString", "myfont", "Hello world")]
 ```
 
-Note the font name is case-sensitive and must match the name in the font file.
+Note the font name specified in the attribute is case-insensitive so `MyFont` works too.

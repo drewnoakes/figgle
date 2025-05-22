@@ -106,9 +106,6 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
     {
         context.AddSource("GenerateFiggleTextAttribute.cs", AttributeSource);
 
-        var additionalFiles = context.AdditionalFiles.ToImmutableDictionary(
-            f => Path.GetFileNameWithoutExtension(f.Path));
-
         if (context.SyntaxContextReceiver is Receiver receiver)
         {
             foreach (var diagnostic in receiver.Diagnostics)
@@ -143,7 +140,7 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
                 foreach (var item in data.Items)
                 {
                     var font = FiggleFonts.TryGetByName(item.FontName)
-                        ?? TryParseFromAdditionalFiles(additionalFiles, item.FontName);
+                        ?? TryParseFromAdditionalFiles(context.AdditionalFiles, item.FontName);
 
                     if (font is null)
                     {
@@ -191,15 +188,21 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
     }
 
     private static FiggleFont? TryParseFromAdditionalFiles(
-        ImmutableDictionary<string, AdditionalText> additionalFiles,
+        ImmutableArray<AdditionalText> additionalFiles,
         string fontName)
     {
-        if (!additionalFiles.TryGetValue(fontName, out var additionalFile))
+        var matchingAdditionalFile = additionalFiles
+            .FirstOrDefault(f => string.Equals(
+                Path.GetFileName(f.Path),
+                $"{fontName}.flf",
+                StringComparison.OrdinalIgnoreCase));
+
+        if (matchingAdditionalFile is null)
         {
             return null;
         }
 
-        var text = additionalFile.GetText();
+        var text = matchingAdditionalFile.GetText();
         if (text is null)
         {
             return null;

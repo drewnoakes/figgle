@@ -614,14 +614,16 @@ public class FiggleSourceGeneratorTests
         Assert.Equal("Unable to generate Figgle text for nested type 'Inner'. Generation is only supported for non-nested types.", diagnostic.GetMessage());
     }
 
-    [Fact]
-    public void ExternalFontInAdditionalFiles_RendersText()
+    [Theory]
+    [InlineData("ANSI Shadow")]
+    [InlineData("ansi shadow")]
+    public void ExternalFontInAdditionalFiles_RendersText(string fontName)
     {
         string source =
-            """
+            $$"""
             namespace Test.Namespace
             {
-                [GenerateFiggleText("Member", "ANSI Shadow", "Figgle")]
+                [GenerateFiggleText("Member", "{{fontName}}", "Figgle")]
                 internal partial class DemoUsage
                 {
                 }

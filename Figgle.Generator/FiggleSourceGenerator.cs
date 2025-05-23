@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -137,7 +139,8 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
 
                 foreach (var item in data.Items)
                 {
-                    var font = FiggleFonts.TryGetByName(item.FontName);
+                    var font = FiggleFonts.TryGetByName(item.FontName)
+                        ?? TryParseFromAdditionalFiles(context.AdditionalFiles, item.FontName);
 
                     if (font is null)
                     {
@@ -182,6 +185,32 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
                 context.AddSource(hintName, sb.ToString());
             }
         }
+    }
+
+    private static FiggleFont? TryParseFromAdditionalFiles(
+        ImmutableArray<AdditionalText> additionalFiles,
+        string fontName)
+    {
+        var matchingAdditionalFile = additionalFiles
+            .FirstOrDefault(f => string.Equals(
+                Path.GetFileName(f.Path),
+                $"{fontName}.flf",
+                StringComparison.OrdinalIgnoreCase));
+
+        if (matchingAdditionalFile is null)
+        {
+            return null;
+        }
+
+        var text = matchingAdditionalFile.GetText();
+        if (text is null)
+        {
+            return null;
+        }
+
+        var textEncoding = text.Encoding ?? Encoding.UTF8;
+        using var stream = new MemoryStream(textEncoding.GetBytes(text.ToString()));
+        return FiggleFontParser.Parse(stream);
     }
 
     private record TypeItems(List<RenderItem> Items, HashSet<string> SeenMemberNames);

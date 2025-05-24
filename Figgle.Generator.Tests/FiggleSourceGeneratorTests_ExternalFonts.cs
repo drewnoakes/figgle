@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using Xunit;
+using System.Collections.Immutable;
 
 namespace Figgle.Generator.Tests;
 
@@ -56,7 +57,11 @@ public partial class FiggleSourceGeneratorTests
 
         var additionalFont = ExternalFontAdditionalText.Create(ExternalFontFileName);
 
-        ValidateOutput(source, [additionalFont], optionsProvider: null, expected);
+        ValidateOutput(
+            source,
+            ImmutableArray.Create(additionalFont),
+            optionsProvider: null,
+            expected);
     }
 
     [Theory]
@@ -109,7 +114,11 @@ public partial class FiggleSourceGeneratorTests
             ExternalFontFileName,
             externalFontNamePropertyValue);
 
-        ValidateOutput(source, [additionalFont], optionsProvider, expected);
+        ValidateOutput(
+            source, 
+            ImmutableArray.Create(additionalFont),
+            optionsProvider,
+            expected);
 
         static TestAnalyzerConfigOptionsProvider CreateOptionsProvider(
             string fontFileName,

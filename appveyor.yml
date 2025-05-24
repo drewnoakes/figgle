@@ -14,6 +14,8 @@ test:
     only:
       - Figgle.Tests.dll
       - Figgle.Generator.Tests.dll
+      - Figgle.Generator.AcceptanceTests.dll
 test_script:
   - dotnet test .\Figgle.Tests\Figgle.Tests.csproj --no-build
   - dotnet test .\Figgle.Generator.Tests\Figgle.Generator.Tests.csproj --no-build
+  - dotnet test .\Figgle.Generator.AcceptanceTests\Figgle.Generator.AcceptanceTests.csproj --no-build

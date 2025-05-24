@@ -229,6 +229,7 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
                 AdditionalText fontFile,
                 string fontName)
             {
+                // a "build_metadata" prefix is added by msbuild for CompilerVisibleItemMetadata
                 context.AnalyzerConfigOptions.GetOptions(fontFile).TryGetValue(
                     "build_metadata.AdditionalFiles.FontName",
                     out var fontNameProperty);

@@ -29,6 +29,8 @@
   <ItemGroup>
     <None Include="$(OutputPath)\Figgle.dll"           Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.pdb"           Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.Fonts.dll"     Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.Fonts.pdb"     Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Generator.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Generator.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
   </ItemGroup>

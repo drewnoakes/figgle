@@ -2,8 +2,7 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.IO.Compression;
-using System.Reflection;
+using Figgle.Fonts;
 
 namespace Figgle;
 
@@ -323,20 +322,17 @@ public static class FiggleFonts
 
     private static FiggleFont? ParseEmbeddedFont(string name)
     {
-        using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+        try
+        {
+            var fontDescriptionString = EmbeddedFontResource.GetFontDescription(name);
+            if (fontDescriptionString is null)
+                return null;
 
-        if (stream is null)
-            throw new FiggleException("Unable to open embedded font archive.");
-
-        using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
-
-        var entry = zip.GetEntry(name + ".flf");
-
-        if (entry == null)
-            return null;
-
-        using var entryStream = entry.Open();
-
-        return FiggleFontParser.Parse(entryStream, _stringPool);
+            return FiggleFontParser.ParseString(fontDescriptionString, _stringPool);
+        }
+        catch (Exception ex)
+        {
+            throw new FiggleException("Could not parse embedded font.", ex);
+        }
     }
 }

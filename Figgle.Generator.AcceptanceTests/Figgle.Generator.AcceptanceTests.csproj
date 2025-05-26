@@ -29,13 +29,14 @@
     <ProjectReference Include="..\Figgle.Generator\Figgle.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     
     <!-- 
-      Figgle.Generator has a runtime dependency to Figgle.dll which is packaged into the generator's nuget package
-      and loaded automatically when a project consumes the nuget.
+      Figgle.Generator has a runtime dependency to Figgle.dll and Figgle.Fonts.dll which is packaged
+      into the generator's nuget package and loaded automatically when a project consumes the nuget.
       
       Since this test project is referencing the generator manually, we must also manually include
-      Figgle.dll as an "analyzer" so the compiler can find it when running the generator.
+      the dependencies as an "analyzer" so the compiler can find it when running the generator.
     -->
     <ProjectReference Include="..\Figgle\Figgle.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

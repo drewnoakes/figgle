@@ -151,7 +151,7 @@ If you want to use an external font, include the external font file as an additi
 </ItemGroup>
 ```
 
-Then specify the font's file name as the font name in the attribute:
+Then specify the font's file name (excluding the extension) as the font name in the attribute:
 
 ```c#
 [GenerateFiggleText("HelloWorldString", "myfont", "Hello world")]

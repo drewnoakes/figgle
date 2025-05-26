@@ -151,10 +151,22 @@ If you want to use an external font, include the external font file as an additi
 </ItemGroup>
 ```
 
-Then specify the font name in the attribute:
+Then specify the font's file name (excluding the extension) as the font name in the attribute:
 
 ```c#
 [GenerateFiggleText("HelloWorldString", "myfont", "Hello world")]
 ```
 
-Note the font name specified in the attribute is case-insensitive so `MyFont` works too.
+Alternatively, you can specify a custom font name using the `FontName` item metadata:
+
+```xml
+<ItemGroup>
+    <AdditionalFiles Include="myfont.flf" FontName="MyCustomFontName" />
+</ItemGroup>
+```
+
+```C#
+[GenerateFiggleText("HelloWorldString", "MyCustomFontName", "Hello world")]
+```
+
+Note the font name specified in the `GenerateFiggleText` attribute is case-insensitive so `mycustomfontname` works too.

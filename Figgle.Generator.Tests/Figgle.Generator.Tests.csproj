@@ -25,6 +25,7 @@
   <ItemGroup>
     <None Update="ANSI Shadow.flf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>FiggleSourceGeneratorTests_ExternalFonts.cs</DependentUpon>
     </None>
   </ItemGroup>
 

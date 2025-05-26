@@ -140,7 +140,7 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
                 foreach (var item in data.Items)
                 {
                     var font = FiggleFonts.TryGetByName(item.FontName)
-                        ?? TryParseFromAdditionalFiles(context.AdditionalFiles, item.FontName);
+                        ?? TryParseFromAdditionalFiles(context, item.FontName);
 
                     if (font is null)
                     {
@@ -188,14 +188,10 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
     }
 
     private static FiggleFont? TryParseFromAdditionalFiles(
-        ImmutableArray<AdditionalText> additionalFiles,
+        GeneratorExecutionContext context,
         string fontName)
     {
-        var matchingAdditionalFile = additionalFiles
-            .FirstOrDefault(f => string.Equals(
-                Path.GetFileName(f.Path),
-                $"{fontName}.flf",
-                StringComparison.OrdinalIgnoreCase));
+        var matchingAdditionalFile = GetMatchingExternalFontFile(context, fontName);
 
         if (matchingAdditionalFile is null)
         {
@@ -211,11 +207,53 @@ public sealed class FiggleSourceGenerator : ISourceGenerator
         var textEncoding = text.Encoding ?? Encoding.UTF8;
         using var stream = new MemoryStream(textEncoding.GetBytes(text.ToString()));
         return FiggleFontParser.Parse(stream);
+
+        static AdditionalText? GetMatchingExternalFontFile(
+            GeneratorExecutionContext context,
+            string fontName)
+        {
+            // If additional file has an explicit font name property defined, prefer that first.
+            // Otherwise, fall back to matching the filename.
+            var matchingFile = context.AdditionalFiles
+                .FirstOrDefault(f => FontNamePropertyMatchesFontName(context, f, fontName));
+
+            if (matchingFile is not null)
+            {
+                return matchingFile;
+            }
+
+            return context.AdditionalFiles.FirstOrDefault(f => FileNameMatchesFontName(f, fontName));
+
+            static bool FontNamePropertyMatchesFontName(
+                GeneratorExecutionContext context,
+                AdditionalText fontFile,
+                string fontName)
+            {
+                // a "build_metadata" prefix is added by msbuild for CompilerVisibleItemMetadata
+                context.AnalyzerConfigOptions.GetOptions(fontFile).TryGetValue(
+                    "build_metadata.AdditionalFiles.FontName",
+                    out var fontNameProperty);
+
+                if (fontNameProperty is null)
+                {
+                    return false;
+                }
+
+                return fontNameProperty.Equals(fontName, StringComparison.OrdinalIgnoreCase);
+            }
+
+            static bool FileNameMatchesFontName(AdditionalText fontFile, string fontName)
+            {
+                return Path.GetFileName(fontFile.Path).Equals(
+                    $"{fontName}.flf",
+                    StringComparison.OrdinalIgnoreCase);
+            }
+        }
     }
 
-    private record TypeItems(List<RenderItem> Items, HashSet<string> SeenMemberNames);
+    private sealed record TypeItems(List<RenderItem> Items, HashSet<string> SeenMemberNames);
 
-    private record RenderItem(string MemberName, Location MemberNameLocation, string FontName, Location FontNameLocation, string SourceText);
+    private sealed record RenderItem(string MemberName, Location MemberNameLocation, string FontName, Location FontNameLocation, string SourceText);
 
     private sealed class Receiver : ISyntaxContextReceiver
     {

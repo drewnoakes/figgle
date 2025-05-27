@@ -27,7 +27,7 @@ public class EmbedFontSourceGeneratorAcceptanceTests
             `----'                    `-'----'    `----'    `----'     `----'     `----'    `----'    `----'                                       '---`"  
             """;
 
-        var renderedFont = FiggleFonts.ThreeDDiagonal.Render("Embedded Font!");
+        var renderedFont = TestEmbeddedFiggleFonts.ThreeDDiagonal.Render("Embedded Font!");
         Assert.Equal(expectedText.Trim(), renderedFont.Trim(), NewlineIgnoreComparer.Instance);
     }
 
@@ -43,13 +43,13 @@ public class EmbedFontSourceGeneratorAcceptanceTests
             ╚══════╝╚═╝     ╚═╝╚═════╝ ╚══════╝╚═════╝ ╚═════╝ ╚══════╝╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝
             """;
 
-        var renderedFont = FiggleFonts.ANSIShadow.Render("Embedded Font!");
+        var renderedFont = TestEmbeddedFiggleFonts.ANSIShadow.Render("Embedded Font!");
         Assert.Equal(expectedText.Trim(), renderedFont.Trim(), NewlineIgnoreComparer.Instance);
     }
 }
 
 [EmbedFiggleFont("ThreeDDiagonal", "3d_diagonal")]
 [EmbedFiggleFont("ANSIShadow", "My External Font")]
-internal static partial class FiggleFonts
+internal static partial class TestEmbeddedFiggleFonts
 {
 }

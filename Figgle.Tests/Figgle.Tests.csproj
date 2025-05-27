@@ -11,6 +11,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
     <ProjectReference Include="..\Figgle\Figgle.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -33,19 +33,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(OutputPath)\Figgle.dll"           Pack="true" PackagePath="analyzers\dotnet\cs" />
-    <None Include="$(OutputPath)\Figgle.pdb"           Pack="true" PackagePath="analyzers\dotnet\cs" />
-    <None Include="$(OutputPath)\Figgle.Fonts.dll"     Pack="true" PackagePath="analyzers\dotnet\cs" />
-    <None Include="$(OutputPath)\Figgle.Fonts.pdb"     Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.Fonts.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.Fonts.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Generator.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Generator.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="build\Figgle.Generator.props" Pack ="true" PackagePath="\"/>
+    <None Update="build\Figgle.Generator.props" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
     <ProjectReference Include="..\Figgle\Figgle.csproj" PrivateAssets="all" />
   </ItemGroup>
 

@@ -11,8 +11,4 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
-  </ItemGroup>
-
 </Project>

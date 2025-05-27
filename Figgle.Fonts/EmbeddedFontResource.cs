@@ -10,7 +10,7 @@ namespace Figgle.Fonts;
 /// <summary>
 /// The resource for all of the embedded FIGlet font files.
 /// </summary>
-public static class EmbeddedFontResource
+internal static class EmbeddedFontResource
 {
     /// <summary>
     /// Gets the description of a FIGlet font by its name.

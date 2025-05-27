@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
     <ProjectReference Include="..\Figgle\Figgle.csproj" />
   </ItemGroup>
 </Project>

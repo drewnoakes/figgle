@@ -13,6 +13,11 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Figgle.Tests" />
+    <InternalsVisibleTo Include="Figgle.Generator" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Figgle\Figgle.csproj" />
   </ItemGroup>
 
 </Project>

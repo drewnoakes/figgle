@@ -2,9 +2,8 @@
 
 using System;
 using System.Collections.Concurrent;
-using Figgle.Fonts;
 
-namespace Figgle;
+namespace Figgle.Fonts;
 
 /// <summary>
 /// Collection of bundled fonts, ready for use.

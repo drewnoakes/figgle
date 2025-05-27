@@ -35,7 +35,7 @@
       Since this test project is referencing the generator manually, we must also manually include
       the dependencies as an "analyzer" so the compiler can find it when running the generator.
     -->
-    <ProjectReference Include="..\Figgle\Figgle.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Figgle\Figgle.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

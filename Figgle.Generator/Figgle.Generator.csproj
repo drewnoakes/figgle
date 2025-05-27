@@ -14,7 +14,13 @@
       at the same time.
     </Description>
     <IsPackable>true</IsPackable>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    
+    <!-- 
+      RS2002 and RS2003 warns about diagnostics listed in AnalyzerReleases.*.md files are not
+      supported diagnostics of any analyzers but we are reporting the diagnostics from our source generators,
+      which—unlike analyzers—don't have the SupportedDiagnostics property to override.
+    -->
+    <NoWarn>$(NoWarn);NU5128;RS2002;RS2003</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

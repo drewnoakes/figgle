@@ -14,7 +14,13 @@
       at the same time.
     </Description>
     <IsPackable>true</IsPackable>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    
+    <!-- 
+      RS2002 and RS2003 warns about diagnostics listed in AnalyzerReleases.*.md files are not
+      supported diagnostics of any analyzers but we are reporting the diagnostics from our source generators,
+      which—unlike analyzers—don't have the SupportedDiagnostics property to override.
+    -->
+    <NoWarn>$(NoWarn);NU5128;RS2002;RS2003</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,17 +33,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(OutputPath)\Figgle.dll"           Pack="true" PackagePath="analyzers\dotnet\cs" />
-    <None Include="$(OutputPath)\Figgle.pdb"           Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.Fonts.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
+    <None Include="$(OutputPath)\Figgle.Fonts.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Generator.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Generator.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="build\Figgle.Generator.props" Pack ="true" PackagePath="\"/>
+    <None Update="build\Figgle.Generator.props" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
     <ProjectReference Include="..\Figgle\Figgle.csproj" PrivateAssets="all" />
   </ItemGroup>
 

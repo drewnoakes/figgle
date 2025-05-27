@@ -296,6 +296,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Figgle.Generator.Tests", "F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figgle.Generator.AcceptanceTests", "Figgle.Generator.AcceptanceTests\Figgle.Generator.AcceptanceTests.csproj", "{E9177B5C-626B-44E6-87B4-2D712FB52DC9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figgle.Fonts", "Figgle.Fonts\Figgle.Fonts.csproj", "{A94B3D16-C26C-4822-A0DF-846A11B27F7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -378,6 +380,18 @@ Global
 		{E9177B5C-626B-44E6-87B4-2D712FB52DC9}.Release|x64.Build.0 = Release|Any CPU
 		{E9177B5C-626B-44E6-87B4-2D712FB52DC9}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9177B5C-626B-44E6-87B4-2D712FB52DC9}.Release|x86.Build.0 = Release|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Debug|x64.Build.0 = Debug|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Debug|x86.Build.0 = Debug|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x64.ActiveCfg = Release|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x64.Build.0 = Release|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x86.ActiveCfg = Release|Any CPU
+		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

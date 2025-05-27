@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <EmbeddedResource Include="Fonts.zip" />
   </ItemGroup>
 
 </Project>

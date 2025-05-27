@@ -1,7 +1,7 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
 using System.IO.Compression;
-using System.Reflection;
+using Figgle.Fonts;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,7 +16,7 @@ public sealed class FiggleFontParserTest
     [Fact]
     public void ParseAllEmbeddedFonts()
     {
-        using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+        using var stream = EmbeddedFontResource.GetFontArchiveStream();
 
         Assert.NotNull(stream);
 

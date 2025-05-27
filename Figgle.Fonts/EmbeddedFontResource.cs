@@ -23,7 +23,7 @@ internal static class EmbeddedFontResource
         using var stream = GetFontArchiveStream();
 
         if (stream is null)
-            throw new InvalidOperationException("Unable to open embedded font archive.");
+            throw new FiggleException("Unable to open embedded font archive.");
 
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 

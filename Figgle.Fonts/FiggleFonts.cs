@@ -321,17 +321,10 @@ public static class FiggleFonts
 
     private static FiggleFont? ParseEmbeddedFont(string name)
     {
-        try
-        {
-            var fontDescriptionString = EmbeddedFontResource.GetFontDescription(name);
-            if (fontDescriptionString is null)
-                return null;
+        var fontDescriptionString = EmbeddedFontResource.GetFontDescription(name);
+        if (fontDescriptionString is null)
+            return null;
 
-            return FiggleFontParser.ParseString(fontDescriptionString, _stringPool);
-        }
-        catch (Exception ex)
-        {
-            throw new FiggleException("Could not parse embedded font.", ex);
-        }
+        return FiggleFontParser.ParseString(fontDescriptionString, _stringPool);
     }
 }

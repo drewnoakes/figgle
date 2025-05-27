@@ -16,14 +16,4 @@ public sealed class FiggleException : Exception
     public FiggleException(string message) : base(message)
     {
     }
-
-    /// <summary>
-    /// Constructs a new Figgle exception.
-    /// </summary>
-    /// <param name="message">A message explaining the exception.</param>
-    /// <param name="innerException">The inner exception</param>
-    public FiggleException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
 }

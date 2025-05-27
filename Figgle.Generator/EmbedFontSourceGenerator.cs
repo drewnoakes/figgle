@@ -109,6 +109,9 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             predicate: static (syntaxNode, cancellationToken) => syntaxNode is ClassDeclarationSyntax declaration,
             transform: (context, cancellationToken) =>
             {
+                // use hash set to de-dup attributes that are identical.  If an attribute specifies
+                // the same member name multiple times with different font names, we will report a diagnostic
+                // later in RegisterSourceOutput since we can't report diagnostics from here.
                 var attributeInfos = new HashSet<EmbedFontAttributeInfo>();
                 foreach (var matchingAttributeData in context.Attributes)
                 {

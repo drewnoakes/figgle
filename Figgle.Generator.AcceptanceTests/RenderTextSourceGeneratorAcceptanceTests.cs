@@ -5,7 +5,7 @@ using Xunit;
 namespace Figgle.Generator.AcceptanceTests;
 
 [GenerateFiggleText("HelloWorld", "My External Font", "Hello World!")]
-public partial class RenderTextSourceGeneratorTests
+public partial class RenderTextSourceGeneratorAcceptanceTests
 {
     [Fact]
     public void HelloWorldTextWithExternalFontIsSourceGenerated_RenderedTextMatches()

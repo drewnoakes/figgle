@@ -9,7 +9,7 @@ using System.Collections.Immutable;
 
 namespace Figgle.Generator.Tests;
 
-public partial class FiggleSourceGeneratorTests
+public partial class RenderTextSourceGeneratorTests
 {
     private const string ExternalFontFileName = "ANSI Shadow.flf";
 

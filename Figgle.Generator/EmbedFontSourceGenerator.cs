@@ -20,19 +20,19 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
     // but this generator "owns" these diagnostics and are conceptually distinct from
     // the diagnostics of the Figgle source generator.
     public static readonly DiagnosticDescriptor UnknownFontNameDiagnostic
-        = RenderTextSourceGenerator .UnknownFontNameDiagnostic;
+        = RenderTextSourceGenerator.UnknownFontNameDiagnostic;
 
     public static readonly DiagnosticDescriptor InvalidMemberNameDiagnostic
-        = RenderTextSourceGenerator .InvalidMemberNameDiagnostic;
+        = RenderTextSourceGenerator.InvalidMemberNameDiagnostic;
 
     public static readonly DiagnosticDescriptor DuplicateMemberNameDiagnostic
-        = RenderTextSourceGenerator .DuplicateMemberNameDiagnostic;
+        = RenderTextSourceGenerator.DuplicateMemberNameDiagnostic;
 
     public static readonly DiagnosticDescriptor TypeIsNotPartialDiagnostic
-        = RenderTextSourceGenerator .TypeIsNotPartialDiagnostic;
+        = RenderTextSourceGenerator.TypeIsNotPartialDiagnostic;
 
     public static readonly DiagnosticDescriptor NestedTypeIsNotSupportedDiagnostic
-        = RenderTextSourceGenerator .NestedTypeIsNotSupportedDiagnostic;
+        = RenderTextSourceGenerator.NestedTypeIsNotSupportedDiagnostic;
 
     public static readonly DiagnosticDescriptor ErrorReadingExternalFontFileDiagnostic = new(
         "FGL0006",
@@ -279,7 +279,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         static string RenderFonts(ImmutableArray<RenderSourceInfo> renderInfos, int indentationLevel)
         {
             string indentation = new(' ', indentationLevel * 4);
-            var builder = new StringBuilder();
+            var builder = new StringBuilder(capacity: 4096);
             builder.AppendLine();
 
             foreach (var renderInfo in renderInfos)

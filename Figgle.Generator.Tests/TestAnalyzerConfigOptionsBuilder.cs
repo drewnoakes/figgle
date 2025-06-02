@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 
 namespace Figgle.Generator.Tests;
 
-internal sealed class TestAnalyzerConfigOptionsBuilder
+public sealed class TestAnalyzerConfigOptionsBuilder
 {
     private readonly ImmutableDictionary<string, string>.Builder _optionsBuilder
         = ImmutableDictionary.CreateBuilder<string, string>();

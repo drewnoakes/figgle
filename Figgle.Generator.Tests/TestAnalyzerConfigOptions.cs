@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Figgle.Generator.Tests;
 
-internal sealed class TestAnalyzerConfigOptions : AnalyzerConfigOptions
+public sealed class TestAnalyzerConfigOptions : AnalyzerConfigOptions
 {
     public static readonly TestAnalyzerConfigOptions Empty
         = new(ImmutableDictionary<string, string>.Empty);

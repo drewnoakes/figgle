@@ -1,12 +1,12 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
 using System;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Figgle.Generator.Tests;
 
-internal sealed class TestAnalyzerConfigOptionsProvider
+public sealed class TestAnalyzerConfigOptionsProvider
     : AnalyzerConfigOptionsProvider
 {
     private readonly Func<SyntaxTree, AnalyzerConfigOptions?> _getSyntaxTreeOptions;

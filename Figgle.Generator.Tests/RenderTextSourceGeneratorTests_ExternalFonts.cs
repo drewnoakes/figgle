@@ -1,11 +1,7 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
-using System.IO;
-using System.Threading;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis;
-using Xunit;
 using System.Collections.Immutable;
+using Xunit;
 
 namespace Figgle.Generator.Tests;
 
@@ -115,48 +111,9 @@ public partial class RenderTextSourceGeneratorTests
             externalFontNamePropertyValue);
 
         ValidateOutput(
-            source, 
+            source,
             ImmutableArray.Create(additionalFont),
             optionsProvider,
             expected);
-
-        static TestAnalyzerConfigOptionsProvider CreateOptionsProvider(
-            string fontFileName,
-            string fontNameProperty)
-        {
-            var additionalFontOption = new TestAnalyzerConfigOptionsBuilder()
-                .AddOption("build_metadata.AdditionalFiles.FontName", fontNameProperty)
-                .Build();
-
-            return new TestAnalyzerConfigOptionsProvider(
-                getAdditionalFileOptions: f => f.Path == fontFileName
-                    ? additionalFontOption
-                    : null);
-        }
-    }
-
-    private sealed class ExternalFontAdditionalText : AdditionalText
-    {
-        private readonly SourceText _sourceText;
-
-        public static ExternalFontAdditionalText Create(string externalFontPath)
-        {
-            using var fontStream = File.OpenRead(externalFontPath);
-
-            return new ExternalFontAdditionalText(externalFontPath, fontStream);
-        }
-
-        public ExternalFontAdditionalText(string path, Stream externalFont)
-        {
-            Path = path;
-            _sourceText = SourceText.From(externalFont);
-        }
-
-        public override string Path { get; }
-
-        public override SourceText? GetText(CancellationToken cancellationToken = default)
-        {
-            return _sourceText;
-        }
     }
 }

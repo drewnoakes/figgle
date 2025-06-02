@@ -112,7 +112,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                 // use hash set to de-dup attributes that are identical.  If an attribute specifies
                 // the same member name multiple times with different font names, we will report a diagnostic
                 // later in RegisterSourceOutput since we can't report diagnostics from here.
-                var attributeInfos = new HashSet<EmbedFontAttributeInfo>();
+                var attributeInfos = new HashSet<EmbedFontAttributeInfo>(EmbedFontAttributeInfoComparer.Instance);
                 foreach (var matchingAttributeData in context.Attributes)
                 {
                     attributeInfos.Add(new EmbedFontAttributeInfo(
@@ -164,7 +164,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                     context.ReportDiagnostic(Diagnostic.Create(
                         InvalidMemberNameDiagnostic,
                         embedFontInfo.Location ?? generationInfo.TargetType.Locations[0],
-                        embedFontInfo.FontName ?? "unknown"));
+                        embedFontInfo.MemberName ?? "unknown"));
                     continue;
                 }
 
@@ -252,6 +252,19 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             return false;
         }
 
+        // we know the syntax *must* be a class declaration because of the predicate we used in the syntax provider,
+        var classSyntax = (ClassDeclarationSyntax)typeToGenerate.DeclaringSyntaxReferences
+            .First()
+            .GetSyntax(context.CancellationToken);
+        if (!classSyntax.Modifiers.Any(SyntaxKind.PartialKeyword))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                TypeIsNotPartialDiagnostic,
+                typeToGenerate.Locations[0],
+                typeToGenerate.ToDisplayString(_fullyQualifiedFormat)));
+            return false;
+        }
+
         return true;
     }
 
@@ -326,4 +339,31 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         string MemberName,
         string FontName,
         string FontDescriptionString);
+
+    private sealed class EmbedFontAttributeInfoComparer : IEqualityComparer<EmbedFontAttributeInfo>
+    {
+        public static readonly EmbedFontAttributeInfoComparer Instance = new();
+
+        public bool Equals(EmbedFontAttributeInfo? x, EmbedFontAttributeInfo? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            // we don't compare the location we're only interested in checking if the attribute
+            // arguments are the same.
+            return x.MemberName == y.MemberName
+                && x.FontName == y.FontName;
+        }
+
+        public int GetHashCode(EmbedFontAttributeInfo obj)
+        {
+            return HashCode.Combine(obj.MemberName, obj.FontName);
+        }
+    }
 }

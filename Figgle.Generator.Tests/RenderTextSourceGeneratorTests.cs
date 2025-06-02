@@ -1,35 +1,16 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Figgle.Generator.Tests;
 
-public partial class RenderTextSourceGeneratorTests
+public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
 {
-    private readonly ImmutableArray<MetadataReference> _references;
-
-    public RenderTextSourceGeneratorTests()
+    protected override ISourceGenerator CreateSourceGenerator()
     {
-        _references = GetReferences().ToImmutableArray();
-
-        static IEnumerable<MetadataReference> GetReferences()
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                if (!assembly.IsDynamic && !string.IsNullOrWhiteSpace(assembly.Location))
-                {
-                    yield return MetadataReference.CreateFromFile(assembly.Location);
-                }
-            }
-        }
+        return new RenderTextSourceGenerator();
     }
 
     [Fact]
@@ -609,89 +590,5 @@ public partial class RenderTextSourceGeneratorTests
 
         Assert.Same(RenderTextSourceGenerator.NestedTypeIsNotSupportedDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Unable to generate Figgle text for nested type 'Inner'. Generation is only supported for non-nested types.", diagnostic.GetMessage());
-    }
-
-    private void ValidateOutput(string source, params string[] outputs)
-    {
-        ValidateOutput(
-            source,
-            ImmutableArray<ExternalFontAdditionalText>.Empty,
-            optionsProvider: null,
-            outputs);
-    }
-
-    private void ValidateOutput(
-        string source,
-        ImmutableArray<ExternalFontAdditionalText> additionalFonts,
-        TestAnalyzerConfigOptionsProvider? optionsProvider,
-        params string[] outputs)
-    {
-        var (compilation, diagnostics) = RunGenerator(source, additionalFonts, optionsProvider);
-
-        ValidateNoErrors(diagnostics);
-
-        Assert.Equal(
-            new[] { source, RenderTextSourceGenerator.AttributeSource }.Concat(outputs),
-            compilation.SyntaxTrees.Select(tree => tree.ToString()),
-            NewlineIgnoreComparer.Instance);
-    }
-
-    private (Compilation Compilation, ImmutableArray<Diagnostic> Diagnostics) RunGenerator(
-        string source,
-        ImmutableArray<ExternalFontAdditionalText>? additionalFonts = null,
-        TestAnalyzerConfigOptionsProvider? optionsProvider = null)
-    {
-        var syntaxTree = CSharpSyntaxTree.ParseText(source);
-
-        var compilation = CSharpCompilation.Create(
-            "testAssembly",
-            [syntaxTree],
-            _references,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        ISourceGenerator generator = new RenderTextSourceGenerator();
-
-        var driver = CSharpGeneratorDriver.Create(
-            [generator],
-            additionalTexts: additionalFonts,
-            optionsProvider: optionsProvider);
-
-        driver.RunGeneratorsAndUpdateCompilation(
-            compilation,
-            out var outputCompilation,
-            out var generateDiagnostics);
-
-        return (outputCompilation, generateDiagnostics);
-    }
-
-    private static void ValidateNoErrors(ImmutableArray<Diagnostic> diagnostics)
-    {
-        var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
-
-        if (errors.Any())
-        {
-            throw new XunitException(
-                string.Join(
-                    Environment.NewLine,
-                    errors.Select(error => error.GetMessage())));
-        }
-    }
-
-    private sealed class NewlineIgnoreComparer : IEqualityComparer<string>
-    {
-        public static NewlineIgnoreComparer Instance { get; } = new();
-
-        public bool Equals(string? x, string? y)
-        {
-            return StringComparer.Ordinal.Equals(Normalize(x), Normalize(y));
-        }
-
-        public int GetHashCode(string obj)
-        {
-            return StringComparer.Ordinal.GetHashCode(Normalize(obj));
-        }
-
-        [return: NotNullIfNotNull("s")]
-        private static string? Normalize(string? s) => s?.Replace("\r", "");
     }
 }

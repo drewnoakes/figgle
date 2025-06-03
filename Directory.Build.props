@@ -28,8 +28,6 @@
     <IncludeSource>true</IncludeSource>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
-    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-
     <AnalysisLevel>latest</AnalysisLevel>
 
     <IsPackable>false</IsPackable>

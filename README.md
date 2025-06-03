@@ -28,9 +28,9 @@ Produces...
                      |/
 ```
 
-Alternatively, use Figgle's source generator to generate output during compilation, so you don't need to ship Figgle binaries with your app. See below for details.
+Alternatively, use Figgle's source generator to embed just the fonts you want into your assembly, or&mdash;if the text to render is known ahead of time&mdash;generate output during compilation, so you don't need to ship Figgle binaries with your app. See below for details.
 
-The library bundles 265 [FIGlet](http://www.figlet.org/) [fonts](http://www.jave.de/figlet/fonts.html). You can add your own if that's not enough! 
+The library bundles 265 [FIGlet](http://www.figlet.org/) [fonts](http://www.jave.de/figlet/fonts.html) in the [Figgle.Fonts](https://www.nuget.org/packages/Figgle.Fonts) NuGet package. You can add your own if that's not enough! 
 
 ## Installation
 
@@ -107,6 +107,10 @@ var text = font.Render("Hello World, from My Font");
 
 ## Using the Source Generator
 
+Figgle has two source generators: one renders static text at compile time, the other embeds the font into your assembly.
+
+### Static text rendering
+
 If the text you want Figgle to render is known at compile time, this section is for you.
 
 Instead of having Figgle render text at runtime, you can use Figgle's _source generator_ to
@@ -121,12 +125,11 @@ In your code:
 ```c#
 using Figgle;
 
-namespace MyNamespace
+namespace MyNamespace;
+
+[GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
+internal partial class MyClass
 {
-    [GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
-    internal partial class MyClass
-    {
-    }
 }
 ```
 
@@ -134,12 +137,11 @@ By adding this attribute to a partial class, Figgle will automatically generate 
 member in another part of the partial class, resembling:
 
 ```c#
-namespace MyNamespace
+namespace MyNamespace;
+
+partial class MyClass
 {
-    partial class MyClass
-    {
-        public static string HelloWorldString { get; } = "...rendered text here...";
-    }
+    public static string HelloWorldString { get; } = "...rendered text here...";
 }
 ```
 
@@ -170,3 +172,77 @@ Alternatively, you can specify a custom font name using the `FontName` item meta
 ```
 
 Note the font name specified in the `GenerateFiggleText` attribute is case-insensitive so `mycustomfontname` works too.
+
+### Embedding fonts
+
+If you know the font you want to use to render, but the text to render is dynamic during runtime (e.g. user input),
+you can use the source generator to embed the font into your assembly.
+
+By embedding only the fonts you want into your assembly, you can avoid having to ship all of built-in figgle fonts with your application, reducing
+the deploy size and memory usage of your application.
+
+In your code:
+
+```c#
+using Figgle;
+
+namespace MyNamespace;
+
+[EmbedFiggleFont(memberName: "MyFont", fontName: "blocks")]
+internal static partial class MyClass
+{
+}
+```
+
+This will cause the source generator to generate a static property of type `FiggleFont` in the `MyClass` type, which you can use to render text:
+
+```c#
+using Figgle;
+
+namespace MyNamespace;
+
+internal partial class MyClass
+{
+    public static FiggleFont MyFont { get; }
+}
+```
+
+You can then use the font the same way you use a built-in font:
+
+```c#
+using Figgle;
+
+namespace MyNamespace;
+
+string text = MyClass.MyFont.Render("Hello, World!");
+
+Console.WriteLine(text);
+```
+
+Similar to `GenerateFiggleText`, external fonts are also supported.  Include the external font file as an additional file in your csproj
+the same way as before:
+
+```xml
+<ItemGroup>
+    <AdditionalFiles Include="myfont.flf" FontName="MyExternalFont" />
+</ItemGroup>
+```
+
+Then specify the font's font name as specified in `AdditionalFiles` 
+(filename without the extension is also recognized if `FontName` property is not defined):
+
+```c#
+[EmbedFiggleFont(memberName: "MyFont", fontName: "MyExternalFont")]
+```
+
+## Source generator diagnostics
+
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+FGL0001 | Figgle   |  Error   | The specified font name was not found.
+FGL0002 | Figgle   |  Error   | The attribute specified an invalid member name.
+FGL0003 | Figgle   |  Error   | The member specified by the attribute has already been declared.
+FGL0004 | Figgle   |  Error   | The type must be `partial`.
+FGL0005 | Figgle   |  Error   | Figgle generation does not support nested types.
+FGL0006 | Figgle   |  Error   | There were errors when trying to read the external font.
+FGL0007 | Figgle   |  Error   | Type must `static`.

@@ -33,6 +33,9 @@
     <AnalysisLevel>latest</AnalysisLevel>
 
     <IsPackable>false</IsPackable>
+
+    <!-- The target framework used for all non-shipping projects in this solution, such as tests and sample code. -->
+    <SupportingProjectTargetFramework>net9.0</SupportingProjectTargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslyn.Diagnostics.Analyzers" Version="3.3.3" PrivateAssets="all" />
+    <PackageReference Include="Roslyn.Diagnostics.Analyzers" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Standard fonts for ASCII banner generation</Description>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Figgle.Tests" />
+    <InternalsVisibleTo Include="Figgle.Generator" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Figgle\Figgle.csproj" />
+  </ItemGroup>
+
+</Project>

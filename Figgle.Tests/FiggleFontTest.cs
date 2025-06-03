@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
+using Figgle.Fonts;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -88,7 +88,7 @@ public class FiggleFontTest
         void Test(FiggleFont font, string s, int? smushOverride = null, params string[] expected)
         {
             var output = font.Render(s, smushOverride);
-            var actual = output.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+            var actual = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
             actual = actual.Take(Math.Max(0, actual.Length - 1)).ToArray();
             Assert.Equal(expected.Length, actual.Length);
             for (var i = 0; i < expected.Length; i++)
@@ -99,7 +99,7 @@ public class FiggleFontTest
                 {
                     _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
                     _output.WriteLine("Actual:\n" + output);
-                    Assert.True(false, $"Mismatched lengths row {i}. Expecting '{expected[i].Length}' but got '{actual[i].Length}'.");
+                    Assert.Fail($"Mismatched lengths row {i}. Expecting '{expected[i].Length}' but got '{actual[i].Length}'.");
                 }
 
                 for (var x = 0; x < expected[i].Length; x++)
@@ -108,7 +108,7 @@ public class FiggleFontTest
                     {
                         _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
                         _output.WriteLine("Actual:\n" + output);
-                        Assert.True(false, $"Mismatch at row {i} col {x}. Expecting '{expected[i][x]}' but got '{actual[i][x]}'.");
+                        Assert.Fail($"Mismatch at row {i} col {x}. Expecting '{expected[i][x]}' but got '{actual[i][x]}'.");
                     }
                 }
             }
@@ -126,7 +126,7 @@ public class FiggleFontTest
 
     public static IEnumerable<object[]> EnumerateAllFonts()
     {
-        using var stream = typeof(FiggleFonts).GetTypeInfo().Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+        using var stream = EmbeddedFontResource.GetFontArchiveStream();
 
         if (stream is null)
             throw new FiggleException("Unable to open embedded font archive.");

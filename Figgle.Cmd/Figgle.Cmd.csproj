@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>$(SupportingProjectTargetFramework)</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
     <ProjectReference Include="..\Figgle\Figgle.csproj" />
   </ItemGroup>
 </Project>

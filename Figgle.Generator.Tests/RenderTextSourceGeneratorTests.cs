@@ -1,39 +1,16 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Figgle.Generator.Tests;
 
-public partial class FiggleSourceGeneratorTests
+public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
 {
-    private readonly ImmutableArray<MetadataReference> _references;
-
-    public FiggleSourceGeneratorTests()
+    protected override ISourceGenerator CreateSourceGenerator()
     {
-        _references = GetReferences().ToImmutableArray();
-
-        static IEnumerable<MetadataReference> GetReferences()
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                if (!assembly.IsDynamic && !string.IsNullOrWhiteSpace(assembly.Location))
-                {
-                    yield return MetadataReference.CreateFromFile(assembly.Location);
-                }
-            }
-        }
+        return new RenderTextSourceGenerator();
     }
 
     [Fact]
@@ -384,7 +361,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.UnknownFontNameDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.UnknownFontNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("A font with name 'unknown-font' was not found", diagnostic.GetMessage());
     }
 
@@ -406,7 +383,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.InvalidMemberNameDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.InvalidMemberNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("The string 'With Space' is not a valid member name", diagnostic.GetMessage());
     }
 
@@ -429,7 +406,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
 
         string expected =
@@ -481,7 +458,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
     }
 
@@ -508,7 +485,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
     }
 
@@ -535,7 +512,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
 
         string expected =
@@ -586,7 +563,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.TypeIsNotPartialDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.TypeIsNotPartialDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Type 'DemoUsage' must be partial", diagnostic.GetMessage());
     }
 
@@ -611,91 +588,7 @@ public partial class FiggleSourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
-        Assert.Same(FiggleSourceGenerator.NestedTypeIsNotSupportedDiagnostic, diagnostic.Descriptor);
+        Assert.Same(RenderTextSourceGenerator.NestedTypeIsNotSupportedDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Unable to generate Figgle text for nested type 'Inner'. Generation is only supported for non-nested types.", diagnostic.GetMessage());
-    }
-
-    private void ValidateOutput(string source, params string[] outputs)
-    {
-        ValidateOutput(
-            source,
-            ImmutableArray<ExternalFontAdditionalText>.Empty, 
-            optionsProvider: null, 
-            outputs);
-    }
-
-    private void ValidateOutput(
-        string source,
-        ImmutableArray<ExternalFontAdditionalText> additionalFonts,
-        TestAnalyzerConfigOptionsProvider? optionsProvider,
-        params string[] outputs)
-    {
-        var (compilation, diagnostics) = RunGenerator(source, additionalFonts, optionsProvider);
-
-        ValidateNoErrors(diagnostics);
-
-        Assert.Equal(
-            new[] { source, FiggleSourceGenerator.AttributeSource }.Concat(outputs),
-            compilation.SyntaxTrees.Select(tree => tree.ToString()),
-            NewlineIgnoreComparer.Instance);
-    }
-
-    private (Compilation Compilation, ImmutableArray<Diagnostic> Diagnostics) RunGenerator(
-        string source,
-        ImmutableArray<ExternalFontAdditionalText>? additionalFonts = null,
-        TestAnalyzerConfigOptionsProvider? optionsProvider = null)
-    {
-        var syntaxTree = CSharpSyntaxTree.ParseText(source);
-
-        var compilation = CSharpCompilation.Create(
-            "testAssembly",
-            [syntaxTree],
-            _references,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        ISourceGenerator generator = new FiggleSourceGenerator();
-
-        var driver = CSharpGeneratorDriver.Create(
-            [generator],
-            additionalTexts: additionalFonts,
-            optionsProvider: optionsProvider);
-
-        driver.RunGeneratorsAndUpdateCompilation(
-            compilation,
-            out var outputCompilation,
-            out var generateDiagnostics);
-
-        return (outputCompilation, generateDiagnostics);
-    }
-
-    private static void ValidateNoErrors(ImmutableArray<Diagnostic> diagnostics)
-    {
-        var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
-
-        if (errors.Any())
-        {
-            throw new XunitException(
-                string.Join(
-                    Environment.NewLine,
-                    errors.Select(error => error.GetMessage())));
-        }
-    }
-
-    private sealed class NewlineIgnoreComparer : IEqualityComparer<string>
-    {
-        public static NewlineIgnoreComparer Instance { get; } = new();
-
-        public bool Equals(string? x, string? y)
-        {
-            return StringComparer.Ordinal.Equals(Normalize(x), Normalize(y));
-        }
-
-        public int GetHashCode(string obj)
-        {
-            return StringComparer.Ordinal.GetHashCode(Normalize(obj));
-        }
-
-        [return: NotNullIfNotNull("s")]
-        private static string? Normalize(string? s) => s?.Replace("\r", "");
     }
 }

@@ -47,8 +47,27 @@ public static class FiggleFontParser
             throw new ArgumentNullException(nameof(stream));
 
         // TODO allow specifying encoding
-        var reader = new StreamReader(stream);
+        return ParseCore(
+            new StreamReader(stream),
+            pool);
+    }
 
+    /// <summary>
+    /// Parses a FIGlet font description string, and returns a usable <see cref="FiggleFont"/>.
+    /// </summary>
+    /// <param name="fontDescription">The string that contains the entire font description.</param>
+    /// <param name="pool">An optional string pool for merging identical string references.</param>
+    /// <returns>The font described by the string.</returns>
+    /// <exception cref="FiggleException">The string contained an error and could not be parsed.</exception>
+    public static FiggleFont ParseString(string fontDescription, StringPool? pool = null)
+    {
+        return ParseCore(
+            new StringReader(fontDescription),
+            pool);
+    }
+
+    private static FiggleFont ParseCore(TextReader reader, StringPool? pool = null)
+    {
         var firstLine = reader.ReadLine();
 
         if (firstLine == null)
@@ -168,7 +187,7 @@ public static class FiggleFontParser
             {
                 byte count = 0;
                 for (; count < s.Length && s[count] == ' '; count++)
-                {}
+                { }
                 return count;
             }
 
@@ -176,7 +195,7 @@ public static class FiggleFontParser
             {
                 byte count = 0;
                 for (var i = s.Length - 1; i > 0 && s[i] == ' '; i--, count++)
-                {}
+                { }
                 return count;
             }
         }
@@ -199,7 +218,7 @@ public static class FiggleFontParser
 
         while (true)
         {
-readLine:
+            readLine:
             var line = reader.ReadLine();
 
             if (line == null)

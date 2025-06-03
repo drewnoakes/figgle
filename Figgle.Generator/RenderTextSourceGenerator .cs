@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Figgle.Fonts;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Figgle.Generator;
 
 [Generator]
-public sealed class FiggleSourceGenerator : ISourceGenerator
+public sealed class RenderTextSourceGenerator : ISourceGenerator
 {
     public static readonly DiagnosticDescriptor UnknownFontNameDiagnostic = new(
         "FGL0001",

@@ -350,6 +350,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             {
                 return true;
             }
+
             if (x is null || y is null)
             {
                 return false;
@@ -357,13 +358,16 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
 
             // we don't compare the location we're only interested in checking if the attribute
             // arguments are the same.
-            return x.MemberName == y.MemberName
-                && x.FontName == y.FontName;
+            return StringComparer.Ordinal.Equals(x.MemberName, y.MemberName)
+                && StringComparer.Ordinal.Equals(x.FontName, y.FontName);
         }
 
         public int GetHashCode(EmbedFontAttributeInfo obj)
         {
-            return HashCode.Combine(obj.MemberName, obj.FontName);
+            var hash1 = StringComparer.Ordinal.GetHashCode(obj.MemberName);
+            var hash2 = StringComparer.Ordinal.GetHashCode(obj.FontName);
+
+            return ((hash1 << 5) + hash1) ^ hash2; // hash1 * 33 ^ hash2
         }
     }
 }

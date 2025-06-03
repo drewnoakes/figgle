@@ -218,6 +218,40 @@ public class EmbedFontSourceGeneratorTests : SourceGeneratorTests
 
         string generatedCode = compilation.SyntaxTrees.Last().ToString();
         Assert.Contains(
+            "namespace Test.Namespace",
+            generatedCode);
+        Assert.Contains(
+            "public static FiggleFont Foo => _fontByName.GetOrAdd(\"Foo\", _ => FiggleFontParser.ParseString(FooFontDescription, _stringPool));",
+            generatedCode);
+        Assert.Contains(
+            "private static readonly string FooFontDescription = @\"",
+            generatedCode);
+    }
+
+    [Fact]
+    public void ExternalFontInAdditionalFiles_NoNamespace_EmbedsFont()
+    {
+        string source =
+            """
+            using Figgle;
+
+            [EmbedFiggleFont("Foo", "ANSI Shadow")]
+            internal static partial class DemoUsage
+            {
+            }
+            """;
+
+        var additionalFont = ExternalFontAdditionalText.Create("ANSI Shadow.flf");
+        var optionsProvider = CreateOptionsProvider("ANSI Shadow.flf", "ANSI Shadow");
+
+        var (compilation, diagnostics) = RunGenerator(source, [additionalFont], optionsProvider);
+        Assert.Empty(diagnostics);
+
+        string generatedCode = compilation.SyntaxTrees.Last().ToString();
+        Assert.DoesNotContain(
+            "namespace",
+            generatedCode);
+        Assert.Contains(
             "public static FiggleFont Foo => _fontByName.GetOrAdd(\"Foo\", _ => FiggleFontParser.ParseString(FooFontDescription, _stringPool));",
             generatedCode);
         Assert.Contains(

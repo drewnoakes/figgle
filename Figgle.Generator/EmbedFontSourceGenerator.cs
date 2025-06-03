@@ -283,7 +283,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
 
             namespace {{ns}}
             {
-                {{GetAccessibility(type.DeclaredAccessibility)}}static partial class {{type.Name}}
+                static partial class {{type.Name}}
                 {
                     private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new(StringComparer.Ordinal);
                     private static readonly StringPool _stringPool = new();
@@ -302,7 +302,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                 using System.Collections.Concurrent;
                 using Figgle;
 
-                {{GetAccessibility(type.DeclaredAccessibility)}}static partial class {{type.Name}}
+                static partial class {{type.Name}}
                 {
                     private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new(StringComparer.Ordinal);
                     private static readonly StringPool _stringPool = new();
@@ -328,20 +328,6 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             }
 
             return builder.ToString();
-        }
-
-        static string GetAccessibility(Accessibility declaredAccessibility)
-        {
-            return declaredAccessibility switch
-            {
-                Accessibility.Public => "public ",
-                Accessibility.Internal => "internal ",
-                Accessibility.Private => "private ",
-                Accessibility.Protected => "protected ",
-                Accessibility.ProtectedAndInternal => "protected internal ",
-                Accessibility.NotApplicable => "",
-                _ => throw new NotImplementedException($"Unexpected accessibility '{declaredAccessibility}'."),
-            };
         }
     }
 

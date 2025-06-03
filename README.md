@@ -28,9 +28,9 @@ Produces...
                      |/
 ```
 
-Alternatively, use Figgle's source generator to embed just the fonts you want into your assembly, or—if the text to render is known ahead of time—generate output during compilation, so you don't need to ship Figgle binaries with your app. See below for details.
+Alternatively, use Figgle's source generator to embed just the fonts you want into your assembly, or&mdash;if the text to render is known ahead of time&mdash;generate output during compilation, so you don't need to ship Figgle binaries with your app. See below for details.
 
-The library bundles 265 [FIGlet](http://www.figlet.org/) [fonts](http://www.jave.de/figlet/fonts.html). You can add your own if that's not enough! 
+The library bundles 265 [FIGlet](http://www.figlet.org/) [fonts](http://www.jave.de/figlet/fonts.html) in the [Figgle.Fonts](https://www.nuget.org/packages/Figgle.Fonts) NuGet package. You can add your own if that's not enough! 
 
 ## Installation
 
@@ -125,12 +125,11 @@ In your code:
 ```c#
 using Figgle;
 
-namespace MyNamespace
+namespace MyNamespace;
+
+[GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
+internal partial class MyClass
 {
-    [GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
-    internal partial class MyClass
-    {
-    }
 }
 ```
 
@@ -138,12 +137,11 @@ By adding this attribute to a partial class, Figgle will automatically generate 
 member in another part of the partial class, resembling:
 
 ```c#
-namespace MyNamespace
+namespace MyNamespace;
+
+partial class MyClass
 {
-    partial class MyClass
-    {
-        public static string HelloWorldString { get; } = "...rendered text here...";
-    }
+    public static string HelloWorldString { get; } = "...rendered text here...";
 }
 ```
 
@@ -181,19 +179,18 @@ If you know the font you want to use to render, but the text to render is dynami
 you can use the source generator to embed the font into your assembly.
 
 By embedding only the fonts you want into your assembly, you can avoid having to ship all of built-in figgle fonts with your application, reducing
-the deploy size of your application.
+the deploy size and memory usage of your application.
 
 In your code:
 
 ```c#
 using Figgle;
 
-namespace MyNamespace
+namespace MyNamespace;
+
+[EmbedFiggleFont(memberName: "MyFont", fontName: "blocks")]
+internal static partial class MyClass
 {
-    [EmbedFiggleFont("MyFont", "blocks")]
-    internal static partial class MyClass
-    {
-    }
 }
 ```
 
@@ -202,12 +199,11 @@ This will cause the source generator to generate a static property of type `Figg
 ```c#
 using Figgle;
 
-namespace MyNamespace
+namespace MyNamespace;
+
+internal partial class MyClass
 {
-    internal partial class MyClass
-    {
-        public static FiggleFont MyFont { get; }
-    }
+    public static FiggleFont MyFont { get; }
 }
 ```
 
@@ -216,17 +212,11 @@ You can then use the font the same way you use a built-in font:
 ```c#
 using Figgle;
 
-namespace MyNamespace
-{
-    internal class Program
-    {
-        static void Main()
-        {
-            var text = MyClass.MyFont.Render("Hello, World!");
-            Console.WriteLine(text);
-        }
-    }
-}
+namespace MyNamespace;
+
+string text = MyClass.MyFont.Render("Hello, World!");
+
+Console.WriteLine(text);
 ```
 
 Similar to `GenerateFiggleText`, external fonts are also supported.  Include the external font file as an additional file in your csproj
@@ -242,7 +232,7 @@ Then specify the font's font name as specified in `AdditionalFiles`
 (filename without the extension is also recognized if `FontName` property is not defined):
 
 ```c#
-[EmbedFiggleFont("MyFont", "MyExternalFont")]
+[EmbedFiggleFont(memberName: "MyFont", fontName: "MyExternalFont")]
 ```
 
 ## Source generator diagnostics

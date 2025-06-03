@@ -268,7 +268,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         return true;
     }
 
-    private string RenderSource(ITypeSymbol type, ImmutableArray<RenderSourceInfo> fontsToGenerate)
+    private static string RenderSource(ITypeSymbol type, ImmutableArray<RenderSourceInfo> fontsToGenerate)
     {
         string ns = type.ContainingNamespace.ToDisplayString(_fullyQualifiedFormat);
 

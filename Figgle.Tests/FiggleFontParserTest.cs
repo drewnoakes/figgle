@@ -18,8 +18,6 @@ public sealed class FiggleFontParserTest
     {
         using var stream = EmbeddedFontResource.GetFontArchiveStream();
 
-        Assert.NotNull(stream);
-
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
         foreach (var entry in zip.Entries)

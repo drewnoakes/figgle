@@ -20,6 +20,6 @@ internal sealed class NewlineIgnoreComparer : IEqualityComparer<string>
         return StringComparer.Ordinal.GetHashCode(Normalize(obj));
     }
 
-    [return: NotNullIfNotNull("s")]
+    [return: NotNullIfNotNull(nameof(s))]
     private static string? Normalize(string? s) => s?.Replace("\r", "");
 }

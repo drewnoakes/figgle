@@ -4,7 +4,7 @@
   <Import Project="../Figgle.Generator/build/Figgle.Generator.props" />
   
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>$(SupportingProjectTargetFramework)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

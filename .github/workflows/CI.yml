@@ -29,17 +29,17 @@ jobs:
       run: dotnet build Figgle.sln --configuration Debug
 
     - name: Test Figgle.Tests (Release)
-      run: dotnet test --verbosity normal --configuration Release --no-build --framework net8.0 Figgle.Tests/Figgle.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Release --no-build --framework net9.0 Figgle.Tests/Figgle.Tests.csproj
     - name: Test Figgle.Tests (Debug)
-      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net8.0 Figgle.Tests/Figgle.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net9.0 Figgle.Tests/Figgle.Tests.csproj
 
     - name: Test Figgle.Generator.Tests (Release)
-      run: dotnet test --verbosity normal --configuration Release --no-build --framework net8.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Release --no-build --framework net9.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
     - name: Test Figgle.Generator.Tests (Debug)
-      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net8.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net9.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
 
 #    - name: Publish NativeAOT
-#      run: dotnet publish --verbosity normal --configuration Release --framework net8.0 Figgle/Figgle.csproj
+#      run: dotnet publish --verbosity normal --configuration Release --framework net9.0 Figgle/Figgle.csproj
 
   windows:
     runs-on: windows-latest
@@ -61,14 +61,14 @@ jobs:
       run: dotnet build Figgle.sln --configuration Debug
 
     - name: Test Figgle.Tests (Release)
-      run: dotnet test --verbosity normal --configuration Release --no-build --framework net8.0 Figgle.Tests/Figgle.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Release --no-build --framework net9.0 Figgle.Tests/Figgle.Tests.csproj
     - name: Test Figgle.Tests (Debug)
-      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net8.0 Figgle.Tests/Figgle.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net9.0 Figgle.Tests/Figgle.Tests.csproj
 
     - name: Test Figgle.Generator.Tests (Release)
-      run: dotnet test --verbosity normal --configuration Release --no-build --framework net8.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Release --no-build --framework net9.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
     - name: Test Figgle.Generator.Tests (Debug)
-      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net8.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
+      run: dotnet test --verbosity normal --configuration Debug --no-build --framework net9.0 Figgle.Generator.Tests/Figgle.Generator.Tests.csproj
 
 #    - name: Publish NativeAOT
-#      run: dotnet publish --verbosity normal --configuration Release --framework net8.0 Figgle/Figgle.csproj
+#      run: dotnet publish --verbosity normal --configuration Release --framework net9.0 Figgle/Figgle.csproj

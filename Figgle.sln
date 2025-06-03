@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		.globalconfig = .globalconfig
-		appveyor.yml = appveyor.yml
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		spec\figfont.html = spec\figfont.html
@@ -300,6 +299,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figgle.Generator.Acceptance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figgle.Fonts", "Figgle.Fonts\Figgle.Fonts.csproj", "{A94B3D16-C26C-4822-A0DF-846A11B27F7D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\CI.yml = .github\workflows\CI.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -400,6 +404,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{39B8EEFC-2BF9-4E33-B299-0BF4016AC5D7} = {4A36A179-AB9F-4D63-8409-A7400F65C139}
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {4A36A179-AB9F-4D63-8409-A7400F65C139}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69F27669-F6DA-410D-8F8B-9E6877CC73F4}

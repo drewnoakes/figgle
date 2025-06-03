@@ -6,7 +6,7 @@
         |___|___|      
 ```
 
-[![Figgle Build Status](https://ci.appveyor.com/api/projects/status/2vvwieg2ou7pkhst?svg=true)](https://ci.appveyor.com/project/drewnoakes/figgle)
+[![Figgle Build Status](https://github.com/drewnoakes/figgle/actions/workflows/CI.yml/badge.svg)](https://github.com/drewnoakes/figgle/actions/)
 [![Figgle NuGet version](https://img.shields.io/nuget/v/Figgle)](https://www.nuget.org/packages/Figgle/)
 [![Figgle NuGet download count](https://img.shields.io/nuget/dt/Figgle)](https://www.nuget.org/packages/Figgle/)
 

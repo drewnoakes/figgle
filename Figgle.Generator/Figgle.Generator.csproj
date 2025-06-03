@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
+    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Figgle\Figgle.csproj" PrivateAssets="all" />
   </ItemGroup>
 

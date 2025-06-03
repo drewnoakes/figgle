@@ -88,7 +88,7 @@ public class FiggleFontTest
         void Test(FiggleFont font, string s, int? smushOverride = null, params string[] expected)
         {
             var output = font.Render(s, smushOverride);
-            var actual = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var actual = output.Split([Environment.NewLine], StringSplitOptions.None);
             actual = actual.Take(Math.Max(0, actual.Length - 1)).ToArray();
             Assert.Equal(expected.Length, actual.Length);
             for (var i = 0; i < expected.Length; i++)

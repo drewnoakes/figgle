@@ -1,7 +1,6 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
 using System;
-using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
 using Figgle.Fonts;
@@ -10,11 +9,8 @@ using Xunit.Abstractions;
 
 namespace Figgle.Tests;
 
-public class FiggleFontTest
+public sealed class FiggleFontTest(ITestOutputHelper testOutput)
 {
-    private readonly ITestOutputHelper _output;
-    public FiggleFontTest(ITestOutputHelper output) => _output = output;
-
     [Fact]
     public void Render()
     {
@@ -97,8 +93,8 @@ public class FiggleFontTest
                     continue;
                 if (expected[i].Length != actual[i].Length)
                 {
-                    _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
-                    _output.WriteLine("Actual:\n" + output);
+                    testOutput.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
+                    testOutput.WriteLine("Actual:\n" + output);
                     Assert.Fail($"Mismatched lengths row {i}. Expecting '{expected[i].Length}' but got '{actual[i].Length}'.");
                 }
 
@@ -106,8 +102,8 @@ public class FiggleFontTest
                 {
                     if (expected[i][x] != actual[i][x])
                     {
-                        _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
-                        _output.WriteLine("Actual:\n" + output);
+                        testOutput.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
+                        testOutput.WriteLine("Actual:\n" + output);
                         Assert.Fail($"Mismatch at row {i} col {x}. Expecting '{expected[i][x]}' but got '{actual[i][x]}'.");
                     }
                 }

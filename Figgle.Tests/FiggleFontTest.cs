@@ -128,9 +128,6 @@ public class FiggleFontTest
     {
         using var stream = EmbeddedFontResource.GetFontArchiveStream();
 
-        if (stream is null)
-            throw new FiggleException("Unable to open embedded font archive.");
-
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
         StringPool stringPool = new();

@@ -22,9 +22,6 @@ internal static class EmbeddedFontResource
     {
         using var stream = GetFontArchiveStream();
 
-        if (stream is null)
-            throw new FiggleException("Unable to open embedded font archive.");
-
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
         var entry = zip.GetEntry(fontName + ".flf");
@@ -38,7 +35,8 @@ internal static class EmbeddedFontResource
 
     internal static Stream GetFontArchiveStream()
     {
-        return Assembly.GetAssembly(typeof(EmbeddedFontResource))
-            .GetManifestResourceStream("Figgle.Fonts.Fonts.zip");
+        var assembly = typeof(EmbeddedFontResource).Assembly;
+        var stream = assembly.GetManifestResourceStream("Figgle.Fonts.Fonts.zip");
+        return stream ?? throw new FiggleException("Unable to open embedded font archive.");
     }
 }

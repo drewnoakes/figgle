@@ -7,13 +7,7 @@ namespace Figgle;
 /// <summary>
 /// Type for exceptions raised by Figgle.
 /// </summary>
-public sealed class FiggleException : Exception
+/// <param name="message">A message explaining the exception.</param>
+public sealed class FiggleException(string message) : Exception(message)
 {
-    /// <summary>
-    /// Constructs a new Figgle exception.
-    /// </summary>
-    /// <param name="message">A message explaining the exception.</param>
-    public FiggleException(string message) : base(message)
-    {
-    }
 }

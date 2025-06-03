@@ -68,10 +68,7 @@ public static class FiggleFontParser
 
     private static FiggleFont ParseCore(TextReader reader, StringPool? pool = null)
     {
-        var firstLine = reader.ReadLine();
-
-        if (firstLine == null)
-            throw new FiggleException("Font file is empty.");
+        var firstLine = reader.ReadLine() ?? throw new FiggleException("Font file is empty.");
 
         var match = _firstLinePattern.Match(firstLine);
 
@@ -170,9 +167,8 @@ public static class FiggleFontParser
 
             for (var i = 0; i < height; i++)
             {
-                var line = reader.ReadLine();
-                if (line == null)
-                    throw new FiggleException("Unexpected EOF in Font file.");
+                var line = reader.ReadLine() ?? throw new FiggleException("Unexpected EOF in Font file.");
+
                 // TODO validate single endmark on all lines but last, and double endmark on last
                 // TODO validate all lines are the advertised width (without endmarks)
                 // TODO pool computed space counts too

@@ -16,6 +16,7 @@ public partial class RenderTextSourceGeneratorTests
     {
         string source =
             $$"""
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Member", "{{fontName}}", "Figgle")]
@@ -69,6 +70,7 @@ public partial class RenderTextSourceGeneratorTests
     {
         string source =
             $$"""
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Member", "{{generateFiggleFontName}}", "Figgle")]

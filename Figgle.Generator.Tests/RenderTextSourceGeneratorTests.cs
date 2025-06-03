@@ -8,7 +8,7 @@ namespace Figgle.Generator.Tests;
 
 public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
 {
-    protected override ISourceGenerator CreateSourceGenerator()
+    protected override IIncrementalGenerator CreateIncrementalSourceGenerator()
     {
         return new RenderTextSourceGenerator();
     }
@@ -18,6 +18,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Member", "stacey", "Figgle")]
@@ -61,6 +62,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Member", "stacey", "Figgle")]
@@ -103,6 +105,8 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     public void SimpleCase_GlobalNamespace()
     {
         string source = """
+            using Figgle;
+
             [GenerateFiggleText("Member", "stacey", "Figgle")]
             internal static partial class DemoUsage
             {
@@ -141,6 +145,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("HelloWorldString", "blocks", "Hello world")]
@@ -197,6 +202,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Member", "stacey", "Figgle")]
@@ -271,6 +277,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace1
             {
                 [GenerateFiggleText("Member", "stacey", "Figgle")]
@@ -348,6 +355,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Foo", "unknown-font", "Bar")]
@@ -370,6 +378,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("With Space", "stacey", "Foo")]
@@ -392,6 +401,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Foo", "stacey", "Foo")]
@@ -444,6 +454,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Foo", "stacey", "Foo")]
@@ -467,6 +478,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Foo", "stacey", "Foo")]
@@ -494,6 +506,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Foo", "stacey", "Foo")]
@@ -550,6 +563,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 [GenerateFiggleText("Foo", "stacey", "Foo")]
@@ -572,6 +586,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
     {
         string source =
             """
+            using Figgle;
             namespace Test.Namespace
             {
                 internal partial class Outer

@@ -32,6 +32,9 @@
 
     <!-- The target framework used for all non-shipping projects in this solution, such as tests and sample code. -->
     <SupportingProjectTargetFramework>net9.0</SupportingProjectTargetFramework>
+
+    <!-- Suppress NU1507: There are 2 package sources defined in your configuration. When using central package management, please map your package sources with package source mapping or specify a single package source. -->
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

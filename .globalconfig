@@ -1,5 +1,8 @@
 is_global = true
 
+dotnet_diagnostic.RS0016.severity = none        # Public API analyzer
+dotnet_diagnostic.RS0037.severity = none        # Public API analyzer
+
 # RS2007/2008 - Include analyzer release files AnalyzerReleases.Shipped.md and AnalyzerReleases.Unshipped.md in the project
 #    It's not clear that the overhead of maintaining the shipped/unshipped rules is worth the benefit for figgle users, if there
 #    are any.  We will put the rules into the readme instead. 

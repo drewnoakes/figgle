@@ -198,8 +198,6 @@ csharp_prefer_static_local_function = true:warning
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
 
 # Diagnostics
-dotnet_diagnostic.RS0016.severity = none        # Public API analyzer
-dotnet_diagnostic.RS0037.severity = none        # Public API analyzer
 dotnet_diagnostic.RS0100.severity = none        # Statements must be placed on their own line
 
 dotnet_diagnostic.IDE0270.severity = suggestion # Null check can be simplified

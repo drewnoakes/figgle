@@ -99,7 +99,7 @@ public class FiggleFontTest
                 {
                     _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
                     _output.WriteLine("Actual:\n" + output);
-                    Assert.True(false, $"Mismatched lengths row {i}. Expecting '{expected[i].Length}' but got '{actual[i].Length}'.");
+                    Assert.Fail($"Mismatched lengths row {i}. Expecting '{expected[i].Length}' but got '{actual[i].Length}'.");
                 }
 
                 for (var x = 0; x < expected[i].Length; x++)
@@ -108,7 +108,7 @@ public class FiggleFontTest
                     {
                         _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
                         _output.WriteLine("Actual:\n" + output);
-                        Assert.True(false, $"Mismatch at row {i} col {x}. Expecting '{expected[i][x]}' but got '{actual[i][x]}'.");
+                        Assert.Fail($"Mismatch at row {i} col {x}. Expecting '{expected[i][x]}' but got '{actual[i][x]}'.");
                     }
                 }
             }

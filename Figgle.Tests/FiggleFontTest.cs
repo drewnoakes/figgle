@@ -124,10 +124,11 @@ public class FiggleFontTest
         _ = font.Render("Hello, World!");
     }
 
-    public static IEnumerable<object[]> EnumerateAllFonts()
+    public static TheoryData<string, FiggleFont> EnumerateAllFonts()
     {
-        using var stream = EmbeddedFontResource.GetFontArchiveStream();
+        TheoryData<string, FiggleFont> data = [];
 
+        using var stream = EmbeddedFontResource.GetFontArchiveStream();
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
         StringPool stringPool = new();
@@ -135,8 +136,9 @@ public class FiggleFontTest
         foreach (var entry in zip.Entries)
         {
             using var entryStream = entry.Open();
-
-            yield return new object[] { entry.Name, FiggleFontParser.Parse(entryStream, stringPool) };
+            data.Add(entry.Name, FiggleFontParser.Parse(entryStream, stringPool));
         }
+
+        return data;
     }
 }

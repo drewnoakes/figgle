@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1280"
+   height="640"
+   viewBox="0 0 338.66666 169.33334"
+   version="1.1"
+   id="svg1"
+   inkscape:export-filename="bitmap.png"
+   inkscape:export-xdpi="200.44"
+   inkscape:export-ydpi="200.44"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="repo-card.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showguides="true"
+     inkscape:zoom="1.5990811"
+     inkscape:cx="615.35341"
+     inkscape:cy="333.62911"
+     inkscape:window-width="3840"
+     inkscape:window-height="2054"
+     inkscape:window-x="2149"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="10.583333,104.14225"
+       orientation="-1,0"
+       id="guide7"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="328.08334,-40.965833"
+       orientation="-1,0"
+       id="guide8"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-10.093036,158.75"
+       orientation="0,1"
+       id="guide9"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-8.9348188,10.583333"
+       orientation="0,1"
+       id="guide10"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-47.155988,84.666667"
+       orientation="0,1"
+       id="guide11"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="142.29526,-28.059983"
+       orientation="1,0"
+       id="guide12"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;stroke-width:12.26;stroke-linecap:round"
+       id="rect11"
+       width="338.66669"
+       height="169.33334"
+       x="0"
+       y="0"
+       inkscape:label="Background" />
+    <flowRoot
+       xml:space="preserve"
+       transform="matrix(0.33352163,0,0,0.33352163,96.421958,-26.764164)"
+       style="font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px"
+       id="flowRoot1"
+       inkscape:label="Figgle"><flowRegion
+         id="flowRegion1"><rect
+           id="rect1"
+           width="812.96692"
+           height="407.73419"
+           x="128.82399"
+           y="161.34267"
+           style="stroke-width:1" /></flowRegion><flowPara
+         id="flowPara1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'Cascadia Mono';-inkscape-font-specification:'Cascadia Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"> _____ _         _     </flowPara><flowPara
+         id="flowPara2"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'Cascadia Mono';-inkscape-font-specification:'Cascadia Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">|   __|_|___ ___| |___ </flowPara><flowPara
+         id="flowPara3"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'Cascadia Mono';-inkscape-font-specification:'Cascadia Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">|   __| | . | . | | -_|</flowPara><flowPara
+         id="flowPara4"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'Cascadia Mono';-inkscape-font-specification:'Cascadia Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">|__|  |_|_  |_  |_|___|</flowPara><flowPara
+         id="flowPara5"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'Cascadia Mono';-inkscape-font-specification:'Cascadia Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">        |___|___|    </flowPara></flowRoot>
+    <flowRoot
+       xml:space="preserve"
+       style="font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px"
+       id="flowRoot5"
+       inkscape:label="Title"
+       transform="matrix(0.26458334,0,0,0.26458334,0,16.681196)"><flowRegion
+         id="flowRegion5"><rect
+           id="rect5"
+           width="689.14581"
+           height="145.08333"
+           x="533.43134"
+           y="390.84949" /></flowRegion><flowPara
+         id="flowPara7"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'Cascadia Mono';-inkscape-font-specification:'Cascadia Mono, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal">.NET ASCII Banner Generation</flowPara></flowRoot>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4485"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;line-height:125%;font-family:Verdana;-inkscape-font-specification:'Verdana, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="matrix(0.52199995,0,0,0.52199995,-137.01825,33.593739)"
+       inkscape:label="Bunny"><flowRegion
+         id="flowRegion4487"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:Verdana;-inkscape-font-specification:'Verdana, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"><rect
+           id="rect4489"
+           width="751.42859"
+           height="1077.1428"
+           x="28.571428"
+           y="22.519686"
+           style="-inkscape-font-specification:'Verdana, Bold';font-family:Verdana;font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:40.00000204px;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal" /></flowRegion><flowPara
+         id="flowPara4491"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:Verdana;-inkscape-font-specification:'Verdana, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ff00ff">(\_/)</flowPara><flowPara
+         id="flowPara4493"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:Verdana;-inkscape-font-specification:'Verdana, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ff00ff">=( o.o )=</flowPara><flowPara
+         id="flowPara4495"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:40px;font-family:Verdana;-inkscape-font-specification:'Verdana, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ff00ff">(&quot;)_(&quot;)</flowPara></flowRoot>
+  </g>
+</svg>

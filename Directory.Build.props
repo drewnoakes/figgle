@@ -1,13 +1,11 @@
 <Project>
 
   <PropertyGroup>
-    <Version>0.5.1</Version>
-
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 
     <Authors>Drew Noakes</Authors>
-    <Copyright>Copyright Drew Noakes 2017-2023</Copyright>
+    <Copyright>Copyright Drew Noakes 2017-$([System.DateTime]::Now.Year)</Copyright>
 
     <PackageIcon>logo-square-256px.png</PackageIcon>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -27,8 +25,6 @@
     <!-- source path -->
     <IncludeSource>true</IncludeSource>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-
-    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 
     <AnalysisLevel>latest</AnalysisLevel>
 

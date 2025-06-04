@@ -135,93 +135,115 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
             });
 
         var externalFontsProvider = context.GetExternalFontsProvider();
-        var embedFontInfoProvider = generationInfoProvider.Combine(externalFontsProvider);
+        var embedFontInfoProvider = generationInfoProvider.Collect().Combine(externalFontsProvider);
 
         context.RegisterSourceOutput(embedFontInfoProvider, (context, pair)=>
         {
-            var (generationInfo, externalFonts) = pair;
+            var (generationInfos, externalFonts) = pair;
 
-            if (!IsValidTypeForGeneration(context, generationInfo.TargetType))
+            // Group by the target type in case there are multiple partial definitions
+            // for a single type, so that we can generate one file per type.
+            var typeToGenerateGroup = generationInfos.GroupBy(
+                keySelector: info => info.TargetType,
+                elementSelector: info => info.AttributeInfos,
+                comparer: SymbolEqualityComparer.Default);
+
+            foreach (var generateGroup in typeToGenerateGroup)
             {
-                return;
-            }
+                var targetType = (ITypeSymbol)generateGroup.Key!;
 
-            var renderInfoBuilder = ImmutableArray.CreateBuilder<RenderSourceInfo>(
-                generationInfo.AttributeInfos.Count);
-
-            var memberNames = new HashSet<string>();
-            foreach (var generateFiggleInfo in generationInfo.AttributeInfos)
-            {
-                if (!SyntaxFacts.IsValidIdentifier(generateFiggleInfo.MemberName))
+                // There may be multiple partial definitions for the same symbol,
+                // each listing different attributes that may or may not repeat.
+                // By merging all attributes into a single hash set, we ensure there
+                // are no repeats and we generate all source in one file per type.
+                var attributeInfos = new HashSet<RenderItem>(RenderItemComparer.Instance);
+                foreach (var attributeInfo in generateGroup)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        InvalidMemberNameDiagnostic,
-                        generateFiggleInfo.AttributeLocation ?? generationInfo.TargetType.Locations[0],
-                        generateFiggleInfo.MemberName ?? "unknown"));
-                    continue;
+                    attributeInfos.UnionWith(attributeInfo);
                 }
 
-                if (!memberNames.Add(generateFiggleInfo.MemberName!))
+                if (!IsValidTypeForGeneration(context, targetType))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        DuplicateMemberNameDiagnostic,
-                        generateFiggleInfo.AttributeLocation ?? generationInfo.TargetType.Locations[0],
-                        generateFiggleInfo.MemberName));
-                    continue;
+                    return;
                 }
 
-                if (generationInfo.TargetType.GetMembers(generateFiggleInfo.MemberName!).Any())
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        DuplicateMemberNameDiagnostic,
-                        generationInfo.TargetType.Locations[0],
-                        generateFiggleInfo.MemberName));
-                    continue;
-                }
+                var renderInfoBuilder = ImmutableArray.CreateBuilder<RenderSourceInfo>(
+                    attributeInfos.Count);
 
-                if (string.IsNullOrWhiteSpace(generateFiggleInfo.FontName))
+                var memberNames = new HashSet<string>();
+                foreach (var generateFiggleInfo in attributeInfos)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        UnknownFontNameDiagnostic,
-                        generationInfo.TargetType.Locations[0],
-                        generateFiggleInfo.MemberName ?? "unknown"));
-                    continue;
-                }
-
-                var figgleFont = FiggleFonts.TryGetByName(generateFiggleInfo.FontName!);
-                if (figgleFont is null)
-                {
-                    // check if the requested font to use is available in the external fonts
-                    var matchingExternalFont = externalFonts.FirstOrDefault(
-                        externalFont => externalFont.FontName.Equals(
-                            generateFiggleInfo.FontName,
-                            StringComparison.OrdinalIgnoreCase));
-
-                    if (matchingExternalFont is null || matchingExternalFont.FontDescriptionString is null)
+                    if (!SyntaxFacts.IsValidIdentifier(generateFiggleInfo.MemberName))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
-                            UnknownFontNameDiagnostic,
-                            generateFiggleInfo.AttributeLocation ?? generationInfo.TargetType.Locations[0],
-                            generateFiggleInfo.FontName));
+                            InvalidMemberNameDiagnostic,
+                            generateFiggleInfo.AttributeLocation ?? targetType.Locations[0],
+                            generateFiggleInfo.MemberName ?? "unknown"));
                         continue;
                     }
 
-                    figgleFont = FiggleFontParser.ParseString(matchingExternalFont.FontDescriptionString);
+                    if (!memberNames.Add(generateFiggleInfo.MemberName!))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            DuplicateMemberNameDiagnostic,
+                            generateFiggleInfo.AttributeLocation ?? targetType.Locations[0],
+                            generateFiggleInfo.MemberName));
+                        continue;
+                    }
+
+                    if (targetType.GetMembers(generateFiggleInfo.MemberName!).Any())
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            DuplicateMemberNameDiagnostic,
+                            targetType.Locations[0],
+                            generateFiggleInfo.MemberName));
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(generateFiggleInfo.FontName))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            UnknownFontNameDiagnostic,
+                            targetType.Locations[0],
+                            generateFiggleInfo.MemberName ?? "unknown"));
+                        continue;
+                    }
+
+                    var figgleFont = FiggleFonts.TryGetByName(generateFiggleInfo.FontName!);
+                    if (figgleFont is null)
+                    {
+                        // check if the requested font to use is available in the external fonts
+                        var matchingExternalFont = externalFonts.FirstOrDefault(
+                            externalFont => externalFont.FontName.Equals(
+                                generateFiggleInfo.FontName,
+                                StringComparison.OrdinalIgnoreCase));
+
+                        if (matchingExternalFont is null || matchingExternalFont.FontDescriptionString is null)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                UnknownFontNameDiagnostic,
+                                generateFiggleInfo.AttributeLocation ?? targetType.Locations[0],
+                                generateFiggleInfo.FontName));
+                            continue;
+                        }
+
+                        figgleFont = FiggleFontParser.ParseString(matchingExternalFont.FontDescriptionString);
+                    }
+
+                    renderInfoBuilder.Add(new(
+                        generateFiggleInfo.MemberName!,
+                        generateFiggleInfo.SourceText!,
+                        figgleFont));
                 }
 
-                renderInfoBuilder.Add(new(
-                    generateFiggleInfo.MemberName!,
-                    generateFiggleInfo.SourceText!,
-                    figgleFont));
-            }
+                context.AddSource(
+                    GetGeneratedFileName(targetType),
+                    RenderSource(targetType, renderInfoBuilder.ToImmutable()));
 
-            context.AddSource(
-                GetGeneratedFileName(generationInfo.TargetType),
-                RenderSource(generationInfo.TargetType, renderInfoBuilder.ToImmutable()));
-
-            static string GetGeneratedFileName(ITypeSymbol type)
-            {
-                return $"{type.ToDisplayString(_fullyQualifiedFormat)}.g.cs";
+                static string GetGeneratedFileName(ITypeSymbol type)
+                {
+                    return $"{type.ToDisplayString(_fullyQualifiedFormat)}.g.cs";
+                }
             }
         });
     }

@@ -140,6 +140,7 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(embedFontInfoProvider, (context, pair)=>
         {
             var (generationInfo, externalFonts) = pair;
+
             if (!IsValidTypeForGeneration(context, generationInfo.TargetType))
             {
                 return;
@@ -165,6 +166,15 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
                     context.ReportDiagnostic(Diagnostic.Create(
                         DuplicateMemberNameDiagnostic,
                         generateFiggleInfo.AttributeLocation ?? generationInfo.TargetType.Locations[0],
+                        generateFiggleInfo.MemberName));
+                    continue;
+                }
+
+                if (generationInfo.TargetType.GetMembers(generateFiggleInfo.MemberName!).Any())
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(
+                        DuplicateMemberNameDiagnostic,
+                        generationInfo.TargetType.Locations[0],
                         generateFiggleInfo.MemberName));
                     continue;
                 }
@@ -211,27 +221,20 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
 
             static string GetGeneratedFileName(ITypeSymbol type)
             {
-                if (type.ContainingNamespace is null)
-                {
-                    return $"{type.Name}.g.cs";
-                }
-
-                return $"{type.ContainingNamespace.ToDisplayString(_fullyQualifiedFormat)}.{type.Name}.g.cs";
+                return $"{type.ToDisplayString(_fullyQualifiedFormat)}.g.cs";
             }
         });
     }
 
     private string RenderSource(ITypeSymbol type, ImmutableArray<RenderSourceInfo> fontsToGenerate)
     {
-        if (type.ContainingNamespace is null)
+        if (type.ContainingNamespace.IsGlobalNamespace)
         {
             return $$"""
                 {{Header}}
-                static partial class {{type.Name}}
-                {
-                {{RenderFonts(fontsToGenerate, indentationLevel: 1)}}
+                partial class {{type.Name}}
+                {{{RenderFonts(fontsToGenerate, indentationLevel: 1)}}
                 }
-                
                 """;
         }
 
@@ -240,11 +243,9 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
             namespace {{type.ContainingNamespace.ToDisplayString(_fullyQualifiedFormat)}}
             {
                 partial class {{type.Name}}
-                {
-            {{RenderFonts(fontsToGenerate, indentationLevel: 2)}}
+                {{{RenderFonts(fontsToGenerate, indentationLevel: 2)}}
                 }
             }
-            
             """;
 
         static string RenderFonts(ImmutableArray<RenderSourceInfo> renderInfos, int indentationLevel)
@@ -256,6 +257,7 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
             {
                 var text = renderInfo.Font.Render(renderInfo.SourceText);
 
+                builder.AppendLine();
                 builder.Append($$"""
                     {{indentation}}public static string {{renderInfo.MemberName}} { get; } = @"{{text.Replace("\"", "\"\"")}}";
                     """);

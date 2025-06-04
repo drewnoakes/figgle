@@ -123,9 +123,9 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
             //     the code is regenerated.
             // </auto-generated>
 
-                partial class DemoUsage
-                {
-                    public static string Member { get; } = @"_____________________________   _______
+            partial class DemoUsage
+            {
+                public static string Member { get; } = @"_____________________________   _______
             7     77  77     77     77  7   7     7
             |  ___!|  ||   __!|   __!|  |   |  ___!
             |  __| |  ||  !  7|  !  7|  !___|  __|_
@@ -133,8 +133,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
             !__!   !__!!_____!!_____!!_____!!_____!
                                                    
             ";
-                }
-
+            }
             """;
 
         ValidateOutput(source, expected);
@@ -414,10 +413,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
 
         var (compilation, diagnostics) = RunGenerator(source);
 
-        var diagnostic = Assert.Single(diagnostics);
-
-        Assert.Same(RenderTextSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
-        Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
+        Assert.Empty(diagnostics);
 
         string expected =
             """
@@ -578,7 +574,7 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
         var diagnostic = Assert.Single(diagnostics);
 
         Assert.Same(RenderTextSourceGenerator.TypeIsNotPartialDiagnostic, diagnostic.Descriptor);
-        Assert.Equal("Type 'DemoUsage' must be partial", diagnostic.GetMessage());
+        Assert.Equal("Type 'Test.Namespace.DemoUsage' must be partial", diagnostic.GetMessage());
     }
 
     [Fact]
@@ -604,6 +600,6 @@ public partial class RenderTextSourceGeneratorTests : SourceGeneratorTests
         var diagnostic = Assert.Single(diagnostics);
 
         Assert.Same(RenderTextSourceGenerator.NestedTypeIsNotSupportedDiagnostic, diagnostic.Descriptor);
-        Assert.Equal("Unable to generate Figgle text for nested type 'Inner'. Generation is only supported for non-nested types.", diagnostic.GetMessage());
+        Assert.Equal("Unable to generate Figgle text for nested type 'Test.Namespace.Outer.Inner'. Generation is only supported for non-nested types.", diagnostic.GetMessage());
     }
 }

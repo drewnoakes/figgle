@@ -1,7 +1,6 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
 using System;
-using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
 using Figgle.Fonts;
@@ -10,11 +9,8 @@ using Xunit.Abstractions;
 
 namespace Figgle.Tests;
 
-public class FiggleFontTest
+public sealed class FiggleFontTest(ITestOutputHelper testOutput)
 {
-    private readonly ITestOutputHelper _output;
-    public FiggleFontTest(ITestOutputHelper output) => _output = output;
-
     [Fact]
     public void Render()
     {
@@ -88,7 +84,7 @@ public class FiggleFontTest
         void Test(FiggleFont font, string s, int? smushOverride = null, params string[] expected)
         {
             var output = font.Render(s, smushOverride);
-            var actual = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var actual = output.Split([Environment.NewLine], StringSplitOptions.None);
             actual = actual.Take(Math.Max(0, actual.Length - 1)).ToArray();
             Assert.Equal(expected.Length, actual.Length);
             for (var i = 0; i < expected.Length; i++)
@@ -97,8 +93,8 @@ public class FiggleFontTest
                     continue;
                 if (expected[i].Length != actual[i].Length)
                 {
-                    _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
-                    _output.WriteLine("Actual:\n" + output);
+                    testOutput.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
+                    testOutput.WriteLine("Actual:\n" + output);
                     Assert.Fail($"Mismatched lengths row {i}. Expecting '{expected[i].Length}' but got '{actual[i].Length}'.");
                 }
 
@@ -106,8 +102,8 @@ public class FiggleFontTest
                 {
                     if (expected[i][x] != actual[i][x])
                     {
-                        _output.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
-                        _output.WriteLine("Actual:\n" + output);
+                        testOutput.WriteLine("Expected:\n" + string.Join(Environment.NewLine, expected));
+                        testOutput.WriteLine("Actual:\n" + output);
                         Assert.Fail($"Mismatch at row {i} col {x}. Expecting '{expected[i][x]}' but got '{actual[i][x]}'.");
                     }
                 }
@@ -124,13 +120,11 @@ public class FiggleFontTest
         _ = font.Render("Hello, World!");
     }
 
-    public static IEnumerable<object[]> EnumerateAllFonts()
+    public static TheoryData<string, FiggleFont> EnumerateAllFonts()
     {
+        TheoryData<string, FiggleFont> data = [];
+
         using var stream = EmbeddedFontResource.GetFontArchiveStream();
-
-        if (stream is null)
-            throw new FiggleException("Unable to open embedded font archive.");
-
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
         StringPool stringPool = new();
@@ -138,8 +132,9 @@ public class FiggleFontTest
         foreach (var entry in zip.Entries)
         {
             using var entryStream = entry.Open();
-
-            yield return new object[] { entry.Name, FiggleFontParser.Parse(entryStream, stringPool) };
+            data.Add(entry.Name, FiggleFontParser.Parse(entryStream, stringPool));
         }
+
+        return data;
     }
 }

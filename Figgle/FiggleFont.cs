@@ -13,27 +13,19 @@ using System.Text;
 
 namespace Figgle;
 
-internal readonly struct Line
+internal readonly struct Line(string content, byte spaceBefore, byte spaceAfter)
 {
-    public string Content { get; }
-    public byte SpaceBefore { get; }
-    public byte SpaceAfter { get; }
+    public string Content { get; } = content;
+    public byte SpaceBefore { get; } = spaceBefore;
+    public byte SpaceAfter { get; } = spaceAfter;
 
     public char FrontChar => Content.Length == SpaceBefore ? ' ' : Content[SpaceBefore];
     public char BackChar  => Content.Length == SpaceAfter  ? ' ' : Content[Content.Length - SpaceAfter - 1];
-
-    public Line(string content, byte spaceBefore, byte spaceAfter)
-    {
-        Content = content;
-        SpaceBefore = spaceBefore;
-        SpaceAfter = spaceAfter;
-    }
 }
 
-internal sealed class FiggleCharacter
+internal sealed class FiggleCharacter(IReadOnlyList<Line> lines)
 {
-    public IReadOnlyList<Line> Lines { get; }
-    public FiggleCharacter(IReadOnlyList<Line> lines) => Lines = lines;
+    public IReadOnlyList<Line> Lines { get; } = lines;
 }
 
 /// <summary>Enumeration of possible text directions.</summary>

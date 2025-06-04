@@ -15,15 +15,12 @@ internal static class EmbeddedFontResource
     /// <summary>
     /// Gets the description of a FIGlet font by its name.
     /// </summary>
-    /// <param name="fontName">the font's name</param>
-    /// <returns>the font description string if font name is found, otherwise null</returns>
+    /// <param name="fontName">The font's name, without any file extension.</param>
+    /// <returns>the font description string if font name is found, otherwise <see langword="null"/>.</returns>
     /// <exception cref="InvalidOperationException">The stream contained an error and could not be parsed.</exception>
     public static string? GetFontDescription(string fontName)
     {
         using var stream = GetFontArchiveStream();
-
-        if (stream is null)
-            throw new FiggleException("Unable to open embedded font archive.");
 
         using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
@@ -38,7 +35,8 @@ internal static class EmbeddedFontResource
 
     internal static Stream GetFontArchiveStream()
     {
-        return Assembly.GetAssembly(typeof(EmbeddedFontResource))
-            .GetManifestResourceStream("Figgle.Fonts.Fonts.zip");
+        var assembly = typeof(EmbeddedFontResource).Assembly;
+        var stream = assembly.GetManifestResourceStream("Figgle.Fonts.Fonts.zip");
+        return stream ?? throw new FiggleException("Unable to open embedded font archive.");
     }
 }

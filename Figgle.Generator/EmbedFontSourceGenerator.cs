@@ -252,18 +252,22 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         return true;
     }
 
-    private string RenderSource(ITypeSymbol type, ImmutableArray<RenderSourceInfo> fontsToGenerate)
+    private static string RenderSource(ITypeSymbol type, ImmutableArray<RenderSourceInfo> fontsToGenerate)
     {
-        return $$"""
+        string ns = type.ContainingNamespace.ToDisplayString(_fullyQualifiedFormat);
+
+        if (ns.Length is not 0)
+        {
+            return $$"""
             {{Header}}
 
             using System;
             using System.Collections.Concurrent;
             using Figgle;
 
-            namespace {{type.ContainingNamespace.ToDisplayString(_fullyQualifiedFormat)}}
+            namespace {{ns}}
             {
-                {{GetAccessibility(type.DeclaredAccessibility)}} static partial class {{type.Name}}
+                static partial class {{type.Name}}
                 {
                     private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new(StringComparer.Ordinal);
                     private static readonly StringPool _stringPool = new();
@@ -272,6 +276,25 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             }
             
             """;
+        }
+        else
+        {
+            return $$"""
+                {{Header}}
+
+                using System;
+                using System.Collections.Concurrent;
+                using Figgle;
+
+                static partial class {{type.Name}}
+                {
+                    private static readonly ConcurrentDictionary<string, FiggleFont> _fontByName = new(StringComparer.Ordinal);
+                    private static readonly StringPool _stringPool = new();
+                    {{RenderFonts(fontsToGenerate, indentationLevel: 1)}}
+                }
+            
+                """;
+        }
 
         static string RenderFonts(ImmutableArray<RenderSourceInfo> renderInfos, int indentationLevel)
         {
@@ -290,20 +313,6 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
 
             return builder.ToString();
         }
-    }
-
-    private static string GetAccessibility(Accessibility declaredAccessibility)
-    {
-        return declaredAccessibility switch
-        {
-            Accessibility.Public => "public",
-            Accessibility.Internal => "internal",
-            Accessibility.Private => "private",
-            Accessibility.Protected => "protected",
-            Accessibility.ProtectedAndInternal => "protected internal",
-            Accessibility.NotApplicable => string.Empty,
-            _ => throw new NotImplementedException($"Unexpected accessibility '{declaredAccessibility}'"),
-        };
     }
 
     private sealed record EmbedFontAttributeInfo(

@@ -33,6 +33,20 @@
     <ProjectReference Include="..\Figgle\Figgle.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Using a T4 template to generate property accessors for all bundled fonts -->
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    <None Update="FiggleFonts.Generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FiggleFonts.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="FiggleFonts.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FiggleFonts.Generated.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
   <!-- Create the zip file before build -->
   <Target Name="CreateFontsZip" BeforeTargets="PrepareForBuild" Inputs="@(FontFiles)" Outputs="$(FontsZipFile)" Condition="'$(DesignTimeBuild)' != 'true' AND '$(BuildingProject)' == 'true'">
 

@@ -1,0 +1,91 @@
+<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ output extension=".cs" #>
+// Auto-generated code - Do not modify manually
+// Generated from FiggleFonts.Generated.tt
+
+namespace Figgle.Fonts;
+
+public static partial class FiggleFonts
+{
+<#
+
+Dictionary<string, string> aliases = GetFontAliases();
+
+List<string> fontNames = GetFontNames();
+    
+// Sort the font names for consistent ordering
+fontNames.Sort();
+    
+foreach (var fontName in fontNames)
+{
+    var propertyName = GeneratePropertyName(fontName, aliases);
+#>
+    /// <summary>Obtains the <see cref="FiggleFont"/> for the font named <c><#= fontName #></c>.</summary>
+    public static FiggleFont <#= propertyName #> => GetByName("<#= fontName #>");
+<#
+}
+#>}
+
+<#+
+private Dictionary<string, string> GetFontAliases()
+{
+    var aliasFile = Path.Combine(Host.ResolvePath("."), "Aliases.csv");
+
+    // Property name by file name
+    Dictionary<string, string> aliases = new();
+
+    string content = File.ReadAllText(aliasFile);
+                
+    foreach (var line in content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+    {
+        var parts = line.Split(',');
+        if (parts.Length == 2)
+        {
+            var fontName = parts[0].Trim();
+            var propertyName = parts[1].Trim();
+                        
+            if (!string.IsNullOrEmpty(fontName) && !string.IsNullOrEmpty(propertyName))
+            {
+                aliases[fontName] = propertyName;
+            }
+        }
+    }
+
+    return aliases;
+}
+
+private List<string> GetFontNames()
+{
+    var fontDir = Path.GetFullPath(Path.Combine(Host.ResolvePath("."), "..", "fonts"));
+
+    if (!Directory.Exists(fontDir))
+    {
+        throw new DirectoryNotFoundException($"Font directory not found at {fontDir}");
+    }
+        
+    var fontFiles = Directory.GetFiles(fontDir, "*.flf");
+    return fontFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+}
+    
+private string GeneratePropertyName(string fontName, Dictionary<string, string> aliases)
+{
+    // Property name by file name
+    if (aliases.TryGetValue(fontName, out var alias))
+    {
+        return alias;
+    }
+
+    // If no alias is found, generate a PascalCase property name
+    return Regex
+        .Replace(fontName, @"(?<=^|[\s\-_0-9])[a-z]", m => m.Value.ToUpperInvariant())
+        .Replace(" ", "")
+        .Replace("-", "")
+        .Replace("_", "");
+}
+#>

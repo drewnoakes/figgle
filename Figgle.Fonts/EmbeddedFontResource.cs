@@ -36,7 +36,7 @@ internal static class EmbeddedFontResource
     internal static Stream GetFontArchiveStream()
     {
         var assembly = typeof(EmbeddedFontResource).Assembly;
-        var stream = assembly.GetManifestResourceStream("Figgle.Fonts.Fonts.zip");
+        var stream = assembly.GetManifestResourceStream("Figgle.Fonts.zip");
         return stream ?? throw new FiggleException("Unable to open embedded font archive.");
     }
 }

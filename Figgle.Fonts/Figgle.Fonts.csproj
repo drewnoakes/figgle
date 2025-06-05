@@ -5,10 +5,23 @@
     <Description>Standard fonts for ASCII banner generation</Description>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- We cannot use IntermediateOutputPath here, as it's assigned in a target, not during evaluation. -->
+    <FontsZipFile>$(BaseIntermediateOutputPath)$(Configuration)\$(TargetFramework)\Fonts.zip</FontsZipFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Fonts.zip" />
+    <!-- Collect all font files -->
+    <FontFiles Include="..\fonts\*.flf" />
+
+    <!-- Configure additional inputs/outputs for incremental builds in Visual Studio -->
+    <UpToDateCheckInput Include="@(FontFiles)" Set="FontFile" />
+    <UpToDateCheckOutput Include="$(FontsZipFile)" Set="FontFile" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Embed the generated zip file -->
+    <EmbeddedResource Include="$(FontsZipFile)" LogicalName="Figgle.Fonts.zip" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,5 +32,15 @@
   <ItemGroup>
     <ProjectReference Include="..\Figgle\Figgle.csproj" />
   </ItemGroup>
+
+  <!-- Create the zip file before build -->
+  <Target Name="CreateFontsZip" BeforeTargets="PrepareForBuild" Inputs="@(FontFiles)" Outputs="$(FontsZipFile)" Condition="'$(DesignTimeBuild)' != 'true' AND '$(BuildingProject)' == 'true'">
+
+    <!-- Create directory if it doesn't exist -->
+    <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
+
+    <!-- Create the zip file -->
+    <ZipDirectory SourceDirectory="..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true" />
+  </Target>
 
 </Project>

@@ -170,7 +170,7 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
                 var renderInfoBuilder = ImmutableArray.CreateBuilder<RenderSourceInfo>(
                     attributeInfos.Count);
 
-                var memberNames = new HashSet<string>();
+                var memberNames = new HashSet<string>(StringComparer.Ordinal);
                 foreach (var generateFiggleInfo in attributeInfos)
                 {
                     if (!SyntaxFacts.IsValidIdentifier(generateFiggleInfo.MemberName))

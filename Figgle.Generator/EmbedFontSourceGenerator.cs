@@ -126,23 +126,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                     attributeInfos);
             });
 
-        var externalFontsProvider = context.AdditionalTextsProvider
-            .Combine(context.AnalyzerConfigOptionsProvider)
-            .Where(pair => pair.Left.Path.EndsWith(".flf", StringComparison.OrdinalIgnoreCase))
-            .Select(static (pair, cancellationToken) =>
-            {
-                var (additionalFile, optionsProvider) = pair;
-                var additionalFileOptions = optionsProvider.GetOptions(additionalFile);
-
-                additionalFileOptions.TryGetValue("build_metadata.AdditionalFiles.FontName", out var fontNameValue);
-                var fontName = fontNameValue ?? Path.GetFileNameWithoutExtension(additionalFile.Path);
-
-                return new ExternalFont(
-                    fontName,
-                    // GetText returns null if there are errors reading the file.
-                    additionalFile.GetText(cancellationToken)?.ToString());
-            })
-            .Collect();
+        var externalFontsProvider = context.GetExternalFontsProvider();
 
         var embedFontInfoProvider = generationInfoProvider.Combine(externalFontsProvider);
         context.RegisterSourceOutput(embedFontInfoProvider, (context, pair) =>
@@ -335,10 +319,6 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         Location? Location,
         string? MemberName,
         string? FontName);
-
-    private sealed record ExternalFont(
-        string FontName,
-        string? FontDescriptionString);
 
     private sealed record GenerationInfo(
         ITypeSymbol TargetType,

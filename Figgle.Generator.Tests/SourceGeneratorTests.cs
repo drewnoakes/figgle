@@ -35,7 +35,7 @@ public abstract class SourceGeneratorTests
         }
     }
 
-    protected abstract ISourceGenerator CreateSourceGenerator();
+    protected abstract IIncrementalGenerator CreateIncrementalSourceGenerator();
 
     protected void ValidateOutput(string source, params string[] outputs)
     {
@@ -75,7 +75,10 @@ public abstract class SourceGeneratorTests
             _references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        ISourceGenerator generator = CreateSourceGenerator();
+        // need to convert to ISourceGenerator because the CSharpGeneratorDriver.Create overload
+        // we want to use doesn't accept IIncrementalGenerator.
+        ISourceGenerator generator = CreateIncrementalSourceGenerator()
+            .AsSourceGenerator();
 
         var driver = CSharpGeneratorDriver.Create(
             [generator],

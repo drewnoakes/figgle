@@ -8,9 +8,9 @@ namespace Figgle.Generator.Tests;
 
 public class EmbedFontSourceGeneratorTests : SourceGeneratorTests
 {
-    protected override ISourceGenerator CreateSourceGenerator()
+    protected override IIncrementalGenerator CreateIncrementalSourceGenerator()
     {
-        return new EmbedFontSourceGenerator().AsSourceGenerator();
+        return new EmbedFontSourceGenerator();
     }
 
     [Fact]

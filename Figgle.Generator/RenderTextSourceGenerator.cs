@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Figgle.Fonts;
@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Figgle.Generator;
 
 [Generator]
-public sealed class RenderTextSourceGenerator : ISourceGenerator
+public sealed class RenderTextSourceGenerator : IIncrementalGenerator
 {
     public static readonly DiagnosticDescriptor UnknownFontNameDiagnostic = new(
         "FGL0001",
@@ -68,6 +68,9 @@ public sealed class RenderTextSourceGenerator : ISourceGenerator
 
         """;
 
+    private const string AttributeNamespace = "Figgle";
+    private const string AttributeName = "GenerateFiggleTextAttribute";
+
     public const string AttributeSource =
         $$"""
         {{Header}}
@@ -75,19 +78,19 @@ public sealed class RenderTextSourceGenerator : ISourceGenerator
         using System.Diagnostics;
         using System.Diagnostics.CodeAnalysis;
 
-        namespace Figgle
+        namespace {{AttributeNamespace}}
         {
             [Conditional("INCLUDE_FIGGLE_GENERATOR_ATTRIBUTES")]
             [ExcludeFromCodeCoverage]
             [DebuggerNonUserCode]
             [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-            internal sealed class GenerateFiggleTextAttribute : Attribute
+            internal sealed class {{AttributeName}} : Attribute
             {
                 public string MemberName { get; }
                 public string FontName { get; }
                 public string SourceText { get; }
 
-                public GenerateFiggleTextAttribute(string memberName, string fontName, string sourceText)
+                public {{AttributeName}}(string memberName, string fontName, string sourceText)
                 {
                     MemberName = memberName;
                     FontName = fontName;
@@ -97,244 +100,263 @@ public sealed class RenderTextSourceGenerator : ISourceGenerator
         }
         """;
 
-    public void Initialize(GeneratorInitializationContext context)
-    {
-        context.RegisterForSyntaxNotifications(() => new Receiver());
-    }
+    private static readonly SymbolDisplayFormat _fullyQualifiedFormat
+        = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(
+            SymbolDisplayGlobalNamespaceStyle.Omitted);
 
-    public void Execute(GeneratorExecutionContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.AddSource("GenerateFiggleTextAttribute.cs", AttributeSource);
-
-        if (context.SyntaxContextReceiver is Receiver receiver)
+        context.RegisterPostInitializationOutput(context =>
         {
-            foreach (var diagnostic in receiver.Diagnostics)
+           context.AddSource($"{AttributeName}.cs", AttributeSource);
+        });
+
+        var generationInfoProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
+            $"{AttributeNamespace}.{AttributeName}",
+            predicate: static (syntaxNode, cancellationToken) => syntaxNode is ClassDeclarationSyntax,
+            transform: (context, cancellationToken) =>
             {
-                context.ReportDiagnostic(diagnostic);
-            }
-
-            foreach (var pair in receiver.DataByType)
-            {
-                var type = pair.Key;
-                var data = pair.Value;
-
-                var sb = new StringBuilder();
-
-                sb.AppendLine(Header);
-
-                if (type.Namespace is not null)
+                // use hash set to de-dup attributes that are identical.  If an attribute specifies
+                // the same member name multiple times with different font names, we will report a diagnostic
+                // later in RegisterSourceOutput since we can't report diagnostics from here.
+                var attributeInfos = new HashSet<RenderItem>(RenderItemComparer.Instance);
+                foreach (var matchingAttributeData in context.Attributes)
                 {
-                    sb.AppendLine(
-                        $$"""
-                        namespace {{type.Namespace}}
-                        {
-                        """);
+                    attributeInfos.Add(new RenderItem(
+                        matchingAttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
+                        (string?)matchingAttributeData.ConstructorArguments[0].Value,
+                        (string?)matchingAttributeData.ConstructorArguments[1].Value,
+                        (string?)matchingAttributeData.ConstructorArguments[2].Value));
                 }
 
-                sb.AppendLine(
-                    $$"""
-                        partial class {{type.Class}}
-                        {
-                    """);
+                return new GenerationInfo(
+                    (ITypeSymbol)context.TargetSymbol,
+                    attributeInfos);
+            });
 
-                foreach (var item in data.Items)
+        var externalFontsProvider = context.GetExternalFontsProvider();
+        var embedFontInfoProvider = generationInfoProvider.Collect().Combine(externalFontsProvider);
+
+        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair)=>
+        {
+            var (generationInfos, externalFonts) = pair;
+
+            // Group by the target type in case there are multiple partial definitions
+            // for a single type, so that we can generate one file per type.
+            var typeToGenerateGroup = generationInfos.GroupBy(
+                keySelector: info => info.TargetType,
+                elementSelector: info => info.AttributeInfos,
+                comparer: SymbolEqualityComparer.Default);
+
+            foreach (var generateGroup in typeToGenerateGroup)
+            {
+                var targetType = (ITypeSymbol)generateGroup.Key!;
+
+                // There may be multiple partial definitions for the same symbol,
+                // each listing different attributes that may or may not repeat.
+                // By merging all attributes into a single hash set, we ensure there
+                // are no repeats and we generate all source in one file per type.
+                var attributeInfos = new HashSet<RenderItem>(RenderItemComparer.Instance);
+                foreach (var attributeInfo in generateGroup)
                 {
-                    var font = FiggleFonts.TryGetByName(item.FontName)
-                        ?? TryParseFromAdditionalFiles(context, item.FontName);
+                    attributeInfos.UnionWith(attributeInfo);
+                }
 
-                    if (font is null)
+                if (!IsValidTypeForGeneration(context, targetType))
+                {
+                    return;
+                }
+
+                var renderInfoBuilder = ImmutableArray.CreateBuilder<RenderSourceInfo>(
+                    attributeInfos.Count);
+
+                var memberNames = new HashSet<string>(StringComparer.Ordinal);
+                foreach (var generateFiggleInfo in attributeInfos)
+                {
+                    if (!SyntaxFacts.IsValidIdentifier(generateFiggleInfo.MemberName))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
-                            UnknownFontNameDiagnostic,
-                            item.FontNameLocation,
-                            item.FontName));
+                            InvalidMemberNameDiagnostic,
+                            generateFiggleInfo.AttributeLocation ?? targetType.Locations[0],
+                            generateFiggleInfo.MemberName ?? "unknown"));
                         continue;
                     }
 
-                    if (!data.SeenMemberNames.Add(item.MemberName))
+                    if (!memberNames.Add(generateFiggleInfo.MemberName!))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
                             DuplicateMemberNameDiagnostic,
-                            item.MemberNameLocation,
-                            item.MemberName));
+                            generateFiggleInfo.AttributeLocation ?? targetType.Locations[0],
+                            generateFiggleInfo.MemberName));
                         continue;
                     }
 
-                    var text = font.Render(item.SourceText);
-
-                    sb.AppendLine(
-                        $$"""
-                                public static string {{item.MemberName}} { get; } = @"{{text.Replace("\"", "\"\"")}}";
-                        """);
-                }
-
-                sb.AppendLine(
-                    """
-                        }
-                    """);
-
-                if (type.Namespace is not null)
-                {
-                    sb.Append('}');
-                }
-
-                var hintName = type.Namespace is null
-                    ? $"{type.Class}.FiggleGenerated.cs"
-                    : $"{type.Namespace}.{type.Class}.FiggleGenerated.cs";
-
-                context.AddSource(hintName, sb.ToString());
-            }
-        }
-    }
-
-    private static FiggleFont? TryParseFromAdditionalFiles(
-        GeneratorExecutionContext context,
-        string fontName)
-    {
-        var matchingAdditionalFile = GetMatchingExternalFontFile(context, fontName);
-
-        if (matchingAdditionalFile is null)
-        {
-            return null;
-        }
-
-        var text = matchingAdditionalFile.GetText();
-        if (text is null)
-        {
-            return null;
-        }
-
-        var textEncoding = text.Encoding ?? Encoding.UTF8;
-        using var stream = new MemoryStream(textEncoding.GetBytes(text.ToString()));
-        return FiggleFontParser.Parse(stream);
-
-        static AdditionalText? GetMatchingExternalFontFile(
-            GeneratorExecutionContext context,
-            string fontName)
-        {
-            // If additional file has an explicit font name property defined, prefer that first.
-            // Otherwise, fall back to matching the filename.
-            var matchingFile = context.AdditionalFiles
-                .FirstOrDefault(f => FontNamePropertyMatchesFontName(context, f, fontName));
-
-            if (matchingFile is not null)
-            {
-                return matchingFile;
-            }
-
-            return context.AdditionalFiles.FirstOrDefault(f => FileNameMatchesFontName(f, fontName));
-
-            static bool FontNamePropertyMatchesFontName(
-                GeneratorExecutionContext context,
-                AdditionalText fontFile,
-                string fontName)
-            {
-                // a "build_metadata" prefix is added by msbuild for CompilerVisibleItemMetadata
-                context.AnalyzerConfigOptions.GetOptions(fontFile).TryGetValue(
-                    "build_metadata.AdditionalFiles.FontName",
-                    out var fontNameProperty);
-
-                if (fontNameProperty is null)
-                {
-                    return false;
-                }
-
-                return fontNameProperty.Equals(fontName, StringComparison.OrdinalIgnoreCase);
-            }
-
-            static bool FileNameMatchesFontName(AdditionalText fontFile, string fontName)
-            {
-                return Path.GetFileName(fontFile.Path).Equals(
-                    $"{fontName}.flf",
-                    StringComparison.OrdinalIgnoreCase);
-            }
-        }
-    }
-
-    private sealed record TypeItems(List<RenderItem> Items, HashSet<string> SeenMemberNames);
-
-    private sealed record RenderItem(string MemberName, Location MemberNameLocation, string FontName, Location FontNameLocation, string SourceText);
-
-    private sealed class Receiver : ISyntaxContextReceiver
-    {
-        public List<Diagnostic> Diagnostics { get; } = new();
-
-        public Dictionary<(string Class, string? Namespace), TypeItems> DataByType { get; } = new();
-
-        public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
-        {
-            if (context.Node is ClassDeclarationSyntax classDeclaration)
-            {
-                foreach (var attributeList in classDeclaration.AttributeLists)
-                {
-                    foreach (var attribute in attributeList.Attributes)
+                    if (targetType.GetMembers(generateFiggleInfo.MemberName!).Any())
                     {
-                        if (attribute.Name is IdentifierNameSyntax name &&
-                            (name.Identifier.Text == "GenerateFiggleTextAttribute" || name.Identifier.Text == "GenerateFiggleText") &&
-                            attribute.ArgumentList is not null &&
-                            attribute.ArgumentList.Arguments.Count == 3 &&
-                            attribute.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0 &&
-                            attribute.ArgumentList.Arguments[1].Expression is LiteralExpressionSyntax arg1 &&
-                            attribute.ArgumentList.Arguments[2].Expression is LiteralExpressionSyntax arg2)
-                        {
-                            var classSymbol = ModelExtensions.GetDeclaredSymbol(context.SemanticModel, classDeclaration);
-
-                            if (classSymbol is not INamedTypeSymbol namedTypeSymbol)
-                            {
-                                throw new("Unable to obtain source class details.");
-                            }
-
-                            (string ClassName, string? Namespace) key = (namedTypeSymbol.Name, namedTypeSymbol.ContainingNamespace.IsGlobalNamespace ? null : namedTypeSymbol.ContainingNamespace.ToString());
-
-                            if (namedTypeSymbol.ContainingType is not null)
-                            {
-                                Diagnostics.Add(Diagnostic.Create(
-                                    NestedTypeIsNotSupportedDiagnostic,
-                                    Location.Create(attribute.SyntaxTree, attribute.Span),
-                                    key.ClassName));
-                                continue;
-                            }
-
-                            if (!classDeclaration.Modifiers.Any(modifier => modifier.Text == "partial"))
-                            {
-                                Diagnostics.Add(Diagnostic.Create(
-                                    TypeIsNotPartialDiagnostic,
-                                    Location.Create(attribute.SyntaxTree, attribute.Span),
-                                    key.ClassName));
-                                continue;
-                            }
-
-                            if (!DataByType.TryGetValue(key, out var typeItems))
-                            {
-                                DataByType[key] = typeItems = new(new(), new(StringComparer.Ordinal));
-                            }
-
-                            typeItems.SeenMemberNames.UnionWith(namedTypeSymbol.MemberNames);
-
-                            var memberName = arg0.Token.ValueText;
-                            var memberNameLocation = ToLocation(attribute.ArgumentList.Arguments[0]);
-
-                            var fontName = arg1.Token.ValueText;
-                            var fontNameLocation = ToLocation(attribute.ArgumentList.Arguments[1]);
-
-                            var sourceText = arg2.Token.ValueText;
-
-                            if (!SyntaxFacts.IsValidIdentifier(memberName))
-                            {
-                                Diagnostics.Add(Diagnostic.Create(
-                                    InvalidMemberNameDiagnostic,
-                                    memberNameLocation,
-                                    memberName));
-                                continue;
-                            }
-
-                            typeItems.Items.Add(new(memberName, memberNameLocation, fontName, fontNameLocation, sourceText));
-
-                            static Location ToLocation(SyntaxNode node) => Location.Create(node.SyntaxTree, node.Span);
-                        }
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            DuplicateMemberNameDiagnostic,
+                            targetType.Locations[0],
+                            generateFiggleInfo.MemberName));
+                        continue;
                     }
+
+                    if (string.IsNullOrWhiteSpace(generateFiggleInfo.FontName))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            UnknownFontNameDiagnostic,
+                            targetType.Locations[0],
+                            generateFiggleInfo.MemberName ?? "unknown"));
+                        continue;
+                    }
+
+                    var figgleFont = FiggleFonts.TryGetByName(generateFiggleInfo.FontName!);
+                    if (figgleFont is null)
+                    {
+                        // check if the requested font to use is available in the external fonts
+                        var matchingExternalFont = externalFonts.FirstOrDefault(
+                            externalFont => externalFont.FontName.Equals(
+                                generateFiggleInfo.FontName,
+                                StringComparison.OrdinalIgnoreCase));
+
+                        if (matchingExternalFont is null || matchingExternalFont.FontDescriptionString is null)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                UnknownFontNameDiagnostic,
+                                generateFiggleInfo.AttributeLocation ?? targetType.Locations[0],
+                                generateFiggleInfo.FontName));
+                            continue;
+                        }
+
+                        figgleFont = FiggleFontParser.ParseString(matchingExternalFont.FontDescriptionString);
+                    }
+
+                    renderInfoBuilder.Add(new(
+                        generateFiggleInfo.MemberName!,
+                        generateFiggleInfo.SourceText!,
+                        figgleFont));
+                }
+
+                context.AddSource(
+                    GetGeneratedFileName(targetType),
+                    RenderSource(targetType, renderInfoBuilder.ToImmutable()));
+
+                static string GetGeneratedFileName(ITypeSymbol type)
+                {
+                    return $"{type.ToDisplayString(_fullyQualifiedFormat)}.g.cs";
                 }
             }
+        });
+    }
+
+    private string RenderSource(ITypeSymbol type, ImmutableArray<RenderSourceInfo> fontsToGenerate)
+    {
+        if (type.ContainingNamespace.IsGlobalNamespace)
+        {
+            return $$"""
+                {{Header}}
+                partial class {{type.Name}}
+                {{{RenderFonts(fontsToGenerate, indentationLevel: 1)}}
+                }
+                """;
+        }
+
+        return $$"""
+            {{Header}}
+            namespace {{type.ContainingNamespace.ToDisplayString(_fullyQualifiedFormat)}}
+            {
+                partial class {{type.Name}}
+                {{{RenderFonts(fontsToGenerate, indentationLevel: 2)}}
+                }
+            }
+            """;
+
+        static string RenderFonts(ImmutableArray<RenderSourceInfo> renderInfos, int indentationLevel)
+        {
+            string indentation = new(' ', indentationLevel * 4);
+            var builder = new StringBuilder(capacity: 4096);
+
+            foreach (var renderInfo in renderInfos)
+            {
+                var text = renderInfo.Font.Render(renderInfo.SourceText);
+
+                builder.AppendLine();
+                builder.Append($$"""
+                    {{indentation}}public static string {{renderInfo.MemberName}} { get; } = @"{{text.Replace("\"", "\"\"")}}";
+                    """);
+            }
+
+            return builder.ToString();
+        }
+    }
+
+    private static bool IsValidTypeForGeneration(
+        SourceProductionContext context,
+        ITypeSymbol typeToGenerate)
+    {
+        if (typeToGenerate.ContainingType is not null)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                NestedTypeIsNotSupportedDiagnostic,
+                typeToGenerate.Locations[0],
+                typeToGenerate.ToDisplayString(_fullyQualifiedFormat)));
+            return false;
+        }
+
+        // we know the syntax *must* be a class declaration because of the predicate we used in the syntax provider,
+        var classSyntax = (ClassDeclarationSyntax)typeToGenerate.DeclaringSyntaxReferences
+            .First()
+            .GetSyntax(context.CancellationToken);
+        if (!classSyntax.Modifiers.Any(SyntaxKind.PartialKeyword))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(
+                TypeIsNotPartialDiagnostic,
+                typeToGenerate.Locations[0],
+                typeToGenerate.ToDisplayString(_fullyQualifiedFormat)));
+            return false;
+        }
+
+        return true;
+    }
+
+    private sealed record RenderItem(
+        Location? AttributeLocation,
+        string? MemberName,
+        string? FontName,
+        string? SourceText);
+
+    private sealed record GenerationInfo(
+        ITypeSymbol TargetType,
+        HashSet<RenderItem> AttributeInfos);
+
+    private sealed record RenderSourceInfo(
+        string MemberName,
+        string SourceText,
+        FiggleFont Font);
+
+    private sealed class RenderItemComparer : IEqualityComparer<RenderItem>
+    {
+        public static readonly RenderItemComparer Instance = new();
+
+        public bool Equals(RenderItem? x, RenderItem? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            return x.MemberName == y.MemberName
+                && x.FontName == y.FontName
+                && x.SourceText == y.SourceText;
+        }
+
+        public int GetHashCode(RenderItem obj)
+        {
+            return (obj.MemberName, obj.FontName, obj.SourceText).GetHashCode();
         }
     }
 }

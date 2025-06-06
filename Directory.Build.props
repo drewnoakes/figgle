@@ -35,6 +35,9 @@
 
     <!-- Suppress NU1507: There are 2 package sources defined in your configuration. When using central package management, please map your package sources with package source mapping or specify a single package source. -->
     <NoWarn>$(NoWarn);NU1507</NoWarn>
+
+    <!-- Improves incremental build performance -->
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <ItemGroup>

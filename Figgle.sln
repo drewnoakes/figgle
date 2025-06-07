@@ -306,6 +306,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{02EA
 		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Figgle.Fonts.Generator", "Figgle.Fonts.Generator\Figgle.Fonts.Generator.csproj", "{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -400,6 +402,18 @@ Global
 		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x64.Build.0 = Release|Any CPU
 		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x86.ActiveCfg = Release|Any CPU
 		{A94B3D16-C26C-4822-A0DF-846A11B27F7D}.Release|x86.Build.0 = Release|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Debug|x64.Build.0 = Debug|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Debug|x86.Build.0 = Debug|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Release|x64.ActiveCfg = Release|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Release|x64.Build.0 = Release|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Release|x86.ActiveCfg = Release|Any CPU
+		{021EFDCD-EE3F-4C35-B93E-2E760AA481AF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

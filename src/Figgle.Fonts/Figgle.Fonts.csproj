@@ -19,7 +19,7 @@
     <UpToDateCheckOutput Include="$(FontsZipFile)" Set="FontFile" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(DesignTimeBuild)' != 'true' OR '$(BuildingProject)' == 'true'">
     <!-- Embed the generated zip file -->
     <EmbeddedResource Include="$(FontsZipFile)" LogicalName="Figgle.Fonts.zip" />
   </ItemGroup>

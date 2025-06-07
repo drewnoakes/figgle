@@ -24,7 +24,7 @@
     <PackageReference Include="IsExternalInit" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(DesignTimeBuild)' != 'true' OR '$(BuildingProject)' == 'true'">
     <None Include="$(OutputPath)\Figgle.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.pdb" Pack="true" PackagePath="analyzers\dotnet\cs" />
     <None Include="$(OutputPath)\Figgle.Fonts.dll" Pack="true" PackagePath="analyzers\dotnet\cs" />

@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- The target framework used for all test code. -->
+    <TargetFramework>net9.0</TargetFramework>
+    
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AnalysisLevel>latest</AnalysisLevel>
+
+    <!-- Improves incremental build performance. -->
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Roslyn.Diagnostics.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

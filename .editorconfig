@@ -207,4 +207,3 @@ dotnet_diagnostic.IDE0270.severity = suggestion # Null check can be simplified
 # license header
 dotnet_diagnostic.IDE0073.severity = error      # Enforce file header
 file_header_template = Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
-

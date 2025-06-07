@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Figgle.Fonts\Figgle.Fonts.csproj" />
+    <ProjectReference Include="..\..\src\Figgle\Figgle.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\Figgle\ParseUtil.cs" Link="Source\ParseUtil.cs" />
+  </ItemGroup>
+
+</Project>

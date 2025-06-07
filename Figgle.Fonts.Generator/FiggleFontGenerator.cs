@@ -106,6 +106,8 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
                 }
                 """;
 
+            // we expect only a single Alias.csv file, so we don't need to worry about making
+            // the source file name unique.
             context.AddSource("FiggleFonts.g.cs", source);
 
             static string RenderFiggleFontProperties(

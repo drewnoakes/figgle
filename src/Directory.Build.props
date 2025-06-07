@@ -38,8 +38,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)/../images/logo-square-256px.png" Pack="true" PackagePath="\" Visible="false" />
-    <None Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath="\" Visible="false" />
+    <!-- Add the project logo to all packages. -->
+    <None Include="$(MSBuildThisFileDirectory)\..\images\logo-square-256px.png" Pack="true" PackagePath="\" Visible="false" />
+
+    <!-- Each package has its own README file. -->
+    <None Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" Condition="Exists('$(MSBuildProjectDirectory)\README.md')" />
   </ItemGroup>
 
   <ItemGroup>

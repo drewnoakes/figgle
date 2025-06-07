@@ -285,10 +285,11 @@
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
     <File Path="src/Directory.Packages.props" />
-    <Project Path="src/Figgle/Figgle.csproj" />
+    <File Path="src/README.md" />
     <Project Path="src/Figgle.Fonts/Figgle.Fonts.csproj" />
     <Project Path="src/Figgle.Fonts.Generator/Figgle.Fonts.Generator.csproj" />
     <Project Path="src/Figgle.Generator/Figgle.Generator.csproj" />
+    <Project Path="src/Figgle/Figgle.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <File Path="tests/Directory.Build.props" />

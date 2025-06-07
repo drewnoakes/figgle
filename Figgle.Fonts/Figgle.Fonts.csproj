@@ -14,8 +14,6 @@
     <!-- Collect all font files -->
     <FontFiles Include="..\fonts\*.flf" />
 
-    <AdditionalFiles Include="Aliases.csv" />
-
     <!-- Configure additional inputs/outputs for incremental builds in Visual Studio -->
     <UpToDateCheckInput Include="@(FontFiles)" Set="FontFile" />
     <UpToDateCheckOutput Include="$(FontsZipFile)" Set="FontFile" />
@@ -24,6 +22,11 @@
   <ItemGroup>
     <!-- Embed the generated zip file -->
     <EmbeddedResource Include="$(FontsZipFile)" LogicalName="Figgle.Fonts.zip" />
+  </ItemGroup>
+
+  <ItemGroup Label="Internal source generator configurations">
+    <AdditionalFiles Include="Aliases.csv" />
+    <AdditionalFiles Include="@(FontFiles)" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +40,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Figgle.Fonts.Generator\Figgle.Fonts.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    
+    <!-- 
+      Figgle.Fonts.Generator depends on Figgle to generate sample text documentation, so we must include it as an "analyzer" to make it available
+      to the generator.
+      
+      Note that this project *also* has a runtime dependency to Figgle, which we set as a normal ProjectReference above.  The two does not conflict.
+    -->
+    <ProjectReference Include="..\Figgle\Figgle.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <!-- Create the zip file before build -->

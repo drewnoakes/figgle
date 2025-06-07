@@ -14,5 +14,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="IsExternalInit" PrivateAssets="all" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\Figgle\Figgle.csproj" />
+  </ItemGroup>
 </Project>

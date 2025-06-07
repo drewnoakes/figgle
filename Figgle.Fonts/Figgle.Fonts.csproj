@@ -45,7 +45,7 @@
       Figgle.Fonts.Generator depends on Figgle to generate sample text documentation, so we must include it as an "analyzer" to make it available
       to the generator.
       
-      Note that this project *also* has a runtime dependency to Figgle, which we set as a normal ProjectReference above.  The two does not conflict.
+      Note that this project *also* has a runtime dependency to Figgle, which we set as a normal ProjectReference above.  The two do not conflict.
     -->
     <ProjectReference Include="..\Figgle\Figgle.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>

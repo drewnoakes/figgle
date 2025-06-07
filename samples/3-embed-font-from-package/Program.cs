@@ -13,14 +13,14 @@ while (true)
     Console.WriteLine();
     Console.WriteLine(MyFonts.ThreeDDiagonal.Render(message));
     Console.WriteLine();
-    Console.WriteLine($"Rendered with {nameof(MyFonts.Blocks)}");
+    Console.WriteLine($"Rendered with {nameof(MyFonts.Cosmic)}");
     Console.WriteLine();
-    Console.WriteLine(MyFonts.Blocks.Render(message));
+    Console.WriteLine(MyFonts.Cosmic.Render(message));
     Console.WriteLine();
 }
 
 [EmbedFiggleFont(memberName: "ThreeDDiagonal", fontName: "3d_diagonal")]
-[EmbedFiggleFont(memberName: "Blocks", fontName: "blocks")]
+[EmbedFiggleFont(memberName: "Cosmic", fontName: "cosmic")]
 internal static partial class MyFonts
 {
 }

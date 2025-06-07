@@ -3,10 +3,6 @@
   <!-- Simulate consuming NuPget package's props file. -->
   <Import Project="..\..\src\Figgle.Generator\build\Figgle.Generator.props" />
   
-  <PropertyGroup>
-    <TargetFramework>$(SupportingProjectTargetFramework)</TargetFramework>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

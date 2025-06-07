@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Figgle.Generator;
 
 [Generator]
-public sealed class RenderTextSourceGenerator : IIncrementalGenerator
+internal sealed class RenderTextSourceGenerator : IIncrementalGenerator
 {
     public static readonly DiagnosticDescriptor UnknownFontNameDiagnostic = new(
         "FGL0001",

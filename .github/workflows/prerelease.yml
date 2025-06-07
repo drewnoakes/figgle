@@ -13,9 +13,9 @@ jobs:
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       shell: bash
     - run: echo ${{ steps.get_version.outputs.VERSION }}
-    - run: dotnet pack Figgle -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
-    - run: dotnet pack Figgle.Fonts -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
-    - run: dotnet pack Figgle.Generator -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
+    - run: dotnet pack src/Figgle -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
+    - run: dotnet pack src/Figgle.Fonts -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
+    - run: dotnet pack src/Figgle.Generator -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
     - run: dotnet nuget push *.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
       env:
         NUGET_API_KEY: ${{ secrets.NuGetAPIKey }}

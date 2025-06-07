@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Standard fonts for ASCII banner generation</Description>
-    <IsPackable>true</IsPackable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <!-- We cannot use IntermediateOutputPath here, as it's assigned in a target, not during evaluation. -->
     <FontsZipFile>$(BaseIntermediateOutputPath)$(Configuration)\$(TargetFramework)\Fonts.zip</FontsZipFile>

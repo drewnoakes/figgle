@@ -1,6 +1,8 @@
 <Project>
 
   <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 
@@ -26,9 +28,11 @@
     <IncludeSource>true</IncludeSource>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
     <AnalysisLevel>latest</AnalysisLevel>
 
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
 
     <!-- Improves incremental build performance. -->
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>

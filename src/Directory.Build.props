@@ -43,10 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslyn.Diagnostics.Analyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Roslyn.Diagnostics.Analyzers" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
   </ItemGroup>
 

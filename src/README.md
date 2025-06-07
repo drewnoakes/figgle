@@ -1,3 +1,11 @@
+```
+ _____ _         _     
+|   __|_|___ ___| |___ 
+|   __| | . | . | | -_|
+|__|  |_|_  |_  |_|___|
+        |___|___|      
+```
+
 # Source
 
 This folder contains the source code for all of Figgle's NuGet packages.

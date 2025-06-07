@@ -34,11 +34,29 @@ The library bundles 265 [FIGlet](http://www.figlet.org/) [fonts](http://www.jave
 
 ## Installation
 
-Available via [NuGet](https://www.nuget.org/packages/Figgle/):
+Figgle ships as NuGet packages that target .NET Standard 2.0, so run almost everywhere.
 
->Install-Package Figgle
+| Project | Badges | Description |
+| :------ | :----- | :---------- |
+| [Figgle][figgle] | [![v][figgle-v]][figgle-nuget] [![dl][figgle-dl]][figgle-nuget] | The core library. Supports parsing font files and rendering text. |
+| [Figgle.Fonts][fonts] | [![v][fonts-v]][fonts-nuget] [![dl][fonts-dl]][fonts-nuget] | A collection of 250+ FIGlet fonts, for use with Figgle. |
+| [Figgle.Generator][generator] | [![v][gen-v]][gen-nuget] [![dl][gen-dl]][gen-nuget] | A source generator to embedding fonts and render static text at compile-time. |
 
-Targets .NET Standard 2.0, so runs pretty much anywhere. If you require .NET Standard 1.3, use package version 0.4.1.
+[figgle]: https://github.com/drewnoakes/figgle/tree/master/src/Figgle
+[fonts]: https://github.com/drewnoakes/figgle/tree/master/src/Figgle.Fonts
+[generator]: https://github.com/drewnoakes/figgle/tree/master/src/Figgle.Generator
+
+[figgle-v]: https://img.shields.io/nuget/v/Figgle
+[figgle-dl]: https://img.shields.io/nuget/dt/Figgle
+[figgle-nuget]: https://www.nuget.org/packages/Figgle/
+
+[fonts-v]: https://img.shields.io/nuget/v/Figgle.Fonts
+[fonts-dl]: https://img.shields.io/nuget/dt/Figgle.Fonts
+[fonts-nuget]: https://www.nuget.org/packages/Figgle.Fonts/
+
+[gen-v]: https://img.shields.io/nuget/v/Figgle.Generator
+[gen-dl]: https://img.shields.io/nuget/dt/Figgle.Generator
+[gen-nuget]: https://www.nuget.org/packages/Figgle.Generator/
 
 ## Other samples
 

@@ -3,33 +3,7 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-
-    <Authors>Drew Noakes</Authors>
-    <Copyright>Copyright Drew Noakes 2017-$([System.DateTime]::Now.Year)</Copyright>
-
-    <PackageIcon>logo-square-256px.png</PackageIcon>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/drewnoakes/figgle.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>figlet;ascii;banner;headings</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-
-    <!-- deterministic builds -->
-    <Deterministic>true</Deterministic>
-    <DeterministicSourcePaths>true</DeterministicSourcePaths>
-    <!-- debug symbols -->
-    <DebugType>portable</DebugType>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <!-- source path -->
-    <IncludeSource>true</IncludeSource>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-
     <AnalysisLevel>latest</AnalysisLevel>
-
-    <IsPackable>false</IsPackable>
-
     <!-- The target framework used for all non-shipping projects in this solution, such as tests and sample code. -->
     <SupportingProjectTargetFramework>net9.0</SupportingProjectTargetFramework>
 
@@ -37,11 +11,6 @@
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 
-  <ItemGroup>
-    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
-    <None Include="$(MSBuildThisFileDirectory)/images/logo-square-256px.png" Pack="true" PackagePath="\" Visible="false" />
-    <None Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath="\" Visible="false" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Roslyn.Diagnostics.Analyzers">

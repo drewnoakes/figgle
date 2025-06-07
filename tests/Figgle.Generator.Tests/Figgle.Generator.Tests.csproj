@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
@@ -14,12 +15,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Figgle.Fonts\Figgle.Fonts.csproj" />
-    <ProjectReference Include="..\Figgle\Figgle.csproj" />
+    <ProjectReference Include="..\..\src\Figgle.Generator\Figgle.Generator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Figgle\ParseUtil.cs" Link="Source\ParseUtil.cs" />
+    <None Update="ANSI Shadow.flf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>RenderTextSourceGeneratorTests_ExternalFonts.cs</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

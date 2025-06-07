@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <!-- Collect all font files -->
-    <FontFiles Include="..\fonts\*.flf" />
+    <FontFiles Include="..\..\fonts\*.flf" />
 
     <!-- Configure additional inputs/outputs for incremental builds in Visual Studio -->
     <UpToDateCheckInput Include="@(FontFiles)" Set="FontFile" />
@@ -57,7 +57,7 @@
     <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
 
     <!-- Create the zip file -->
-    <ZipDirectory SourceDirectory="..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true" />
+    <ZipDirectory SourceDirectory="..\..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true" />
   </Target>
 
 </Project>

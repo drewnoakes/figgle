@@ -3,6 +3,9 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    
+    <!-- Suppress NU1507 warnings about multiple package sources. This suppression is not needed in every development environment. -->
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

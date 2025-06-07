@@ -3,6 +3,7 @@
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path=".globalconfig" />
+    <File Path="Directory.Packages.props" />
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
@@ -284,7 +285,6 @@
   </Folder>
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
-    <File Path="src/Directory.Packages.props" />
     <File Path="src/README.md" />
     <Project Path="src/Figgle.Fonts/Figgle.Fonts.csproj" />
     <Project Path="src/Figgle.Fonts.Generator/Figgle.Fonts.Generator.csproj" />
@@ -293,7 +293,6 @@
   </Folder>
   <Folder Name="/tests/">
     <File Path="tests/Directory.Build.props" />
-    <File Path="tests/Directory.Packages.props" />
     <Project Path="tests/Figgle.Generator.AcceptanceTests/Figgle.Generator.AcceptanceTests.csproj" />
     <Project Path="tests/Figgle.Generator.Tests/Figgle.Generator.Tests.csproj" />
     <Project Path="tests/Figgle.Tests/Figgle.Tests.csproj" />

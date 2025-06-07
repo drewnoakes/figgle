@@ -10,6 +10,9 @@
 
     <!-- Improves incremental build performance. -->
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <ItemGroup>

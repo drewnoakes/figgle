@@ -30,11 +30,11 @@
 
     <IsPackable>false</IsPackable>
 
-    <!-- The target framework used for all non-shipping projects in this solution, such as tests and sample code. -->
-    <SupportingProjectTargetFramework>net9.0</SupportingProjectTargetFramework>
-
     <!-- Improves incremental build performance. -->
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <ItemGroup>

@@ -125,35 +125,30 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                     attributeInfos);
             });
 
-        var externalFontsProvider = context.GetExternalFontsProvider();
-
-        var embedFontInfoProvider = generationInfoProvider.Collect().Combine(externalFontsProvider);
-        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair) =>
+        var generationInfos = generationInfoProvider.Collect().Select(static (generationInfos, _) =>
         {
-            var (generationInfos, externalFonts) = pair;
-
-            // Group by the target type in case there are multiple partial definitions
-            // for a single type, so that we can generate one file per type.
             var typeToGenerateGroup = generationInfos.GroupBy(
                 keySelector: info => info.TargetType,
                 elementSelector: info => info.FontsToGenerate,
                 comparer: SymbolEqualityComparer.Default);
 
-            foreach (var generateGroup in typeToGenerateGroup)
+            return typeToGenerateGroup.ToImmutableDictionary(
+                keySelector: group => group.Key!,
+                elementSelector: group => group.SelectMany(info => info).ToImmutableHashSet(EmbedFontAttributeInfoComparer.Instance),
+                keyComparer: SymbolEqualityComparer.Default);
+        });
+
+        var externalFontsProvider = context.GetExternalFontsProvider();
+
+        var embedFontInfoProvider = generationInfos.Combine(externalFontsProvider);
+        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair) =>
+        {
+            var (generationInfos, externalFonts) = pair;
+
+            foreach (var kvp in generationInfos)
             {
-                var targetType = (ITypeSymbol)generateGroup.Key!;
-
-                // There may be multiple partial definitions for the same symbol,
-                // each listing different attributes that may or may not repeat.
-                // By merging all attributes into a single hash set, we ensure there
-                // are no repeats and we generate all source in one file per type.
-                var attributeInfos = new HashSet<EmbedFontAttributeInfo>(
-                    EmbedFontAttributeInfoComparer.Instance);
-
-                foreach (var attributeInfo in generateGroup)
-                {
-                    attributeInfos.UnionWith(attributeInfo);
-                }
+                var targetType = (ITypeSymbol)kvp.Key;
+                var attributeInfos = kvp.Value;
 
                 if (!IsValidTypeForGeneration(context, targetType))
                 {

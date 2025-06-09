@@ -318,7 +318,13 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
                 return memberNameResult;
             }
 
-            return StringComparer.Ordinal.Compare(x.FontName, y.FontName);
+            int fontNameResult = StringComparer.Ordinal.Compare(x.FontName, y.FontName);
+            if (fontNameResult != 0)
+            {
+                return fontNameResult;
+            }
+
+            return StringComparer.Ordinal.Compare(x.SourceText, y.SourceText);
         }
 
         public bool Equals(RenderItem? x, RenderItem? y)

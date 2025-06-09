@@ -103,27 +103,13 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             context.AddSource($"{AttributeName}.cs", AttributeSource);
         });
 
-        var generationInfoProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
+        var generationInfoProvider = context.SyntaxProvider.ForFiggleAttributeWithMetadataName(
             $"{AttributeNamespace}.{AttributeName}",
-            predicate: static (syntaxNode, cancellationToken) => syntaxNode is ClassDeclarationSyntax declaration,
-            transform: (context, cancellationToken) =>
-            {
-                // use hash set to de-dup attributes that are identical.  If an attribute specifies
-                // the same member name multiple times with different font names, we will report a diagnostic
-                // later in RegisterSourceOutput since we can't report diagnostics from here.
-                var attributeInfos = new HashSet<EmbedFontAttributeInfo>(EmbedFontAttributeInfoComparer.Instance);
-                foreach (var matchingAttributeData in context.Attributes)
-                {
-                    attributeInfos.Add(new EmbedFontAttributeInfo(
-                        matchingAttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
-                        (string?)matchingAttributeData.ConstructorArguments[0].Value,
-                        (string?)matchingAttributeData.ConstructorArguments[1].Value));
-                }
-
-                return new GenerationInfo<EmbedFontAttributeInfo>(
-                    (ITypeSymbol)context.TargetSymbol,
-                    attributeInfos);
-            });
+            createAttributeInfo: (attributeData, cancellationToken) => new EmbedFontAttributeInfo(
+                attributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
+                (string?)attributeData.ConstructorArguments[0].Value,
+                (string?)attributeData.ConstructorArguments[1].Value),
+            EmbedFontAttributeInfoComparer.Instance);
 
         var generationInfos = generationInfoProvider.ConsolidateAttributeInfosByTypeSymbol(
             EmbedFontAttributeInfoComparer.Instance);

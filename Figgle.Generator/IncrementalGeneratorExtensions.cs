@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Figgle.Generator;
 
@@ -51,6 +53,34 @@ internal static class IncrementalGeneratorExtensions
                     keySelector: group => group.Key!,
                     elementSelector: group => group.SelectMany(info => info).ToImmutableHashSet(comparer),
                     keyComparer: SymbolEqualityComparer.Default);
+            });
+    }
+
+    public static IncrementalValuesProvider<GenerationInfo<TAttributeInfo>> ForFiggleAttributeWithMetadataName<TAttributeInfo>(
+        this SyntaxValueProvider syntaxValueProvider,
+        string fullyQualifiedMetadataName,
+        Func<AttributeData, CancellationToken, TAttributeInfo> createAttributeInfo,
+        IEqualityComparer<TAttributeInfo>? equalityComparer = null)
+    {
+        return syntaxValueProvider.ForAttributeWithMetadataName(
+            fullyQualifiedMetadataName,
+            predicate: static (syntaxNode, cancellationToken) => syntaxNode is ClassDeclarationSyntax,
+            transform: (context, cancellationToken) =>
+            {
+                // use hash set to de-dup attributes that are identical.  If an attribute specifies
+                // the same member name multiple times with different arguments, we will report a diagnostic
+                // later in RegisterSourceOutput since we can't report diagnostics from here.
+                var attributeInfos = new HashSet<TAttributeInfo>(
+                    equalityComparer ?? EqualityComparer<TAttributeInfo>.Default);
+
+                foreach (var matchingAttributeData in context.Attributes)
+                {
+                    attributeInfos.Add(createAttributeInfo(matchingAttributeData, cancellationToken));
+                }
+
+                return new GenerationInfo<TAttributeInfo>(
+                    (ITypeSymbol)context.TargetSymbol,
+                    attributeInfos);
             });
     }
 }

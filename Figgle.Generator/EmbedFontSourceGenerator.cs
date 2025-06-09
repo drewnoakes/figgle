@@ -320,9 +320,22 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         string FontName,
         string FontDescriptionString);
 
-    private sealed class EmbedFontAttributeInfoComparer : IEqualityComparer<EmbedFontAttributeInfo>
+    private sealed class EmbedFontAttributeInfoComparer :
+        IEqualityComparer<EmbedFontAttributeInfo>,
+        IComparer<EmbedFontAttributeInfo>
     {
         public static readonly EmbedFontAttributeInfoComparer Instance = new();
+
+        public int Compare(EmbedFontAttributeInfo x, EmbedFontAttributeInfo y)
+        {
+            int memberNameResult = StringComparer.Ordinal.Compare(x.MemberName, y.MemberName);
+            if (memberNameResult != 0)
+            {
+                return memberNameResult;
+            }
+
+            return StringComparer.Ordinal.Compare(x.FontName, y.FontName);
+        }
 
         public bool Equals(EmbedFontAttributeInfo? x, EmbedFontAttributeInfo? y)
         {

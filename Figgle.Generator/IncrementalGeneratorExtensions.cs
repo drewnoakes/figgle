@@ -36,9 +36,9 @@ internal static class IncrementalGeneratorExtensions
             .Collect();
     }
 
-    public static IncrementalValueProvider<ImmutableDictionary<ISymbol, ImmutableHashSet<TAttributeInfo>>> ConsolidateAttributeInfosByTypeSymbol<TAttributeInfo>(
+    public static IncrementalValueProvider<ImmutableDictionary<ISymbol, ImmutableSortedSet<TAttributeInfo>>> ConsolidateAttributeInfosByTypeSymbol<TAttributeInfo>(
         this IncrementalValuesProvider<GenerationInfo<TAttributeInfo>> attributeInfosProvider,
-        IEqualityComparer<TAttributeInfo>? comparer = null)
+        IComparer<TAttributeInfo>? comparer = null)
     {
         return attributeInfosProvider
             .Collect()
@@ -51,7 +51,7 @@ internal static class IncrementalGeneratorExtensions
 
                 return typeToGenerateGroup.ToImmutableDictionary(
                     keySelector: group => group.Key!,
-                    elementSelector: group => group.SelectMany(info => info).ToImmutableHashSet(comparer),
+                    elementSelector: group => group.SelectMany(info => info).ToImmutableSortedSet(comparer ?? Comparer<TAttributeInfo>.Default),
                     keyComparer: SymbolEqualityComparer.Default);
             });
     }

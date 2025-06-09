@@ -60,8 +60,7 @@ public abstract class SourceGeneratorTests
         // so by comparing the collection as HashSet we ignore the order.
         Assert.Equal(
             new[] { source, RenderTextSourceGenerator.AttributeSource }.Concat(outputs).ToHashSet(),
-            compilation.SyntaxTrees.Select(tree => tree.ToString()).ToHashSet(),
-            NewlineIgnoreComparer.Instance);
+            compilation.SyntaxTrees.Select(tree => tree.ToString()).ToHashSet());
     }
 
     protected (Compilation Compilation, ImmutableArray<Diagnostic> Diagnostics) RunGenerator(

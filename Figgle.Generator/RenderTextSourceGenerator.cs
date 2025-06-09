@@ -304,9 +304,22 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
         string SourceText,
         FiggleFont Font);
 
-    private sealed class RenderItemComparer : IEqualityComparer<RenderItem>
+    private sealed class RenderItemComparer :
+        IEqualityComparer<RenderItem>,
+        IComparer<RenderItem>
     {
         public static readonly RenderItemComparer Instance = new();
+
+        public int Compare(RenderItem x, RenderItem y)
+        {
+            int memberNameResult = StringComparer.Ordinal.Compare(x.MemberName, y.MemberName);
+            if (memberNameResult != 0)
+            {
+                return memberNameResult;
+            }
+
+            return StringComparer.Ordinal.Compare(x.FontName, y.FontName);
+        }
 
         public bool Equals(RenderItem? x, RenderItem? y)
         {

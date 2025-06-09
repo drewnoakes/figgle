@@ -108,7 +108,7 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
     {
         context.RegisterPostInitializationOutput(context =>
         {
-           context.AddSource($"{AttributeName}.cs", AttributeSource);
+            context.AddSource($"{AttributeName}.cs", AttributeSource);
         });
 
         var generationInfoProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
@@ -129,38 +129,26 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
                         (string?)matchingAttributeData.ConstructorArguments[2].Value));
                 }
 
-                return new GenerationInfo(
+                return new GenerationInfo<RenderItem>(
                     (ITypeSymbol)context.TargetSymbol,
                     attributeInfos);
             });
 
+        var generationInfosProvider = generationInfoProvider.ConsolidateAttributeInfosByTypeSymbol(
+            RenderItemComparer.Instance);
         var externalFontsProvider = context.GetExternalFontsProvider();
-        var embedFontInfoProvider = generationInfoProvider.Collect().Combine(externalFontsProvider);
 
-        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair)=>
+        var embedFontInfoProvider = generationInfosProvider.Combine(externalFontsProvider);
+
+        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair) =>
         {
             var (generationInfos, externalFonts) = pair;
 
-            // Group by the target type in case there are multiple partial definitions
-            // for a single type, so that we can generate one file per type.
-            var typeToGenerateGroup = generationInfos.GroupBy(
-                keySelector: info => info.TargetType,
-                elementSelector: info => info.AttributeInfos,
-                comparer: SymbolEqualityComparer.Default);
-
-            foreach (var generateGroup in typeToGenerateGroup)
+            foreach (var kvp in generationInfos)
             {
-                var targetType = (ITypeSymbol)generateGroup.Key!;
+                var targetType = (ITypeSymbol)kvp.Key;
 
-                // There may be multiple partial definitions for the same symbol,
-                // each listing different attributes that may or may not repeat.
-                // By merging all attributes into a single hash set, we ensure there
-                // are no repeats and we generate all source in one file per type.
-                var attributeInfos = new HashSet<RenderItem>(RenderItemComparer.Instance);
-                foreach (var attributeInfo in generateGroup)
-                {
-                    attributeInfos.UnionWith(attributeInfo);
-                }
+                var attributeInfos = kvp.Value;
 
                 if (!IsValidTypeForGeneration(context, targetType))
                 {
@@ -323,10 +311,6 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
         string? MemberName,
         string? FontName,
         string? SourceText);
-
-    private sealed record GenerationInfo(
-        ITypeSymbol TargetType,
-        HashSet<RenderItem> AttributeInfos);
 
     private sealed record RenderSourceInfo(
         string MemberName,

@@ -120,23 +120,13 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                         (string?)matchingAttributeData.ConstructorArguments[1].Value));
                 }
 
-                return new GenerationInfo(
+                return new GenerationInfo<EmbedFontAttributeInfo>(
                     (ITypeSymbol)context.TargetSymbol,
                     attributeInfos);
             });
 
-        var generationInfos = generationInfoProvider.Collect().Select(static (generationInfos, _) =>
-        {
-            var typeToGenerateGroup = generationInfos.GroupBy(
-                keySelector: info => info.TargetType,
-                elementSelector: info => info.FontsToGenerate,
-                comparer: SymbolEqualityComparer.Default);
-
-            return typeToGenerateGroup.ToImmutableDictionary(
-                keySelector: group => group.Key!,
-                elementSelector: group => group.SelectMany(info => info).ToImmutableHashSet(EmbedFontAttributeInfoComparer.Instance),
-                keyComparer: SymbolEqualityComparer.Default);
-        });
+        var generationInfos = generationInfoProvider.ConsolidateAttributeInfosByTypeSymbol(
+            EmbedFontAttributeInfoComparer.Instance);
 
         var externalFontsProvider = context.GetExternalFontsProvider();
 
@@ -338,10 +328,6 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         Location? Location,
         string? MemberName,
         string? FontName);
-
-    private sealed record GenerationInfo(
-        ITypeSymbol TargetType,
-        HashSet<EmbedFontAttributeInfo> FontsToGenerate);
 
     private sealed record RenderSourceInfo(
         string MemberName,

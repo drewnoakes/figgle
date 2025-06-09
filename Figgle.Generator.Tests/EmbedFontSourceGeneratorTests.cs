@@ -93,6 +93,37 @@ public class EmbedFontSourceGeneratorTests : SourceGeneratorTests
     }
 
     [Fact]
+    public void DuplicateIdenticalAttributeArgumentsInDifferentPartialDefinitions_NoDiagnostic()
+    {
+        string source =
+            """
+            using Figgle;
+            namespace Test.Namespace
+            {
+                [EmbedFiggleFont("Foo", "stacey")]
+                internal static partial class DemoUsage
+                {
+                }
+
+                [EmbedFiggleFont("Foo", "stacey")]
+                internal static partial class DemoUsage
+                {
+                }
+            }
+            """;
+        var (compilation, diagnostics) = RunGenerator(source);
+
+        Assert.Empty(diagnostics);
+        string generatedCode = compilation.SyntaxTrees.Last().ToString();
+        string expectedFiggleFontProperty
+            = "public static FiggleFont Foo => _fontByName.GetOrAdd(\"Foo\", _ => FiggleFontParser.ParseString(FooFontDescription, _stringPool));";
+        string expectedFontDescription
+            = "private static readonly string FooFontDescription = @\"";
+        Assert.Contains(expectedFiggleFontProperty, generatedCode);
+        Assert.Contains(expectedFontDescription, generatedCode);
+    }
+
+    [Fact]
     public void DuplicateMemberNameWithDifferentFontName_DuplicateMemberDiagnostic()
     {
         string source =
@@ -113,6 +144,32 @@ public class EmbedFontSourceGeneratorTests : SourceGeneratorTests
 
         var diagnostic = Assert.Single(diagnostics);
 
+        Assert.Same(EmbedFontSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
+        Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
+    }
+
+    [Fact]
+    public void DuplicateMemberNameInDifferentPartialDefinition_DuplicateMemberDiagnostic()
+    {
+        string source =
+            """
+            using Figgle;
+            namespace Test.Namespace
+            {
+                [EmbedFiggleFont("Foo", "stacey")]
+                internal static partial class DemoUsage
+                {
+                }
+
+                [EmbedFiggleFont("Foo", "3d_diagonal")]
+                internal static partial class DemoUsage
+                {
+                }
+            }
+            """;
+        var (_, diagnostics) = RunGenerator(source);
+
+        var diagnostic = Assert.Single(diagnostics);
         Assert.Same(EmbedFontSourceGenerator.DuplicateMemberNameDiagnostic, diagnostic.Descriptor);
         Assert.Equal("Member 'Foo' has already been declared", diagnostic.GetMessage());
     }

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Figgle.Fonts;
@@ -104,111 +103,107 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             context.AddSource($"{AttributeName}.cs", AttributeSource);
         });
 
-        var generationInfoProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
+        var generationInfoProvider = context.SyntaxProvider.ForFiggleAttributeWithMetadataName(
             $"{AttributeNamespace}.{AttributeName}",
-            predicate: static (syntaxNode, cancellationToken) => syntaxNode is ClassDeclarationSyntax declaration,
-            transform: (context, cancellationToken) =>
-            {
-                // use hash set to de-dup attributes that are identical.  If an attribute specifies
-                // the same member name multiple times with different font names, we will report a diagnostic
-                // later in RegisterSourceOutput since we can't report diagnostics from here.
-                var attributeInfos = new HashSet<EmbedFontAttributeInfo>(EmbedFontAttributeInfoComparer.Instance);
-                foreach (var matchingAttributeData in context.Attributes)
-                {
-                    attributeInfos.Add(new EmbedFontAttributeInfo(
-                        matchingAttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
-                        (string?)matchingAttributeData.ConstructorArguments[0].Value,
-                        (string?)matchingAttributeData.ConstructorArguments[1].Value));
-                }
+            createAttributeInfo: (attributeData, cancellationToken) => new EmbedFontAttributeInfo(
+                attributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
+                (string?)attributeData.ConstructorArguments[0].Value,
+                (string?)attributeData.ConstructorArguments[1].Value),
+            EmbedFontAttributeInfoComparer.Instance);
 
-                return new GenerationInfo(
-                    (ITypeSymbol)context.TargetSymbol,
-                    attributeInfos);
-            });
+        var generationInfos = generationInfoProvider.ConsolidateAttributeInfosByTypeSymbol(
+            EmbedFontAttributeInfoComparer.Instance);
 
         var externalFontsProvider = context.GetExternalFontsProvider();
 
-        var embedFontInfoProvider = generationInfoProvider.Combine(externalFontsProvider);
+        var embedFontInfoProvider = generationInfos.Combine(externalFontsProvider);
         context.RegisterSourceOutput(embedFontInfoProvider, (context, pair) =>
         {
-            var (generationInfo, externalFonts) = pair;
-            if (!IsValidTypeForGeneration(context, generationInfo.TargetType))
+            var (generationInfos, externalFonts) = pair;
+
+            foreach (var kvp in generationInfos)
             {
-                return;
-            }
+                var targetType = (ITypeSymbol)kvp.Key;
+                var attributeInfos = kvp.Value;
 
-            var renderInfoBuilder = ImmutableArray.CreateBuilder<RenderSourceInfo>(
-                generationInfo.FontsToGenerate.Count);
-
-            var memberNames = new HashSet<string>();
-            foreach (var embedFontInfo in generationInfo.FontsToGenerate)
-            {
-                if (!SyntaxFacts.IsValidIdentifier(embedFontInfo.MemberName))
+                if (!IsValidTypeForGeneration(context, targetType))
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        InvalidMemberNameDiagnostic,
-                        embedFontInfo.Location ?? generationInfo.TargetType.Locations[0],
-                        embedFontInfo.MemberName ?? "unknown"));
-                    continue;
+                    return;
                 }
 
-                if (!memberNames.Add(embedFontInfo.MemberName!))
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        DuplicateMemberNameDiagnostic,
-                        embedFontInfo.Location ?? generationInfo.TargetType.Locations[0],
-                        embedFontInfo.MemberName));
-                    continue;
-                }
+                var renderInfoBuilder = ImmutableArray.CreateBuilder<RenderSourceInfo>(
+                    attributeInfos.Count);
 
-                if (string.IsNullOrWhiteSpace(embedFontInfo.FontName))
+                var memberNames = new HashSet<string>();
+                foreach (var embedFontInfo in attributeInfos)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        UnknownFontNameDiagnostic,
-                        generationInfo.TargetType.Locations[0],
-                        embedFontInfo.MemberName ?? "unknown"));
-                    continue;
-                }
+                    if (!SyntaxFacts.IsValidIdentifier(embedFontInfo.MemberName))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            InvalidMemberNameDiagnostic,
+                            embedFontInfo.Location ?? targetType.Locations[0],
+                            embedFontInfo.MemberName ?? "unknown"));
+                        continue;
+                    }
 
-                var fontDescription = EmbeddedFontResource.GetFontDescription(embedFontInfo.FontName!);
-                if (fontDescription is null)
-                {
-                    // check if the requested font to embed is available in the external fonts
-                    var matchingExternalFont = externalFonts.FirstOrDefault(
-                        externalFont => externalFont.FontName.Equals(
-                            embedFontInfo.FontName,
-                            StringComparison.OrdinalIgnoreCase));
+                    if (!memberNames.Add(embedFontInfo.MemberName!))
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            DuplicateMemberNameDiagnostic,
+                            embedFontInfo.Location ?? targetType.Locations[0],
+                            embedFontInfo.MemberName));
+                        continue;
+                    }
 
-                    if (matchingExternalFont is null)
+                    if (string.IsNullOrWhiteSpace(embedFontInfo.FontName))
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
                             UnknownFontNameDiagnostic,
-                            embedFontInfo.Location ?? generationInfo.TargetType.Locations[0],
-                            embedFontInfo.FontName));
+                            targetType.Locations[0],
+                            embedFontInfo.MemberName ?? "unknown"));
                         continue;
                     }
 
-                    if (matchingExternalFont.FontDescriptionString is null)
+                    var fontDescription = EmbeddedFontResource.GetFontDescription(embedFontInfo.FontName!);
+                    if (fontDescription is null)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(
-                            ErrorReadingExternalFontFileDiagnostic,
-                            embedFontInfo.Location ?? generationInfo.TargetType.Locations[0],
-                            embedFontInfo.FontName));
-                        continue;
+                        // check if the requested font to embed is available in the external fonts
+                        var matchingExternalFont = externalFonts.FirstOrDefault(
+                            externalFont => externalFont.FontName.Equals(
+                                embedFontInfo.FontName,
+                                StringComparison.OrdinalIgnoreCase));
+
+                        if (matchingExternalFont is null)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                UnknownFontNameDiagnostic,
+                                embedFontInfo.Location ?? targetType.Locations[0],
+                                embedFontInfo.FontName));
+                            continue;
+                        }
+
+                        if (matchingExternalFont.FontDescriptionString is null)
+                        {
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                ErrorReadingExternalFontFileDiagnostic,
+                                embedFontInfo.Location ?? targetType.Locations[0],
+                                embedFontInfo.FontName));
+                            continue;
+                        }
+
+                        fontDescription = matchingExternalFont.FontDescriptionString;
                     }
 
-                    fontDescription = matchingExternalFont.FontDescriptionString;
+                    renderInfoBuilder.Add(new(
+                        embedFontInfo.MemberName!,
+                        embedFontInfo.FontName!,
+                        fontDescription));
                 }
 
-                renderInfoBuilder.Add(new(
-                    embedFontInfo.MemberName!,
-                    embedFontInfo.FontName!,
-                    fontDescription));
+                context.AddSource(
+                    $"{targetType.ToDisplayString(_fullyQualifiedFormat)}.g.cs",
+                    RenderSource(targetType, renderInfoBuilder.ToImmutable()));
             }
-
-            context.AddSource(
-                $"{generationInfo.TargetType.Name}.g.cs",
-                RenderSource(generationInfo.TargetType, renderInfoBuilder.ToImmutable()));
         });
     }
 
@@ -320,18 +315,27 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
         string? MemberName,
         string? FontName);
 
-    private sealed record GenerationInfo(
-        ITypeSymbol TargetType,
-        HashSet<EmbedFontAttributeInfo> FontsToGenerate);
-
     private sealed record RenderSourceInfo(
         string MemberName,
         string FontName,
         string FontDescriptionString);
 
-    private sealed class EmbedFontAttributeInfoComparer : IEqualityComparer<EmbedFontAttributeInfo>
+    private sealed class EmbedFontAttributeInfoComparer :
+        IEqualityComparer<EmbedFontAttributeInfo>,
+        IComparer<EmbedFontAttributeInfo>
     {
         public static readonly EmbedFontAttributeInfoComparer Instance = new();
+
+        public int Compare(EmbedFontAttributeInfo x, EmbedFontAttributeInfo y)
+        {
+            int memberNameResult = StringComparer.Ordinal.Compare(x.MemberName, y.MemberName);
+            if (memberNameResult != 0)
+            {
+                return memberNameResult;
+            }
+
+            return StringComparer.Ordinal.Compare(x.FontName, y.FontName);
+        }
 
         public bool Equals(EmbedFontAttributeInfo? x, EmbedFontAttributeInfo? y)
         {

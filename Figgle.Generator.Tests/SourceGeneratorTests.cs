@@ -56,9 +56,11 @@ public abstract class SourceGeneratorTests
 
         ValidateNoErrors(diagnostics);
 
+        // the compilation syntax trees (with the generated sources) may have a non-deterministic order,
+        // so by ordering the strings we ensure a deterministic order.
         Assert.Equal(
-            new[] { source, RenderTextSourceGenerator.AttributeSource }.Concat(outputs),
-            compilation.SyntaxTrees.Select(tree => tree.ToString()),
+            new[] { source, RenderTextSourceGenerator.AttributeSource }.Concat(outputs).OrderBy(s => s),
+            compilation.SyntaxTrees.Select(tree => tree.ToString()).OrderBy(s => s),
             NewlineIgnoreComparer.Instance);
     }
 

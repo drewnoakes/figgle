@@ -108,59 +108,34 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
     {
         context.RegisterPostInitializationOutput(context =>
         {
-           context.AddSource($"{AttributeName}.cs", AttributeSource);
+            context.AddSource($"{AttributeName}.cs", AttributeSource);
         });
 
-        var generationInfoProvider = context.SyntaxProvider.ForAttributeWithMetadataName(
+        var generationInfoProvider = context.SyntaxProvider.ForFiggleAttributeWithMetadataName(
             $"{AttributeNamespace}.{AttributeName}",
-            predicate: static (syntaxNode, cancellationToken) => syntaxNode is ClassDeclarationSyntax,
-            transform: (context, cancellationToken) =>
-            {
-                // use hash set to de-dup attributes that are identical.  If an attribute specifies
-                // the same member name multiple times with different font names, we will report a diagnostic
-                // later in RegisterSourceOutput since we can't report diagnostics from here.
-                var attributeInfos = new HashSet<RenderItem>(RenderItemComparer.Instance);
-                foreach (var matchingAttributeData in context.Attributes)
-                {
-                    attributeInfos.Add(new RenderItem(
-                        matchingAttributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
-                        (string?)matchingAttributeData.ConstructorArguments[0].Value,
-                        (string?)matchingAttributeData.ConstructorArguments[1].Value,
-                        (string?)matchingAttributeData.ConstructorArguments[2].Value));
-                }
+            createAttributeInfo: (attributeData, cancellationToken) =>
+                new RenderItem(
+                    attributeData.ApplicationSyntaxReference?.GetSyntax(cancellationToken).GetLocation(),
+                    (string?)attributeData.ConstructorArguments[0].Value,
+                    (string?)attributeData.ConstructorArguments[1].Value,
+                    (string?)attributeData.ConstructorArguments[2].Value),
+            RenderItemComparer.Instance);
 
-                return new GenerationInfo(
-                    (ITypeSymbol)context.TargetSymbol,
-                    attributeInfos);
-            });
-
+        var generationInfosProvider = generationInfoProvider.ConsolidateAttributeInfosByTypeSymbol(
+            RenderItemComparer.Instance);
         var externalFontsProvider = context.GetExternalFontsProvider();
-        var embedFontInfoProvider = generationInfoProvider.Collect().Combine(externalFontsProvider);
 
-        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair)=>
+        var embedFontInfoProvider = generationInfosProvider.Combine(externalFontsProvider);
+
+        context.RegisterSourceOutput(embedFontInfoProvider, (context, pair) =>
         {
             var (generationInfos, externalFonts) = pair;
 
-            // Group by the target type in case there are multiple partial definitions
-            // for a single type, so that we can generate one file per type.
-            var typeToGenerateGroup = generationInfos.GroupBy(
-                keySelector: info => info.TargetType,
-                elementSelector: info => info.AttributeInfos,
-                comparer: SymbolEqualityComparer.Default);
-
-            foreach (var generateGroup in typeToGenerateGroup)
+            foreach (var kvp in generationInfos)
             {
-                var targetType = (ITypeSymbol)generateGroup.Key!;
+                var targetType = (ITypeSymbol)kvp.Key;
 
-                // There may be multiple partial definitions for the same symbol,
-                // each listing different attributes that may or may not repeat.
-                // By merging all attributes into a single hash set, we ensure there
-                // are no repeats and we generate all source in one file per type.
-                var attributeInfos = new HashSet<RenderItem>(RenderItemComparer.Instance);
-                foreach (var attributeInfo in generateGroup)
-                {
-                    attributeInfos.UnionWith(attributeInfo);
-                }
+                var attributeInfos = kvp.Value;
 
                 if (!IsValidTypeForGeneration(context, targetType))
                 {
@@ -324,18 +299,33 @@ public sealed class RenderTextSourceGenerator : IIncrementalGenerator
         string? FontName,
         string? SourceText);
 
-    private sealed record GenerationInfo(
-        ITypeSymbol TargetType,
-        HashSet<RenderItem> AttributeInfos);
-
     private sealed record RenderSourceInfo(
         string MemberName,
         string SourceText,
         FiggleFont Font);
 
-    private sealed class RenderItemComparer : IEqualityComparer<RenderItem>
+    private sealed class RenderItemComparer :
+        IEqualityComparer<RenderItem>,
+        IComparer<RenderItem>
     {
         public static readonly RenderItemComparer Instance = new();
+
+        public int Compare(RenderItem x, RenderItem y)
+        {
+            int memberNameResult = StringComparer.Ordinal.Compare(x.MemberName, y.MemberName);
+            if (memberNameResult != 0)
+            {
+                return memberNameResult;
+            }
+
+            int fontNameResult = StringComparer.Ordinal.Compare(x.FontName, y.FontName);
+            if (fontNameResult != 0)
+            {
+                return fontNameResult;
+            }
+
+            return StringComparer.Ordinal.Compare(x.SourceText, y.SourceText);
+        }
 
         public bool Equals(RenderItem? x, RenderItem? y)
         {

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Figgle.Generator\Figgle.Generator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ANSI Shadow.flf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>RenderTextSourceGeneratorTests_ExternalFonts.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
+</Project>

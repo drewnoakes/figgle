@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Simulate consuming NuPget package's props file. -->
+  <Import Project="..\..\src\Figgle.Generator\build\Figgle.Generator.props" />
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\Figgle.Generator.Tests\ANSI Shadow.flf" FontName="My External Font" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Figgle.Generator\Figgle.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    
+    <!-- 
+      Figgle.Generator has a runtime dependency to Figgle.dll and Figgle.Fonts.dll which is packaged
+      into the generator's nuget package and loaded automatically when a project consumes the nuget.
+      
+      Since this test project is referencing the generator manually, we must also manually include
+      the dependencies as an "analyzer" so the compiler can find it when running the generator.
+    -->
+    <ProjectReference Include="..\..\src\Figgle\Figgle.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\..\src\Figgle.Fonts\Figgle.Fonts.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>

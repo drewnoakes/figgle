@@ -1,0 +1,8 @@
+[*.cs]
+
+# Don't require a license header in sample code
+dotnet_diagnostic.IDE0073.severity = none      # Enforce file header
+
+# Use explicit types in sample code
+csharp_style_var_when_type_is_apparent = false
+dotnet_diagnostic.IDE0007.severity = none

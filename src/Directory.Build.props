@@ -1,0 +1,57 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <Authors>Drew Noakes</Authors>
+    <Copyright>Copyright Drew Noakes 2017-$([System.DateTime]::Now.Year)</Copyright>
+
+    <PackageIcon>logo-square-256px.png</PackageIcon>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/drewnoakes/figgle</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/drewnoakes/figgle.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>figlet;ascii;banner;headings</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- deterministic builds -->
+    <Deterministic>true</Deterministic>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <!-- debug symbols -->
+    <DebugType>portable</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- source path -->
+    <IncludeSource>true</IncludeSource>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <AnalysisLevel>latest</AnalysisLevel>
+
+    <IsPackable>true</IsPackable>
+
+    <!-- Improves incremental build performance. -->
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Add the project logo to all packages. -->
+    <None Include="$(MSBuildThisFileDirectory)\..\images\logo-square-256px.png" Pack="true" PackagePath="\" Visible="false" />
+
+    <!-- Each package has its own README file. -->
+    <None Include="$(MSBuildProjectDirectory)\README.md" Pack="true" PackagePath="\" Condition="Exists('$(MSBuildProjectDirectory)\README.md')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Roslyn.Diagnostics.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

@@ -54,7 +54,13 @@
     <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
 
     <!-- Create the zip file -->
-    <ZipDirectory SourceDirectory="..\..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true" />
+    <ZipDirectory
+      SourceDirectory="..\..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true" CompressionLevel="SmallestSize"
+      Condition="'$(MSBuildVersion)' &gt;= '18.0'" />
+    <ZipDirectory
+      SourceDirectory="..\..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true"
+      Condition="'$(MSBuildVersion)' &lt; '17.0'" />
+
   </Target>
 
 </Project>

@@ -25,7 +25,7 @@ Add package reference to your `.csproj`:
 
 Use the `GenerateFiggleText` attribute to generate the text:
 
-```xml
+```c#
 [EmbedFiggleFont(memberName: "ThreeDDiagonal", fontName: "3d_diagonal")]
 internal static partial class MyFonts
 {
@@ -34,7 +34,7 @@ internal static partial class MyFonts
 
 Use the font to render some text:
 
-```xml
+```c#
 Console.WriteLine(
     MyFonts.ThreeDDiagonal.Render("Hello, World!"));
 ```

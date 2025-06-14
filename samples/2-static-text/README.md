@@ -22,7 +22,7 @@ Add package reference to your `.csproj`:
 
 Use the `GenerateFiggleText` attribute to generate the text:
 
-```xml
+```c#
 [GenerateFiggleText(memberName: "Greeting", fontName: "cosmic", sourceText: "Hello, World!")]
 internal static partial class MyAsciiBanners
 {
@@ -31,7 +31,7 @@ internal static partial class MyAsciiBanners
 
 Use the generated text:
 
-```xml
+```c#
 Console.WriteLine(MyAsciiBanners.Greeting);
 ```
 

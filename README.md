@@ -31,7 +31,7 @@ Use Figgle's source generator to embed just the fonts you want into your assembl
 
 ## Installation
 
-Figgle ships as NuGet packages that target .NET Standard 2.0, so run almost everywhere.
+Figgle ships as NuGet packages that target .NET Standard 2.0, so runs almost everywhere.
 
 | Project | Badges | Description |
 | :------ | :----- | :---------- |

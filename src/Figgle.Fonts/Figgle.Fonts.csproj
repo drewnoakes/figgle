@@ -59,7 +59,7 @@
       Condition="'$(MSBuildVersion)' &gt;= '18.0'" />
     <ZipDirectory
       SourceDirectory="..\..\fonts" DestinationFile="$(FontsZipFile)" Overwrite="true"
-      Condition="'$(MSBuildVersion)' &lt; '17.0'" />
+      Condition="'$(MSBuildVersion)' &lt; '18.0'" />
 
   </Target>
 

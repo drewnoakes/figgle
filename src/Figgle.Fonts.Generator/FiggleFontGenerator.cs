@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 
 namespace Figgle.Fonts.Generator;
@@ -52,7 +53,7 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
                     return [];
                 }
 
-                var fontInfos = ImmutableArray.CreateBuilder<FontInfo>();
+                var aliases = ImmutableArray.CreateBuilder<FontAlias>();
                 var entries = csvFileContent.Split(_newLineCharacters, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var entry in entries)
                 {
@@ -61,11 +62,11 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
                     {
                         var fontName = components[0].Trim();
                         var memberName = components[1].Trim();
-                        fontInfos.Add(new FontInfo(fontName, memberName));
+                        aliases.Add(new FontAlias(fontName, memberName));
                     }
                 }
 
-                return fontInfos.ToImmutable();
+                return aliases.ToImmutable();
             });
 
         var parsedFontsProvider = context.AdditionalTextsProvider
@@ -81,19 +82,19 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(fontMemberNamesProvider.Combine(parsedFontsProvider), (context, pair) =>
         {
-            var fontInfos = pair.Left;
-            var parsedFonts = pair.Right.ToImmutableDictionary(
-                keySelector: f => f.Name,
-                elementSelector: f => f.Font);
+            var memberByFontName = pair.Left.ToImmutableDictionary(
+                keySelector: f => f.FontName,
+                elementSelector: f => f.MemberName);
+            var parsedFonts = pair.Right;
 
-            foreach (var kvp in parsedFonts)
+            foreach (var parsedFont in parsedFonts)
             {
-                if (kvp.Value is null)
+                if (parsedFont.Font is null)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(
                         _errorParsingFontFileDiagnostic,
                         Location.None,
-                        kvp.Key));
+                        parsedFont.Name));
                 }
             }
 
@@ -102,7 +103,7 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
                 namespace Figgle.Fonts;
 
                 partial class FiggleFonts
-                {{{RenderFiggleFontProperties(fontInfos, parsedFonts)}}
+                {{{RenderFiggleFontProperties(memberByFontName, parsedFonts)}}
                 }
                 """;
 
@@ -111,25 +112,36 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
             context.AddSource("FiggleFonts.g.cs", source);
 
             static string RenderFiggleFontProperties(
-                ImmutableArray<FontInfo> fontInfos,
-                ImmutableDictionary<string, FiggleFont?> parsedFonts)
+                ImmutableDictionary<string, string> memberByFontName,
+                ImmutableArray<ParsedFont> parsedFonts)
             {
                 var builder = new StringBuilder(capacity: 4096);
                 var indentation = new string(' ', 4);
-                foreach (var fontInfo in fontInfos)
+
+                foreach (var parsedFont in parsedFonts.OrderBy(parsedFont => parsedFont.Name))
                 {
+                    if (!memberByFontName.TryGetValue(parsedFont.Name, out var memberName))
+                    {
+                        // Compose a PascalCased member name from the font name.
+                        // Replace the first character, or any character after a space, dash, or underscore with an uppercase letter.
+                        memberName = Regex.Replace(
+                            parsedFont.Name,
+                            """^(?<c>\w)|[\s_-]+(?<c>[\w0-9])""",
+                            match => match.Groups["c"].Value.ToUpperInvariant());
+                    }
+
                     builder.Append($$"""
 
 
                         {{indentation}}/// <summary>
-                        {{indentation}}/// Obtains the <see cref="Figgle.FiggleFont" /> for the font name "{{fontInfo.FontName}}".
+                        {{indentation}}/// Obtains the <see cref="Figgle.FiggleFont" /> for the font name "{{parsedFont.Name}}".
                         {{indentation}}/// <example>
                         {{indentation}}/// <code>
-                        {{indentation}}{{RenderSampleText(fontInfo.FontName, parsedFonts[fontInfo.FontName], indentation)}}
+                        {{indentation}}{{RenderSampleText(parsedFont.Name, parsedFont.Font, indentation)}}
                         {{indentation}}/// </code>
                         {{indentation}}/// </example>
                         {{indentation}}/// </summary>
-                        {{indentation}}public static FiggleFont {{fontInfo.MemberName}} => GetByName("{{fontInfo.FontName}}");
+                        {{indentation}}public static FiggleFont {{memberName}} => GetByName("{{parsedFont.Name}}");
                         """);
                 }
 
@@ -140,7 +152,7 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
             {
                 if (font is null)
                 {
-                    return $"Failed to parse {fontName} into a {nameof(FiggleFont)}";
+                    return $"Failed to parse '{fontName}' into a {nameof(FiggleFont)}.";
                 }
 
                 var renderedText = font.Render(fontName);
@@ -161,7 +173,7 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
         });
     }
 
-    private sealed record FontInfo(string FontName, string MemberName);
+    private sealed record FontAlias(string FontName, string MemberName);
 
     private sealed record ParsedFont(string Name, FiggleFont? Font);
 }

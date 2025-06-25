@@ -13,8 +13,8 @@ Add package reference to your `.csproj`:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Figgle" Version="0.6.2" />
-  <PackageReference Include="Figgle.Generator" Version="0.6.2" PrivateAssets="all" />
+  <PackageReference Include="Figgle" Version="0.6.4" />
+  <PackageReference Include="Figgle.Generator" Version="0.6.4" PrivateAssets="all" />
 </ItemGroup>
 ```
 

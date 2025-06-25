@@ -11,7 +11,7 @@ Add package reference to your `.csproj`:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Figgle.Generator" Version="0.6.2" PrivateAssets="all" />
+  <PackageReference Include="Figgle.Generator" Version="0.6.4" PrivateAssets="all" />
 </ItemGroup>
 ```
 

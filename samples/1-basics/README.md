@@ -11,8 +11,8 @@ Add package references:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Figgle" Version="0.6.2" />
-  <PackageReference Include="Figgle.Fonts" Version="0.6.2" />
+  <PackageReference Include="Figgle" Version="0.6.4" />
+  <PackageReference Include="Figgle.Fonts" Version="0.6.4" />
 </ItemGroup>
 ```
 

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Figgle.Generator" Version="0.6.2" PrivateAssets="all" />
+    <PackageReference Include="Figgle.Generator" Version="0.6.4" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

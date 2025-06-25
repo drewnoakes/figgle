@@ -33,7 +33,7 @@ public static class FiggleFontParser
         (\s(\d+))?                    # number of code-tagged (non-required) characters in the font, equal to total number of characters minus 102
         (\s|$)
         """,
-        RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+        RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     /// <summary>
     /// Parses a FIGlet font description stream, and returns a usable <see cref="FiggleFont"/>.

@@ -3,7 +3,7 @@
 > [!NOTE]
 > If all text to be rendered is known statically at compile time, use the [static sample](../2-static-text) instead.
 
-This sample shows how to embed a `FiggleFont` directly in your assembly, sourced from the `Figgle.Fonts` package. This package contains 250+ FIGlet fonts. Copying those you need into your assembly (via the `Figgle.Geneator` source generator) keeps deployed binary size down and reduces runtime memory requirements.
+This sample shows how to embed a `FiggleFont` directly in your assembly, sourced from the `Figgle.Fonts` package. This package contains 250+ FIGlet fonts. Copying those you need into your assembly (via the `Figgle.Generator` source generator) keeps deployed binary size down and reduces runtime memory requirements.
 
 ## Key points
 
@@ -23,7 +23,7 @@ Add package reference to your `.csproj`:
 
 ### Source code
 
-Use the `GenerateFiggleText` attribute to generate the text:
+Use the `EmbedFiggleFont` attribute to embed the font:
 
 ```c#
 [EmbedFiggleFont(memberName: "ThreeDDiagonal", fontName: "3d_diagonal")]

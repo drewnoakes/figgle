@@ -2,7 +2,6 @@
 
 using System.IO.Compression;
 using Figgle.Fonts;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Figgle.Tests;

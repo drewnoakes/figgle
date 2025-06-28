@@ -6,6 +6,7 @@
     
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
     <AnalysisLevel>latest</AnalysisLevel>
 
     <!-- Improves incremental build performance. -->
@@ -22,4 +23,7 @@
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
 </Project>

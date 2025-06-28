@@ -1,10 +1,7 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
-using System;
 using System.IO.Compression;
-using System.Linq;
 using Figgle.Fonts;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Figgle.Tests;

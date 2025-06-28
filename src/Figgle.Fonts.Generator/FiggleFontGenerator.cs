@@ -1,9 +1,6 @@
 ﻿// Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details.
 
-using System;
 using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;

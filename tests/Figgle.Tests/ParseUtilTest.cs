@@ -2,74 +2,76 @@
 
 namespace Figgle.Tests;
 
-public class ParseUtilTest
+public sealed class ParseUtilTest
 {
-    [Fact]
-    public void Parse()
+    [Theory]
+    [InlineData("1234", 1234)]
+    [InlineData("1234 ", 1234)]
+    [InlineData("1234  ", 1234)]
+    [InlineData("0X4D2", 1234)]
+    [InlineData("0h4D2", 1234)]
+    [InlineData("0x4d2", 1234)]
+    [InlineData("0x4D2  ", 1234)]
+    [InlineData("02322", 1234)]
+    [InlineData("02322  ", 1234)]
+    [InlineData("002322  ", 1234)]
+    [InlineData("0002322  ", 1234)]
+    [InlineData("-1234", -1234)]
+    [InlineData("-1234 ", -1234)]
+    [InlineData("-1234  ", -1234)]
+    [InlineData("-0X4D2", -1234)]
+    [InlineData("-0h4D2", -1234)]
+    [InlineData("-0x4d2", -1234)]
+    [InlineData("-0x4D2  ", -1234)]
+    [InlineData("-02322", -1234)]
+    [InlineData("-02322  ", -1234)]
+    [InlineData("-002322  ", -1234)]
+    [InlineData("-0002322  ", -1234)]
+    [InlineData(" 1234", 1234)]
+    [InlineData(" 1234 ", 1234)]
+    [InlineData("  1234  ", 1234)]
+    [InlineData(" 0X4D2", 1234)]
+    [InlineData(" 0h4D2", 1234)]
+    [InlineData(" 0x4d2", 1234)]
+    [InlineData(" 0x4D2  ", 1234)]
+    [InlineData(" 02322", 1234)]
+    [InlineData(" 02322  ", 1234)]
+    [InlineData(" 002322  ", 1234)]
+    [InlineData(" 0002322  ", 1234)]
+    [InlineData("0", 0)]
+    [InlineData("00", 0)]
+    [InlineData("000", 0)]
+    [InlineData("0x0", 0)]
+    [InlineData(" 0 ", 0)]
+    [InlineData(" 00 ", 0)]
+    [InlineData(" 000 ", 0)]
+    [InlineData(" 0x0 ", 0)]
+    [InlineData("-0", 0)]
+    public void Parse_ValidInputs(string input, int expected)
     {
-        void Test(string s, int expected)
-        {
-            Assert.True(ParseUtil.TryParse(s, out var actual));
-            Assert.Equal(expected, actual);
-        }
+        var result = ParseUtil.TryParse(input, out var actual);
+        Assert.True(result);
+        Assert.Equal(expected, actual);
+    }
 
-        void TestFails(string s) => Assert.False(ParseUtil.TryParse(s, out var _));
-
-        Test("1234", 1234);
-        Test("1234 ", 1234);
-        Test("1234  ", 1234);
-        Test("0X4D2", 1234);
-        Test("0h4D2", 1234);
-        Test("0x4d2", 1234);
-        Test("0x4D2  ", 1234);
-        Test("02322", 1234);
-        Test("02322  ", 1234);
-        Test("002322  ", 1234);
-        Test("0002322  ", 1234);
-
-        Test("-1234", -1234);
-        Test("-1234 ", -1234);
-        Test("-1234  ", -1234);
-        Test("-0X4D2", -1234);
-        Test("-0h4D2", -1234);
-        Test("-0x4d2", -1234);
-        Test("-0x4D2  ", -1234);
-        Test("-02322", -1234);
-        Test("-02322  ", -1234);
-        Test("-002322  ", -1234);
-        Test("-0002322  ", -1234);
-
-        Test(" 1234", 1234);
-        Test(" 1234 ", 1234);
-        Test("  1234  ", 1234);
-        Test(" 0X4D2", 1234);
-        Test(" 0h4D2", 1234);
-        Test(" 0x4d2", 1234);
-        Test(" 0x4D2  ", 1234);
-        Test(" 02322", 1234);
-        Test(" 02322  ", 1234);
-        Test(" 002322  ", 1234);
-        Test(" 0002322  ", 1234);
-
-        Test("0", 0);
-        Test("00", 0);
-        Test("000", 0);
-        Test("0x0", 0);
-        Test(" 0 ", 0);
-        Test(" 00 ", 0);
-        Test(" 000 ", 0);
-        Test(" 0x0 ", 0);
-
-        TestFails("Hello");
-        TestFails("0Hello");
-        TestFails("0xx1234");
-        TestFails("04D2");
-        TestFails("4D2");
-        TestFails("098LKJ");
-        TestFails("0x");
-        TestFails("0x ");
-        TestFails(" 0x ");
-        TestFails("- 123");
-        TestFails("--123");
+    [Theory]
+    [InlineData("Hello")]
+    [InlineData("0Hello")]
+    [InlineData("0xx1234")]
+    [InlineData("04D2")]
+    [InlineData("4D2")]
+    [InlineData("098LKJ")]
+    [InlineData("0x")]
+    [InlineData("0x ")]
+    [InlineData(" 0x ")]
+    [InlineData(" 0x0x ")]
+    [InlineData(" 0x0x0 ")]
+    [InlineData("- 123")]
+    [InlineData("--123")]
+    public void Parse_InvalidInputs(string input)
+    {
+        var result = ParseUtil.TryParse(input, out var actual);
+        Assert.False(result);
+        Assert.Equal(0, actual);
     }
 }

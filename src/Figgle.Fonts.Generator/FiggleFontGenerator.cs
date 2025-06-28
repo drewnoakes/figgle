@@ -50,7 +50,7 @@ internal sealed class FiggleFontGenerator : IIncrementalGenerator
                 var csvFileContent = file.GetText(cancellationToken)?.ToString();
                 if (csvFileContent is null)
                 {
-                    return [];
+                    return ImmutableArray<FontAlias>.Empty;
                 }
 
                 var aliases = ImmutableArray.CreateBuilder<FontAlias>();

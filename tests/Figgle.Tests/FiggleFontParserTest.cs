@@ -6,12 +6,8 @@ using Xunit.Abstractions;
 
 namespace Figgle.Tests;
 
-public sealed class FiggleFontParserTest
+public sealed class FiggleFontParserTest(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper _output;
-
-    public FiggleFontParserTest(ITestOutputHelper output) => _output = output;
-
     [Fact]
     public void ParseAllEmbeddedFonts()
     {
@@ -21,7 +17,7 @@ public sealed class FiggleFontParserTest
 
         foreach (var entry in zip.Entries)
         {
-            _output.WriteLine($"Parsing: {entry.Name}");
+            output.WriteLine($"Parsing: {entry.Name}");
 
             using var entryStream = entry.Open();
 

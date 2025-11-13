@@ -35,7 +35,7 @@ and using those fonts to render ASCII text banners.
 
 Users of this package will typically also use either:
 
-- [`Figgle.Fonts`](https://github.com/drewnoakes/figgle/tree/master/src/Figgle.Fonts) which contains over 250+ fonts.
+- [`Figgle.Fonts`](https://github.com/drewnoakes/figgle/tree/master/src/Figgle.Fonts) which contains over 250 fonts.
 - [`Figgle.Generator`](https://github.com/drewnoakes/figgle/tree/master/src/Figgle.Generator) which uses a source generator to improve performance:
   - For static text, embeds the rendered test into your assembly at compile time.
     You don't have to ship any Figgle binaries.

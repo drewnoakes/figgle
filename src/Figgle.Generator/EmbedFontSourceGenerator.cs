@@ -102,7 +102,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
             internal sealed class {{AttributeName}} : Attribute
             {
                 /// <summary>
-                /// The name of the property to add, whose getter will return the embedded <see cref="FiggleFont" />.
+                /// The name of the property to add, whose getter will return the embedded <c>FiggleFont</c>.
                 /// </summary>
                 public string MemberName { get; }
 
@@ -114,7 +114,7 @@ internal sealed class EmbedFontSourceGenerator : IIncrementalGenerator
                 /// <summary>
                 /// Initializes a new instance of the <see cref="{{AttributeName}}"/> class.
                 /// </summary>
-                /// <param name="memberName">The name of the property to add, whose getter returns the embedded <paramref name="FiggleFont" />.</param>
+                /// <param name="memberName">The name of the property to add, whose getter returns the embedded <c>FiggleFont</c>.</param>
                 /// <param name="fontName">The name of the font to use when rendering the text.</param>
                 public {{AttributeName}}(string memberName, string fontName)
                 {

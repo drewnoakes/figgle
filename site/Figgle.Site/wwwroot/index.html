@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figgle — ASCII Banner Generation</title>
+    <base href="/" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="Figgle.Site.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="loading">
+            <pre class="loading-ascii">
+ _____ _         _
+|   __|_|___ ___| |___
+|   __| | . | . | | -_|
+|__|  |_|_  |_  |_|___|
+        |___|___|
+            </pre>
+            <div class="loading-text">Loading — this may take a moment the first time...</div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+        Blazor.start({
+            configureRuntime: function (builder) {
+                builder.withEnvironmentVariable("DOTNET_DebugWriteToStdErr", "1");
+            }
+        }).catch(function (err) {
+            console.error("Blazor startup error:", err);
+        });
+
+        // Log all unhandled errors to the console
+        window.addEventListener("error", function (e) {
+            console.error("Unhandled error:", e.error || e.message);
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+            console.error("Unhandled promise rejection:", e.reason);
+        });
+    </script>
+    <script>
+        window.figgle = {
+            getFavourites: function () {
+                try {
+                    var val = JSON.parse(localStorage.getItem('figgle-favourites') || '[]');
+                    return Array.isArray(val) ? val : [];
+                } catch (e) {
+                    return [];
+                }
+            },
+            setFavourites: function (names) {
+                localStorage.setItem('figgle-favourites', JSON.stringify(names));
+            },
+            copyText: async function (text) {
+                await navigator.clipboard.writeText(text);
+            },
+            getHash: function () {
+                return window.location.hash.replace(/^#/, '');
+            },
+            setHash: function (hash) {
+                var url = hash
+                    ? window.location.pathname + window.location.search + '#' + hash
+                    : window.location.pathname + window.location.search;
+                history.replaceState(null, '', url);
+            },
+            pushHash: function (hash) {
+                var url = hash
+                    ? window.location.pathname + window.location.search + '#' + hash
+                    : window.location.pathname + window.location.search;
+                history.pushState(null, '', url);
+            },
+            onPopState: function (dotnetHelper) {
+                window.addEventListener('popstate', function () {
+                    dotnetHelper.invokeMethodAsync('OnBrowserBack', window.location.hash.replace(/^#/, ''));
+                });
+            }
+        };
+    </script>
+</body>
+
+</html>

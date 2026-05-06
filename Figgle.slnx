@@ -297,6 +297,9 @@
     <Project Path="tests/Figgle.Generator.Tests/Figgle.Generator.Tests.csproj" />
     <Project Path="tests/Figgle.Tests/Figgle.Tests.csproj" />
   </Folder>
+  <Folder Name="/site/">
+    <Project Path="site/Figgle.Site/Figgle.Site.csproj" />
+  </Folder>
   <Folder Name="/samples/">
     <File Path="samples/.editorconfig" />
     <File Path="samples/README.md" />

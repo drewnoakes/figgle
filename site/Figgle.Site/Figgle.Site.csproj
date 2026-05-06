@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <!-- Reduce WASM bundle size -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Figgle\Figgle.csproj" />
+    <ProjectReference Include="..\..\src\Figgle.Fonts\Figgle.Fonts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FontFiles Include="..\..\fonts\*.flf" />
+  </ItemGroup>
+
+  <!-- Generate font-heights.json from .flf file headers at build time -->
+  <Target Name="GenerateFontHeights" BeforeTargets="PrepareForBuild" Inputs="@(FontFiles)" Outputs="wwwroot\font-heights.json">
+    <GenerateFontHeightsTask FontFiles="@(FontFiles)" OutputFile="wwwroot\font-heights.json" />
+  </Target>
+
+  <UsingTask TaskName="GenerateFontHeightsTask" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <FontFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <OutputFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        // Count fonts at each height by parsing the FIGlet header line
+        var heightCounts = new System.Collections.Generic.SortedDictionary<int, int>();
+        foreach (var item in FontFiles)
+        {
+            var path = item.ItemSpec;
+            using var reader = new System.IO.StreamReader(path);
+            var line = reader.ReadLine();
+            if (line == null) continue;
+            // Format: flf2a<hardblank> <height> ...
+            var parts = line.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 2 && int.TryParse(parts[1], out int h))
+                heightCounts[h] = heightCounts.ContainsKey(h) ? heightCounts[h] + 1 : 1;
+        }
+
+        // Build JSON: array of {height, count, cumulative}
+        var sb = new System.Text.StringBuilder();
+        sb.Append("[");
+        int cumulative = 0;
+        bool first = true;
+        foreach (var kvp in heightCounts)
+        {
+            cumulative += kvp.Value;
+            if (!first) sb.Append(",");
+            sb.AppendFormat("{{\"height\":{0},\"count\":{1},\"cumulative\":{2}}}", kvp.Key, kvp.Value, cumulative);
+            first = false;
+        }
+        sb.Append("]");
+
+        System.IO.File.WriteAllText(OutputFile, sb.ToString());
+        Log.LogMessage(Microsoft.Build.Framework.MessageImportance.High,
+            "Generated font-heights.json with {0} height levels", heightCounts.Count);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+</Project>

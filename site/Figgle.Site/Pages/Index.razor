@@ -1,0 +1,511 @@
+@* Copyright Drew Noakes. Licensed under the Apache-2.0 license. See the LICENSE file for more details. *@
+
+@page "/"
+@using System.IO.Compression
+@using System.Reflection
+@using System.Net.Http.Json
+@using Figgle
+@using Figgle.Fonts
+@inject IJSRuntime JS
+@inject HttpClient Http
+
+<PageTitle>Figgle — ASCII Banner Generation</PageTitle>
+
+<div class="input-area">
+    <input type="text" class="text-input" @bind="text" @bind:event="oninput" @bind:after="OnTextChanged" placeholder="Type something..." />
+</div>
+
+<div class="options-bar">
+    <input type="text" @bind="nameFilter" @bind:event="oninput" @bind:after="OnFilterChanged" placeholder="Filter fonts..." />
+
+    <select @bind="maxHeight" @bind:after="OnFilterChanged">
+        <option value="0">Any height (@allFonts.Length)</option>
+        @foreach (var level in heightLevels)
+        {
+            <option value="@level.Height">≤ @level.Height lines (@level.Cumulative)</option>
+        }
+    </select>
+
+    <label><input type="checkbox" @bind="allowMissingChars" @bind:after="OnFilterChanged" /> Allow missing chars</label>
+    <label><input type="checkbox" @bind="allowCaseChanges" @bind:after="OnFilterChanged" /> Allow case changes</label>
+
+    <select @bind="displayFont" @bind:after="OnDisplayFontChanged">
+        <option value="">Default mono</option>
+        <option value="'Cascadia Mono', monospace">Cascadia Mono</option>
+        <option value="Consolas, monospace">Consolas</option>
+        <option value="'Courier New', monospace">Courier New</option>
+        <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+        <option value="'Fira Code', monospace">Fira Code</option>
+        <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        @if (!string.IsNullOrEmpty(customFont))
+        {
+            <option value="@customFont">@customFontLabel</option>
+        }
+        <option value="__custom__">Custom…</option>
+    </select>
+
+    <button class="fav-toggle @(favouritesOnly ? "active" : "")" @onclick="ToggleFavouritesOnly">
+        ★ Favourites only
+    </button>
+
+    <span class="font-count">@filteredFonts.Length of @allFonts.Length fonts</span>
+</div>
+
+@{ var shortlistedFonts = filteredFonts.Where(f => shortlist.Contains(f.Name)).ToArray(); }
+@{ var favouriteFonts = filteredFonts.Where(f => favourites.Contains(f.Name) && !shortlist.Contains(f.Name)).ToArray(); }
+@{ var otherFonts = favouritesOnly ? [] : filteredFonts.Where(f => !favourites.Contains(f.Name) && !shortlist.Contains(f.Name)).ToArray(); }
+
+@if (shortlistedFonts.Length > 0)
+{
+    <div class="section-header shortlist-header">📌 Shortlist <span class="section-hint">— shared via URL</span></div>
+    <div class="font-list">
+        @foreach (var fi in shortlistedFonts)
+        {
+            @RenderFontCard(fi)
+        }
+    </div>
+}
+
+@if (favouriteFonts.Length > 0)
+{
+    <div class="section-header">★ Favourites</div>
+    <div class="font-list">
+        @foreach (var fi in favouriteFonts)
+        {
+            @RenderFontCard(fi)
+        }
+    </div>
+}
+
+@if (otherFonts.Length > 0)
+{
+    @if (shortlistedFonts.Length > 0 || favouriteFonts.Length > 0)
+    {
+        <div class="section-header">All fonts</div>
+    }
+    <div class="font-list">
+        @foreach (var fi in otherFonts)
+        {
+            @RenderFontCard(fi)
+        }
+    </div>
+}
+
+@code {
+    private string text = "Hello";
+    private string nameFilter = "";
+    private int maxHeight = 0;
+    private bool allowMissingChars = true;
+    private bool allowCaseChanges = true;
+    private string displayFont = "";
+    private string customFont = "";
+    private string customFontLabel = "";
+    private bool favouritesOnly = false;
+    private HashSet<string> favourites = new();
+    private HashSet<string> shortlist = new();
+    private string? copiedFont;
+    private string? copiedSource;
+    private string? expandedSource;
+    private int sourceTab = 0;
+    private bool _suppressHashUpdate = false;
+
+    private FontInfo[] allFonts = [];
+    private FontInfo[] filteredFonts = [];
+    private HeightLevel[] heightLevels = [];
+    private readonly Dictionary<string, string> _renderCache = new();
+    private Dictionary<string, string> _fontNameToPropertyName = new();
+
+    private RenderFragment RenderFontCard(FontInfo fi) => __builder =>
+    {
+        var rendered = RenderFont(fi);
+        var isFav = favourites.Contains(fi.Name);
+        var isShortlisted = shortlist.Contains(fi.Name);
+        var fontStyle = string.IsNullOrEmpty(displayFont) || displayFont == "__custom__"
+            ? "font-family: var(--font-mono)"
+            : $"font-family: {displayFont}";
+        <div class="font-card">
+            <div class="font-card-header">
+                <span class="font-name">@fi.Name</span>
+                <span class="font-height">h:@fi.Height</span>
+                <div class="font-card-actions">
+                    <button class="star-btn @(isFav ? "starred" : "")" @onclick="() => ToggleFavourite(fi.Name)" title="@(isFav ? "Remove from favourites" : "Add to favourites")">@(isFav ? "★" : "☆")</button>
+                    <button class="pin-btn @(isShortlisted ? "pinned" : "")" @onclick="() => ToggleShortlist(fi.Name)" title="@(isShortlisted ? "Remove from shortlist" : "Add to shortlist (shared via URL)")">📌</button>
+                    <button class="card-btn @(copiedFont == fi.Name ? "copied" : "")" @onclick="() => CopyRendered(fi.Name, rendered)">
+                        @(copiedFont == fi.Name ? "Copied!" : "Copy")
+                    </button>
+                    <button class="card-btn @(expandedSource == fi.Name ? "active" : "")" @onclick="() => ToggleSource(fi.Name)">Source</button>
+                </div>
+            </div>
+            <pre style="@fontStyle">@rendered</pre>
+            @if (expandedSource == fi.Name)
+            {
+                <div class="source-panel">
+                    <div class="source-tabs">
+                        <button class="source-tab @(sourceTab == 0 ? "active" : "")" @onclick="() => sourceTab = 0">FiggleFonts</button>
+                        <button class="source-tab @(sourceTab == 1 ? "active" : "")" @onclick="() => sourceTab = 1">Source Gen</button>
+                        <button class="source-tab @(sourceTab == 2 ? "active" : "")" @onclick="() => sourceTab = 2">Embed Font</button>
+                    </div>
+                    <div class="source-code">
+                        <pre>@GetSourceCode(fi)</pre>
+                        <button class="source-copy-btn @(copiedSource == fi.Name ? "copied" : "")" @onclick="() => CopySource(fi)">
+                            @(copiedSource == fi.Name ? "Copied!" : "Copy")
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var heightTask = LoadHeightLevels();
+        LoadAllFonts();
+        BuildPropertyNameMap();
+        heightLevels = await heightTask;
+        ApplyFilter();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _suppressHashUpdate = true;
+            try
+            {
+                // Load favourites from localStorage (personal, not shared)
+                var favs = await JS.InvokeAsync<string[]>("figgle.getFavourites");
+                if (favs is { Length: > 0 })
+                    favourites = new HashSet<string>(favs);
+
+                // Restore shortlist and options from URL hash (shareable)
+                var hash = await JS.InvokeAsync<string>("figgle.getHash");
+                if (!string.IsNullOrEmpty(hash))
+                {
+                    RestoreFromHash(hash);
+                    _renderCache.Clear();
+                }
+
+                // Listen for browser back/forward
+                var selfRef = DotNetObjectReference.Create(this);
+                await JS.InvokeVoidAsync("figgle.onPopState", selfRef);
+            }
+            finally { _suppressHashUpdate = false; }
+
+            ApplyFilter();
+            StateHasChanged();
+        }
+    }
+
+    private void LoadAllFonts()
+    {
+        var fontNames = GetAllFontNames();
+        var list = new List<FontInfo>(fontNames.Length);
+
+        foreach (var name in fontNames)
+        {
+            var font = FiggleFonts.TryGetByName(name);
+            if (font is not null)
+                list.Add(new FontInfo(name, font));
+        }
+
+        allFonts = list.ToArray();
+    }
+
+    private void BuildPropertyNameMap()
+    {
+        var properties = typeof(FiggleFonts)
+            .GetProperties(BindingFlags.Public | BindingFlags.Static)
+            .Where(p => p.PropertyType == typeof(FiggleFont))
+            .ToArray();
+
+        foreach (var fi in allFonts)
+        {
+            foreach (var prop in properties)
+            {
+                try
+                {
+                    if (ReferenceEquals(prop.GetValue(null), fi.Font))
+                    {
+                        _fontNameToPropertyName[fi.Name] = prop.Name;
+                        break;
+                    }
+                }
+                catch { }
+            }
+        }
+    }
+
+    private void OnTextChanged()
+    {
+        _renderCache.Clear();
+        ApplyFilter();
+        UpdateHash(push: false);
+    }
+
+    private void OnFilterChanged()
+    {
+        ApplyFilter();
+        UpdateHash(push: true);
+    }
+
+    private async Task OnDisplayFontChanged()
+    {
+        if (displayFont == "__custom__")
+        {
+            await PromptCustomFont();
+            return;
+        }
+        UpdateHash(push: true);
+    }
+
+    private async Task PromptCustomFont()
+    {
+        var name = await JS.InvokeAsync<string>("prompt", "Enter a monospace font name (must be installed on your system):");
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            customFont = $"'{name}', monospace";
+            customFontLabel = name;
+            displayFont = customFont;
+        }
+        else
+        {
+            displayFont = "";
+        }
+        UpdateHash(push: true);
+        StateHasChanged();
+    }
+
+    private void ApplyFilter()
+    {
+        filteredFonts = allFonts
+            .Where(f => string.IsNullOrWhiteSpace(nameFilter) || f.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase))
+            .Where(f => maxHeight == 0 || f.Height <= maxHeight)
+            .Where(f => !favouritesOnly || favourites.Contains(f.Name))
+            .Where(f => allowMissingChars || HasAllCharacters(f))
+            .Where(f => allowCaseChanges || !IsAllCaps(f))
+            .ToArray();
+    }
+
+    private bool HasAllCharacters(FontInfo fi)
+    {
+        if (string.IsNullOrEmpty(text)) return true;
+        foreach (var c in text)
+        {
+            if (c == ' ') continue;
+            // All ASCII 32-126 are technically "present" in every FIGlet font,
+            // but some render as blank. Check by rendering the single character
+            // and seeing if the output is all whitespace.
+            try
+            {
+                var rendered = fi.Font.Render(c.ToString());
+                if (string.IsNullOrWhiteSpace(rendered))
+                    return false;
+            }
+            catch { return false; }
+        }
+        return true;
+    }
+
+    private bool IsAllCaps(FontInfo fi)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        if (!text.Any(char.IsLetter)) return false;
+        var lower = new string(text.Where(char.IsLetter).Select(char.ToLowerInvariant).ToArray());
+        var upper = new string(text.Where(char.IsLetter).Select(char.ToUpperInvariant).ToArray());
+        if (lower == upper) return false;
+        try { return fi.Font.Render(lower) == fi.Font.Render(upper); }
+        catch { return false; }
+    }
+
+    private string RenderFont(FontInfo fi)
+    {
+        if (_renderCache.TryGetValue(fi.Name, out var cached))
+            return cached;
+
+        try
+        {
+            var rendered = fi.Font.Render(text ?? "");
+            _renderCache[fi.Name] = rendered;
+            return rendered;
+        }
+        catch
+        {
+            var error = $"(error rendering with '{fi.Name}')";
+            _renderCache[fi.Name] = error;
+            return error;
+        }
+    }
+
+    private async Task CopyRendered(string fontName, string rendered)
+    {
+        await JS.InvokeVoidAsync("figgle.copyText", rendered);
+        copiedFont = fontName;
+        StateHasChanged();
+        await Task.Delay(1500);
+        if (copiedFont == fontName) { copiedFont = null; StateHasChanged(); }
+    }
+
+    private async Task ToggleFavourite(string fontName)
+    {
+        if (!favourites.Remove(fontName))
+            favourites.Add(fontName);
+        await JS.InvokeVoidAsync("figgle.setFavourites", favourites.ToArray());
+        ApplyFilter();
+    }
+
+    private void ToggleShortlist(string fontName)
+    {
+        if (!shortlist.Remove(fontName))
+            shortlist.Add(fontName);
+        UpdateHash(push: true);
+    }
+
+    private void ToggleFavouritesOnly()
+    {
+        favouritesOnly = !favouritesOnly;
+        ApplyFilter();
+        UpdateHash(push: true);
+    }
+
+    private void ToggleSource(string fontName)
+    {
+        expandedSource = expandedSource == fontName ? null : fontName;
+        sourceTab = 0;
+    }
+
+    private string GetSourceCode(FontInfo fi)
+    {
+        var propName = _fontNameToPropertyName.GetValueOrDefault(fi.Name, fi.Name);
+        var escapedText = text?.Replace("\"", "\\\"") ?? "";
+
+        return sourceTab switch
+        {
+            0 => "using Figgle.Fonts;\n\nConsole.WriteLine(\n    FiggleFonts." + propName + ".Render(\"" + escapedText + "\"));",
+            1 => "using Figgle;\n\n[GenerateFiggleText(\n    memberName: \"Banner\",\n    fontName: \"" + fi.Name + "\",\n    sourceText: \"" + escapedText + "\")]\nstatic partial class MyText;\n\n// Usage:\nConsole.WriteLine(MyText.Banner);",
+            2 => "using Figgle;\n\n[EmbedFiggleFont(\n    memberName: \"" + propName + "\",\n    fontName: \"" + fi.Name + "\")]\nstatic partial class MyFonts;\n\n// Usage:\nConsole.WriteLine(\n    MyFonts." + propName + ".Render(\"" + escapedText + "\"));",
+            _ => ""
+        };
+    }
+
+    private async Task CopySource(FontInfo fi)
+    {
+        var code = GetSourceCode(fi);
+        await JS.InvokeVoidAsync("figgle.copyText", code);
+        copiedSource = fi.Name;
+        StateHasChanged();
+        await Task.Delay(1500);
+        if (copiedSource == fi.Name) { copiedSource = null; StateHasChanged(); }
+    }
+
+    // --- URL hash state ---
+
+    private string BuildHash()
+    {
+        var parts = new List<string>();
+        if (text != "Hello") parts.Add("text=" + Uri.EscapeDataString(text));
+        if (!string.IsNullOrEmpty(nameFilter)) parts.Add("filter=" + Uri.EscapeDataString(nameFilter));
+        if (maxHeight != 0) parts.Add("height=" + maxHeight);
+        if (!allowMissingChars) parts.Add("missing=0");
+        if (!allowCaseChanges) parts.Add("case=0");
+        if (favouritesOnly) parts.Add("favOnly=1");
+        if (shortlist.Count > 0) parts.Add("pick=" + Uri.EscapeDataString(string.Join(",", shortlist.OrderBy(f => f))));
+        return string.Join("&", parts);
+    }
+
+    private void UpdateHash(bool push)
+    {
+        if (_suppressHashUpdate) return;
+        var hash = BuildHash();
+        var jsRuntime = (IJSInProcessRuntime)JS;
+        if (push)
+            jsRuntime.InvokeVoid("figgle.pushHash", hash);
+        else
+            jsRuntime.InvokeVoid("figgle.setHash", hash);
+    }
+
+    [JSInvokable]
+    public void OnBrowserBack(string hash)
+    {
+        _suppressHashUpdate = true;
+        try
+        {
+            // Reset to defaults, then overlay what's in the hash
+            text = "Hello";
+            nameFilter = "";
+            maxHeight = 0;
+            allowMissingChars = true;
+            allowCaseChanges = true;
+            favouritesOnly = false;
+            shortlist.Clear();
+
+            if (!string.IsNullOrEmpty(hash))
+                RestoreFromHash(hash);
+
+            _renderCache.Clear();
+            ApplyFilter();
+            StateHasChanged();
+        }
+        finally { _suppressHashUpdate = false; }
+    }
+
+    private void RestoreFromHash(string hash)
+    {
+        var pairs = hash.Split('&', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var pair in pairs)
+        {
+            var eq = pair.IndexOf('=');
+            if (eq < 0) continue;
+            var key = pair.Substring(0, eq);
+            var val = Uri.UnescapeDataString(pair.Substring(eq + 1));
+            switch (key)
+            {
+                case "text": text = val; _renderCache.Clear(); break;
+                case "filter": nameFilter = val; break;
+                case "height": int.TryParse(val, out maxHeight); break;
+                case "missing": allowMissingChars = val != "0"; break;
+                case "case": allowCaseChanges = val != "0"; break;
+                case "favOnly": favouritesOnly = val == "1"; break;
+                case "pick":
+                    shortlist = new HashSet<string>(val.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                    break;
+            }
+        }
+    }
+
+    // --- Data loading ---
+
+    private static string[] GetAllFontNames()
+    {
+        using var stream = typeof(FiggleFonts).Assembly.GetManifestResourceStream("Figgle.Fonts.zip");
+        if (stream is null) return [];
+        using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
+        return zip.Entries
+            .Select(e => Path.GetFileNameWithoutExtension(e.Name))
+            .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+    }
+
+    private async Task<HeightLevel[]> LoadHeightLevels()
+    {
+        try
+        {
+            var levels = await Http.GetFromJsonAsync<HeightLevel[]>("font-heights.json");
+            return levels ?? [];
+        }
+        catch { return []; }
+    }
+
+    private sealed class FontInfo(string name, FiggleFont font)
+    {
+        public string Name { get; } = name;
+        public FiggleFont Font { get; } = font;
+        public int Height => Font.Height;
+    }
+
+    private sealed class HeightLevel
+    {
+        public int Height { get; set; }
+        public int Count { get; set; }
+        public int Cumulative { get; set; }
+    }
+}

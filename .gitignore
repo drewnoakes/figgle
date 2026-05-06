@@ -6,3 +6,4 @@ obj/
 *.suo
 *.nupkg
 /artifacts/
+site/Figgle.Site/wwwroot/font-heights.json

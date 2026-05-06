@@ -4,19 +4,37 @@ on:
     types: [prereleased]
 
 jobs:
- windows:
-    runs-on: windows-latest
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      DOTNET_NOLOGO: true
     steps:
-    - uses: actions/checkout@v3
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-      shell: bash
-    - run: echo ${{ steps.get_version.outputs.VERSION }}
-    - run: dotnet pack src/Figgle -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
-    - run: dotnet pack src/Figgle.Fonts -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
-    - run: dotnet pack src/Figgle.Generator -o . -c Release /p:Version=${{ steps.get_version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
-    - run: dotnet nuget push *.nupkg -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
-      env:
-        NUGET_API_KEY: ${{ secrets.NuGetAPIKey }}
-      shell: bash
+    - uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Extract version from tag
+      id: version
+      run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+    - name: Pack
+      run: |
+        dotnet pack src/Figgle -o ./artifacts -c Release /p:Version=${{ steps.version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
+        dotnet pack src/Figgle.Fonts -o ./artifacts -c Release /p:Version=${{ steps.version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
+        dotnet pack src/Figgle.Generator -o ./artifacts -c Release /p:Version=${{ steps.version.outputs.VERSION }} /p:ContinuousIntegrationBuild=true
+
+    - name: NuGet login (OIDC)
+      id: login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
+    - name: Push to NuGet
+      run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

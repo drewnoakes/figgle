@@ -10,7 +10,6 @@
 
     <!-- Reduce WASM bundle size -->
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>full</TrimMode>
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 

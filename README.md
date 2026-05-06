@@ -9,9 +9,10 @@
 [![Figgle Build Status](https://github.com/drewnoakes/figgle/actions/workflows/CI.yml/badge.svg)](https://github.com/drewnoakes/figgle/actions/)
 [![Figgle NuGet download count](https://img.shields.io/nuget/dt/Figgle)](https://www.nuget.org/packages/Figgle/)
 
-## ASCII banner generation for .NET
+> [!NOTE]
+> **[Try Figgle online](https://drewnoakes.github.io/figgle/)** — preview all 250+ fonts in your browser.
 
-**[Try it online](https://drewnoakes.github.io/figgle/)** — preview all 250+ fonts in your browser.
+## ASCII banner generation for .NET
 
 ```c#
 Console.WriteLine(

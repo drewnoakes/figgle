@@ -11,6 +11,8 @@
 
 ## ASCII banner generation for .NET
 
+**[Try it online](https://drewnoakes.github.io/figgle/)** — preview all 250+ fonts in your browser.
+
 ```c#
 Console.WriteLine(
     FiggleFonts.Standard.Render("Hello, World!"));
